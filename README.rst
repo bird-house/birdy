@@ -10,7 +10,7 @@ Introduction
 Birdy (the bird)
    *Birdy is not a bird but likes to play with them.*
 
-Birdy is a Python package to provide a commandline tool to work with Web Processing Services (WPS). It is using OWSLib from the GeoPython project.
+Birdy is a Python package to provide a command-line tool to work with Web Processing Services (WPS). It is using OWSLib from the GeoPython project.
 
 Installation
 ************

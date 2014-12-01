@@ -20,7 +20,7 @@ def execute(wps, args):
     monitor(execution, download=False)
 
 def monitor(execution, sleepSecs=3, download=False, filepath=None):
-    '''
+    """
     Convenience method to monitor the status of a WPS execution till it completes (succesfully or not),
     and write the output to file after a succesfull job completion.
     
@@ -29,7 +29,7 @@ def monitor(execution, sleepSecs=3, download=False, filepath=None):
     download: True to download the output when the process terminates, False otherwise
     filepath: optional path to output file (if downloaded=True), otherwise filepath will be inferred from response document
     
-    '''
+    """
     
     while execution.isComplete()==False:
         execution.checkStatus(sleepSecs=sleepSecs)
@@ -46,10 +46,13 @@ def monitor(execution, sleepSecs=3, download=False, filepath=None):
         for ex in execution.errors:
             print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
 
-def main():
-    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.ERROR)
+def create_parser(wps):
+    """
+    Generates commands to execute WPS processes on the command line.
     
-    wps = WebProcessingService(SERVICE, verbose=False, skip_caps=False)
+    See Python argparse documentation:
+    https://docs.python.org/2/howto/argparse.html
+    """
     
     import argparse
 
@@ -84,7 +87,16 @@ def main():
             action="store",
             help=help_msg
         )
+        
+    return parser
 
+def main():
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.ERROR)
+    wps = WebProcessingService(SERVICE, verbose=False, skip_caps=False)
+
+    parser = create_parser(wps)
     args = parser.parse_args()
     execute(wps, args)
 
+if __name__ == '__main__':
+    main()
