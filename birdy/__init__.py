@@ -181,8 +181,8 @@ def create_parser(wps):
     subparsers = parser.add_subparsers(
         dest='identifier',
         title='command',
-        description='valid subcommands',
-        help='additional help'
+        description='List of available commands (wps processes)',
+        help='Run "birdy <command> -h" to get additional help.'
         )
     for process in wps.processes:
         parser_process = subparsers.add_parser(process.identifier)
