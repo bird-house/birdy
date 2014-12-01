@@ -125,42 +125,9 @@ def parse_wps_description(wps):
         wps.identification.title,
         wps.identification.abstract)
 
-def create_parser(wps):
-    """
-    Generates commands to execute WPS processes on the command line.
+def create_process_parser(subparsers, wps, identifier):
+    process = wps.describeprocess(identifier)
     
-    See Python argparse documentation:
-    https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
-    https://docs.python.org/2/howto/argparse.html
-    https://docs.python.org/2/library/argparse.html#module-argparse
-    https://argparse.googlecode.com/svn/trunk/doc/parse_args.html
-    """
-    
-    import argparse
-    import sys
-
-    parser = argparse.ArgumentParser(
-        usage='''birdy [-h] <command> [<args>]''',
-        description=parse_wps_description(wps),
-        )
-    subparsers = parser.add_subparsers(
-        dest='identifier',
-        title='command',
-        description='valid subcommands',
-        help='additional help'
-        )
-    for process in wps.processes:
-        #process = wps.describeprocess(wps.processes[i].identifier)
-        parser_process = subparsers.add_parser(
-            process.identifier,
-            #help=parse_process_help(process)
-            )
-
-        
-
-    args = parser.parse_args(sys.argv[1:2])
-    print 'Arguments:', args
-    process = wps.describeprocess(args.identifier)
     parser_process = subparsers.add_parser(
         process.identifier,
         #help=parse_process_help(process)
@@ -190,10 +157,43 @@ def create_parser(wps):
         action="store",
         help=help_msg
     )
-    args = parser.parse_args(sys.argv[1:])
-    print 'Arguments:', args
-    sys.exit(1)
-        
+    
+def create_parser(wps):
+    """
+    Generates commands to execute WPS processes on the command line.
+    
+    See Python argparse documentation:
+    https://chase-seibert.github.io/blog/2014/03/21/python-multilevel-argparse.html
+    https://docs.python.org/2/howto/argparse.html
+    https://docs.python.org/2/library/argparse.html#module-argparse
+    https://argparse.googlecode.com/svn/trunk/doc/parse_args.html
+    """
+    
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        prog="birdy",
+        #usage='''birdy [-h] <command> [<args>]''',
+        description=parse_wps_description(wps),
+        )
+    subparsers = parser.add_subparsers(
+        dest='identifier',
+        title='command',
+        description='valid subcommands',
+        help='additional help'
+        )
+    for process in wps.processes:
+        parser_process = subparsers.add_parser(
+            process.identifier,
+            #help=parse_process_help(process)
+            )
+    # parse only birdy with command
+    args = parser.parse_args(sys.argv[1:2])
+    # check if called with command
+    if hasattr(args, "identifier"):
+        create_process_parser(subparsers, wps, args.identifier)
+
     return parser
 
 def main():
