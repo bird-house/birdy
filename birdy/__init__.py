@@ -178,6 +178,7 @@ def create_parser(wps):
         usage='''birdy [-h] <command> [<args>]''',
         description=parse_wps_description(wps),
         )
+
     subparsers = parser.add_subparsers(
         dest='identifier',
         title='command',
