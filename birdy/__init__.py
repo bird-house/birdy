@@ -130,6 +130,7 @@ def create_process_parser(subparsers, wps, identifier):
     
     parser_process = subparsers.add_parser(
         process.identifier,
+        prog="birdy {0}".format(process.identifier) ,
         help=parse_process_help(process)
         )
 
@@ -173,8 +174,8 @@ def create_parser(wps):
     import sys
 
     parser = argparse.ArgumentParser(
-        prog="birdy",
-        #usage='''birdy [-h] <command> [<args>]''',
+        #prog="birdy",
+        usage='''birdy [-h] <command> [<args>]''',
         description=parse_wps_description(wps),
         )
     subparsers = parser.add_subparsers(
