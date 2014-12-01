@@ -130,20 +130,20 @@ def create_process_parser(subparsers, wps, identifier):
     
     parser_process = subparsers.add_parser(
         process.identifier,
-        #help=parse_process_help(process)
+        help=parse_process_help(process)
         )
 
     for input in process.dataInputs:
         parser_process.add_argument(
             '--'+input.identifier,
             dest=input.identifier,
-            #required=parse_required(input),
-            #nargs=parse_nargs(input),
+            required=parse_required(input),
+            nargs=parse_nargs(input),
             #type=parse_type(input),
-            #choices=parse_choices(input),
-            #default=parse_default(input),
+            choices=parse_choices(input),
+            default=parse_default(input),
             action="store",
-            #help=parse_description(input),
+            help=parse_description(input),
         )
     output_choices = [output.identifier for output in process.processOutputs]
     help_msg = "Output: "
@@ -184,10 +184,8 @@ def create_parser(wps):
         help='additional help'
         )
     for process in wps.processes:
-        parser_process = subparsers.add_parser(
-            process.identifier,
-            #help=parse_process_help(process)
-            )
+        parser_process = subparsers.add_parser(process.identifier)
+
     # parse only birdy with command
     args = parser.parse_args(sys.argv[1:2])
     # check if called with command
