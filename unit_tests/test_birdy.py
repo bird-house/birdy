@@ -31,6 +31,20 @@ class BirdyTestCase(CommandLineTestCase):
             
     @attr('online')
     def test_help(self):
-        raise SkipTest
-        args = self.parser.parse_args(args=['-h'])
-        nose.tools.ok_(False, args)
+        """
+        Help messages ends with SystemExit
+
+        TODO: overwrite exit method? See: http://bugs.python.org/issue9938
+        """
+        with self.assertRaises(SystemExit):
+            self.parser.parse_args('-h'.split())
+
+    @attr('online')
+    def test_wget(self):
+        """
+        Try wget command
+        """
+        args = self.parser.parse_args('wget'.split())
+        nose.tools.ok_(args.identifier == 'wget', args)
+        nose.tools.ok_(args.output == 'output', args)
+        
