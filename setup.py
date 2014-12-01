@@ -43,7 +43,7 @@ setup(name='birdy',
       install_requires=requires,
       entry_points = {
           'console_scripts': [
-              'birdy=birdy.birdy:main',
+              'birdy=birdy:main',
               ]}     
       ,
       )
