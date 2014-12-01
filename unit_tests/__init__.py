@@ -1,6 +1,6 @@
 import logging
 
-SERVICE = "http://localhost:8091/wps"
+SERVICE = "http://localhost:8094/wps"
 TESTDATA = {}
 
 

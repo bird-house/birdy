@@ -40,11 +40,11 @@ class BirdyTestCase(CommandLineTestCase):
             self.parser.parse_args('-h'.split())
 
     @attr('online')
-    def test_wget(self):
+    def test_inout(self):
         """
-        Try wget command
+        Try inout command
         """
-        args = self.parser.parse_args('wget'.split())
-        nose.tools.ok_(args.identifier == 'wget', args)
+        args = self.parser.parse_args('inout'.split())
+        nose.tools.ok_(args.identifier == 'inout', args)
         nose.tools.ok_(args.output == 'output', args)
         
