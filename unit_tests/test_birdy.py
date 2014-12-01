@@ -21,15 +21,16 @@ class CommandLineTestCase(TestCase):
         cls.parser = create_parser(wps)
 
 class BirdyTestCase(CommandLineTestCase):
+    @attr('online')
     def test_with_empty_args(self):
         """
         User passes no args, should fail with SystemExit
-        """                                    
+        """
         with self.assertRaises(SystemExit):
             self.parser.parse_args([])
             
     @attr('online')
-    def test_birdy(self):
+    def test_help(self):
         raise SkipTest
-        from birdy import main
-        nose.tools.ok_(False, 'birdy needs some work')
+        args = self.parser.parse_args(args=['-h'])
+        nose.tools.ok_(False, args)
