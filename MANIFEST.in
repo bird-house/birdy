@@ -1,0 +1,3 @@
+include *.rst
+graft birdy 
+global-exclude *.pyc *.*~
