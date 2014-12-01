@@ -46,13 +46,19 @@ def monitor(execution, sleepSecs=3, download=False, filepath=None):
         for ex in execution.errors:
             print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
 
+def is_complex_data(input):
+    return 'ComplexData' in input.dataType
+            
 def parse_default(input):
     default = None
     if hasattr(input, 'defaultValue'):
         default = input.defaultValue
         if default is not None:
-            # TODO: handle complexData
-            default = str(input.defaultValue)
+            if is_complex_data(input):
+                # TODO: get default value of complex type
+                default = None #input.defaultValue.mimeType
+            else:
+                default = str(input.defaultValue)
     return default
 
 def parse_description(input):
@@ -60,6 +66,10 @@ def parse_description(input):
     if hasattr(input, 'abstract'):
         description = description + ": " + input.abstract
     default = parse_default(input)
+    if is_complex_data(input):
+        if len(input.supportedValues) > 0: 
+            mime_types = ",".join([value.mimeType for value in input.supportedValues])
+            description = description + ", mime types=" + mime_types
     if default is not None:
         description = description + " (default: " +  default + ")"
     return description
@@ -68,6 +78,12 @@ def parse_type(input):
     # TODO: see https://docs.python.org/2/library/argparse.html#type
     if 'boolean' in input.dataType:
         parsed_type=type(True)
+    elif 'integer' in input.dataType:
+        parsed_type=type(1)
+    elif 'float' in input.dataType:
+        parsed_type=type(1.0)
+    elif 'ComplexData' in input.dataType:
+        parsed_type=type('http://')
     else:
         parsed_type=type('')
     return parsed_type
@@ -135,7 +151,7 @@ def create_parser(wps):
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
-            help_msg = help_msg + parse_description(output) + ", "
+            help_msg = help_msg + output.identifier + "=" + parse_description(output) + " (default: output)"
         parser_process.add_argument(
             '--output',
             dest="output",
