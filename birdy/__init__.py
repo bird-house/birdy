@@ -58,9 +58,12 @@ def monitor(execution, sleepSecs=3, download=False, filepath=None):
         if download:
             execution.getOutput(filepath=filepath)
         else:
+            print "Output:"
             for output in execution.processOutputs:               
                 if output.reference is not None:
-                    print 'Output URL=%s' % output.reference
+                    print '%s=%s (%s)' % (output.identifier, output.reference, output.mimeType)
+                else:
+                    print '%s=%s' % (output.identifier, ", ".join(output.data))
     else:
         for ex in execution.errors:
             print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
