@@ -12,9 +12,14 @@ def execute(wps, args):
     # TODO: this is probably not the way to do it
     for key in args.__dict__.keys():
         if not key in ['identifier', 'output']:
-            inputs.append( (key, str( getattr(args, key) )) )
+            values = getattr(args, key)
+            if not isinstance(values, list):
+                values = [values]
+            for value in values:
+                inputs.append( (str(key), str(value) ) )
     # list of tuple (output identifier, asReference attribute)
-    outputs = [(args.output, True)]
+    #outputs = [(args.output, True)]
+    outputs = []
     execution = wps.execute(args.identifier, inputs, outputs)
     monitor(execution, download=False)
 
