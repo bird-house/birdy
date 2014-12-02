@@ -4,7 +4,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 version = '0.1.0'
-description = 'Birdy provides a commandline tool to work with Web Processing Services (WPS).'
+description = 'Birdy provides a command-line tool to work with Web Processing Services (WPS).'
 long_description = (
     open('README.rst').read() + '\n' +
     open('AUTHORS.rst').read() + '\n' +
