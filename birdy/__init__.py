@@ -9,18 +9,29 @@ import logging
 
 def execute(wps, args):
     inputs = []
+    # inputs 
     # TODO: this is probably not the way to do it
     for key in args.__dict__.keys():
         if not key in ['identifier', 'output']:
             values = getattr(args, key)
+            # checks if single value (or list of values)
             if not isinstance(values, list):
                 values = [values]
             for value in values:
                 inputs.append( (str(key), str(value) ) )
-    # list of tuple (output identifier, asReference attribute)
-    #outputs = [(args.output, True)]
+    # outputs
     outputs = []
+    if args.output is not None:
+        outputs = args.output
+    # checks if single value (or list of values)
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+    for output in outputs:
+        # list of tuple (output identifier, asReference attribute)
+        outputs = [(str(output), True)]
+    # now excecute it ...
     execution = wps.execute(args.identifier, inputs, outputs)
+    # waits for result (async call)
     monitor(execution, download=False)
 
 def monitor(execution, sleepSecs=3, download=False, filepath=None):
@@ -154,11 +165,10 @@ def create_process_parser(subparsers, wps, identifier):
     output_choices = [output.identifier for output in process.processOutputs]
     help_msg = "Output: "
     for output in process.processOutputs:
-       help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: output)"
+       help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
     parser_process.add_argument(
         '--output',
         dest="output",
-        default="output",
         choices=output_choices,
         action="store",
         help=help_msg
