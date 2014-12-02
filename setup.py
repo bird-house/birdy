@@ -27,12 +27,12 @@ classifiers=[
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         ]
 
-setup(name='birdy',
+setup(name='birdhouse-birdy',
       version=version,
       description=description,
       long_description=long_description,
       classifiers=classifiers,
-      keywords='wps pywps python birdy netcdf esgf',
+      keywords='wps pywps python birdy netcdf esgf birdhouse',
       author='Birdhouse',
       url='https://github.com/bird-house/birdy',
       license = "Apache License v2.0",
