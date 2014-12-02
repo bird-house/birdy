@@ -7,6 +7,9 @@ $ birdy -h
 
 import logging
 
+# TODO: dont use globals
+OUTPUT_TYPE_MAP = {}
+
 def execute(wps, args):
     inputs = []
     # inputs 
@@ -20,16 +23,17 @@ def execute(wps, args):
             for value in values:
                 inputs.append( (str(key), str(value) ) )
     # outputs
-    outputs = []
+    output = OUTPUT_TYPE_MAP.keys()
+    #logging.debug(output)
     if args.output is not None:
-        outputs = args.output
+        output = args.output
     # checks if single value (or list of values)
-    if not isinstance(outputs, list):
-        outputs = [outputs]
-    for output in outputs:
-        # list of tuple (output identifier, asReference attribute)
-        outputs = [(str(output), True)]
+    if not isinstance(output, list):
+        output = [output]
+    # list of tuple (output identifier, asReference attribute)
+    outputs = [(str(identifier), OUTPUT_TYPE_MAP.get(identifier, True)) for identifier in output]
     # now excecute it ...
+    #logging.debug(outputs)
     execution = wps.execute(args.identifier, inputs, outputs)
     # waits for result (async call)
     monitor(execution, download=False)
@@ -61,8 +65,8 @@ def monitor(execution, sleepSecs=3, download=False, filepath=None):
         for ex in execution.errors:
             print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
 
-def is_complex_data(input):
-    return 'ComplexData' in input.dataType
+def is_complex_data(inoutput):
+    return 'ComplexData' in inoutput.dataType
             
 def parse_default(input):
     default = None
@@ -166,9 +170,11 @@ def create_process_parser(subparsers, wps, identifier):
     help_msg = "Output: "
     for output in process.processOutputs:
        help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
+       OUTPUT_TYPE_MAP[output.identifier] = is_complex_data(output)
     parser_process.add_argument(
         '--output',
         dest="output",
+        nargs='*',
         choices=output_choices,
         action="store",
         help=help_msg
