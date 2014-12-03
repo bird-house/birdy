@@ -1,6 +1,8 @@
 Todo list
 *********
 
+* check argparse complete
+  https://pypi.python.org/pypi/argcomplete/0.8.3
 * check optcomplete
   https://binstar.org/rsignell/optcomplete
   https://binstar.org/rsignell
