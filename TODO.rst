@@ -1,6 +1,9 @@
 Todo list
 *********
 
+* check optcomplete
+  https://binstar.org/rsignell/optcomplete
+  https://binstar.org/rsignell
 * esgf search on console (files, opendap, local files)
 * csw search on console
 * wps commandline tool similar to miklip:
