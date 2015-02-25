@@ -195,6 +195,7 @@ def create_parser(wps):
     """
     
     import argparse
+    import argcomplete
     import sys
 
     parser = argparse.ArgumentParser(
@@ -202,22 +203,25 @@ def create_parser(wps):
         usage='''birdy [-h] <command> [<args>]''',
         description=parse_wps_description(wps),
         )
-
     subparsers = parser.add_subparsers(
         dest='identifier',
         title='command',
         description='List of available commands (wps processes)',
         help='Run "birdy <command> -h" to get additional help.'
         )
+   
     for process in wps.processes:
         parser_process = subparsers.add_parser(process.identifier)
 
+    # autocomplete
+    argcomplete.autocomplete(parser)
+    
     # parse only birdy with command
     args = parser.parse_args(sys.argv[1:2])
     # check if called with command
     if hasattr(args, "identifier"):
         create_process_parser(subparsers, wps, args.identifier)
-
+        
     return parser
 
 def main():
