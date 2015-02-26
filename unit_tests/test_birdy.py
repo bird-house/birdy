@@ -4,7 +4,7 @@ from nose.plugins.attrib import attr
 
 from __init__ import TESTDATA, WpsTestCase
 
-from birdy import create_parser
+from birdy import Birdy
 
 class BirdyTestCase(WpsTestCase):
     """
@@ -12,13 +12,14 @@ class BirdyTestCase(WpsTestCase):
 
     See: http://dustinrcollins.com/testing-python-command-line-apps
     """
-    
+
     @attr('online')
     def test_with_empty_args(self):
         """
         User passes no args, should fail with SystemExit
         """
-        parser = create_parser(self.wps)
+        birdy = Birdy()
+        parser = birdy.create_parser(self.wps)
         with self.assertRaises(SystemExit):
             parser.parse_args([])
             
@@ -29,7 +30,8 @@ class BirdyTestCase(WpsTestCase):
 
         TODO: overwrite exit method? See: http://bugs.python.org/issue9938
         """
-        parser = create_parser(self.wps)
+        birdy = Birdy()
+        parser = birdy.create_parser(self.wps)
         with self.assertRaises(SystemExit):
             parser.parse_args('-h'.split())
 
@@ -39,7 +41,8 @@ class BirdyTestCase(WpsTestCase):
         Try inout command
         """
         raise SkipTest
-        parser = create_parser(self.wps)
+        birdy = Birdy()
+        parser = birdy.create_parser(self.wps)
         args = parser.parse_args('inout'.split())
         nose.tools.ok_(args.identifier == 'inout', args)
         nose.tools.ok_(args.output == 'output', args)
