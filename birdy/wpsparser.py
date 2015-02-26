@@ -80,3 +80,4 @@ def parse_wps_description(wps):
     description="{0}: {1}".format(
         wps.identification.title,
         wps.identification.abstract)
+    return description
