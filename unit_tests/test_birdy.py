@@ -29,8 +29,12 @@ class BirdyTestCase(TestCase):
         User passes no args, should fail with SystemExit
         """
         parser = self.birdy.create_parser()
-        with self.assertRaises(SystemExit):
-            parser.parse_args([])
+        try:
+            parser.parse_args([], namespace=Args)
+        except SystemExit as e:
+            nose.tools.ok_(e.code > 0, e)
+        else:
+            nose.tools.ok_(False, 'no error message')
             
     @attr('online')
     def test_help(self):
@@ -46,15 +50,21 @@ class BirdyTestCase(TestCase):
             nose.tools.ok_(e.code == 0, e)
 
     @attr('online')
-    def test_inout(self):
-        """
-        Try inout command
-        """
-        #raise SkipTest
+    def test_inout_command(self):
         parser = self.birdy.create_parser()
         try:
             parser.parse_args('inout -h'.split(), namespace=Args)
         except SystemExit as e:
             nose.tools.ok_(e.code == 0, e)
         nose.tools.ok_(Args.identifier == 'inout')
+
+    @attr('online')
+    def test_invalid_command(self):
+        parser = self.birdy.create_parser()
+        try:
+            parser.parse_args('fake_cmd -h'.split(), namespace=Args)
+        except SystemExit as e:
+            nose.tools.ok_(e.code > 0, e)
+        else:
+            nose.tools.ok_(False, 'no error message')
         
