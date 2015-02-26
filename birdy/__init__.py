@@ -5,7 +5,10 @@ see help:
 $ birdy -h
 """
 
+from wpsparser import *
+
 import logging
+logger = logging.getLogger(__name__)
 
 class Birdy(object):
     OUTPUT_TYPE_MAP = {}
@@ -71,86 +74,6 @@ class Birdy(object):
             for ex in execution.errors:
                 print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
 
-    def is_complex_data(self, inoutput):
-        return 'ComplexData' in inoutput.dataType
-            
-    def parse_default(self, input):
-        default = None
-        if hasattr(input, 'defaultValue'):
-            default = input.defaultValue
-            if default is not None:
-                if is_complex_data(input):
-                    # TODO: get default value of complex type
-                    default = None #input.defaultValue.mimeType
-                else:
-                    default = str(input.defaultValue)
-        return default
-
-    def parse_description(self, input):
-        description = ''
-        if hasattr(input, 'title') and input.title is not None:
-            description = str(input.title)
-        if hasattr(input, 'abstract'):
-            description = description + ": " + str(input.abstract)
-        default = parse_default(input)
-        if is_complex_data(input):
-            if len(input.supportedValues) > 0: 
-                mime_types = ",".join([str(value.mimeType) for value in input.supportedValues])
-                description = description + ", mime types=" + mime_types
-        if default is not None:
-            description = description + " (default: " + str(default) + ")"
-        return description.encode(encoding='ascii')
-
-    def parse_type(self, input):
-        # TODO: see https://docs.python.org/2/library/argparse.html#type
-        if 'boolean' in input.dataType:
-            parsed_type=type(True)
-        elif 'integer' in input.dataType:
-            parsed_type=type(1)
-        elif 'float' in input.dataType:
-            parsed_type=type(1.0)
-        elif 'ComplexData' in input.dataType:
-            parsed_type=type('http://')
-        else:
-            parsed_type=type('')
-        return parsed_type
-
-    def parse_choices(self, input):
-        choices = None
-        if len(input.allowedValues) > 0 and not input.allowedValues[0] == 'AnyValue':
-            choices = input.allowedValues
-        return choices
-
-    def parse_required(self, input):
-        required = True
-        if input.minOccurs == 0:
-            required = False
-        return required
-
-    def parse_nargs(self, input):
-        nargs = '?'
-        if input.maxOccurs > 1:
-            if input.minOccurs > 0:
-                nargs = '+'
-            else:
-                nargs = '*'
-        elif input.minOccurs == 1:
-            nargs == 1
-        return nargs
-
-    def parse_process_help(self, process):
-        help = ''
-        if hasattr(process, "title"):
-            help = help + str(process.title) + ": "
-        if hasattr(process, "abstract"):
-            help = help + str(process.abstract)
-        return help.encode(encoding='ascii')
-
-    def parse_wps_description(self, wps):
-        description="{0}: {1}".format(
-            wps.identification.title,
-            wps.identification.abstract)
-
     def create_process_parser(self, subparsers, wps, identifier):
         process = wps.describeprocess(identifier)
 
@@ -204,7 +127,7 @@ class Birdy(object):
         parser = argparse.ArgumentParser(
             #prog="birdy",
             usage='''birdy [-h] <command> [<args>]''',
-            description=self.parse_wps_description(wps),
+            description=parse_wps_description(wps),
             )
         subparsers = parser.add_subparsers(
             dest='identifier',
@@ -221,6 +144,7 @@ class Birdy(object):
 
         # parse only birdy with command
         logging.debug(sys.argv)
+        # TODO: check args
         #args = parser.parse_args(sys.argv[1:2])
         # check if called with command
         #if hasattr(args, "identifier"):
