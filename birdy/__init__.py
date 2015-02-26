@@ -54,24 +54,24 @@ class Birdy(object):
 
         for process in self.wps.processes:
             subparsers.add_parser(process.identifier)
-            self.create_process_parser(subparsers, process.identifier)
+            self.create_subparser(subparsers, process.identifier)
 
         # autocomplete
         argcomplete.autocomplete(parser)
 
         return parser
 
-    def create_process_parser(self, subparsers, identifier):
+    def create_subparser(self, subparsers, identifier):
         process = self.wps.describeprocess(identifier)
 
-        parser_process = subparsers.add_parser(
+        subparser = subparsers.add_parser(
             process.identifier,
             prog="birdy {0}".format(process.identifier) ,
             help=parse_process_help(process)
             )
 
         for input in process.dataInputs:
-            parser_process.add_argument(
+            subparser.add_argument(
                 '--'+input.identifier,
                 dest=input.identifier,
                 required=parse_required(input),
@@ -87,7 +87,7 @@ class Birdy(object):
         for output in process.processOutputs:
            help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
            self.OUTPUT_TYPE_MAP[output.identifier] = is_complex_data(output)
-        parser_process.add_argument(
+        subparser.add_argument(
             '--output',
             dest="output",
             nargs='*',
