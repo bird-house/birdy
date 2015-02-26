@@ -7,6 +7,12 @@ from __init__ import TESTDATA, SERVICE
 
 from birdy import Birdy
 
+class Args(object):
+    """
+    Namespace to collect parsed arguments
+    """
+    pass
+
 class BirdyTestCase(TestCase):
     """
     test command line client birdy:
@@ -31,20 +37,24 @@ class BirdyTestCase(TestCase):
         """
         Help messages ends with SystemExit
 
-        TODO: overwrite exit method? See: http://bugs.python.org/issue9938
+        TODO: overwrite exit method? See: http://bugs.python.org/issue9983
         """
         parser = self.birdy.create_parser()
-        with self.assertRaises(SystemExit):
-            parser.parse_args('-h'.split())
+        try:
+            args = parser.parse_args(['-h'], namespace=Args)
+        except SystemExit as e:
+            nose.tools.ok_(e.code == 0, e)
 
     @attr('online')
     def test_inout(self):
         """
         Try inout command
         """
-        raise SkipTest
+        #raise SkipTest
         parser = self.birdy.create_parser()
-        args = parser.parse_args('inout'.split())
-        nose.tools.ok_(args.identifier == 'inout', args)
-        nose.tools.ok_(args.output == 'output', args)
+        try:
+            parser.parse_args('inout -h'.split(), namespace=Args)
+        except SystemExit as e:
+            nose.tools.ok_(e.code == 0, e)
+        nose.tools.ok_(Args.identifier == 'inout')
         

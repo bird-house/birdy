@@ -40,7 +40,7 @@ class Birdy(object):
         import argcomplete
 
         parser = argparse.ArgumentParser(
-            #prog="birdy",
+            prog="birdy",
             usage='''birdy [-h] <command> [<args>]''',
             description=parse_wps_description(self.wps),
             )
