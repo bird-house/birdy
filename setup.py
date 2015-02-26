@@ -28,7 +28,7 @@ classifiers=[
         'Topic :: Scientific/Engineering :: Atmospheric Science',
         ]
 
-setup(name='birdy',
+setup(name='birdhouse-birdy',
       version=version,
       description=description,
       long_description=long_description,
