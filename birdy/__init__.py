@@ -4,7 +4,6 @@ from wpsparser import *
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 class Birdy(object):
     """
@@ -45,9 +44,12 @@ class Birdy(object):
 
         parser = argparse.ArgumentParser(
             prog="birdy",
-            usage='''birdy [-h] <command> [<args>]''',
+            usage='''birdy [<options>] <command> [<args>]''',
             description=parse_wps_description(self.wps),
             )
+        parser.add_argument("--debug",
+                            help="enable debug mode",
+                            action="store_true")
         subparsers = parser.add_subparsers(
             dest='identifier',
             title='command',
@@ -62,10 +64,13 @@ class Birdy(object):
                 prog="birdy {0}".format(process.identifier) ,
                 help=parse_process_help(process)
                 )
+            #subparser.set_defaults(func=self.execute)
             # lazy build of sub-command
             # TODO: maybe a better way to do this?
-            command = sys.argv[1]
-            if command==process.identifier:
+            #command = sys.argv[1]
+            #if command==process.identifier:
+            # TODO: this matching is too dangerous !!!
+            if process.identifier in sys.argv:
                 self.build_command(subparser, process.identifier)
 
         # autocomplete
@@ -105,6 +110,10 @@ class Birdy(object):
         )
 
     def execute(self, args):
+        if args.debug:
+            logger.setLevel(logging.DEBUG)
+            logger.debug('using web processing service %s', self.wps.url)
+        
         inputs = []
         # inputs 
         # TODO: this is probably not the way to do it
@@ -164,11 +173,11 @@ class Birdy(object):
 
 
 def main():
+    logger.setLevel(logging.INFO)
+    
     from os import environ 
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
-    logger.debug('using wps %s', service)
-    logger.debug('args %s', sys.argv)
-
+   
     try:
         mybirdy = Birdy(service)
         parser = mybirdy.create_parser()
@@ -177,12 +186,13 @@ def main():
         sys.exit(1)
         
     args = parser.parse_args()
+    mybirdy.execute(args)
 
-    try:
-        mybirdy.execute(args)
-    except:
-        logger.exception('birdy execute failed!')
-        sys.exit(1)
+    ## try:
+    ##     mybirdy.execute(args)
+    ## except:
+    ##     logger.exception('birdy execute failed!')
+    ##     sys.exit(1)
 
 if __name__ == '__main__':
     sys.exit(main())
