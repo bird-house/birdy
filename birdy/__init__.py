@@ -35,6 +35,9 @@ class Birdy(object):
         https://docs.python.org/2/howto/argparse.html
         https://docs.python.org/2/library/argparse.html#module-argparse
         https://argparse.googlecode.com/svn/trunk/doc/parse_args.html
+
+        lazy parsing subparser:
+        http://stackoverflow.com/questions/22742450/argparse-on-demand-imports-for-types-choices-etc
         """
 
         import argparse
@@ -54,21 +57,26 @@ class Birdy(object):
 
         for process in self.wps.processes:
             subparsers.add_parser(process.identifier)
-            self.create_subparser(subparsers, process.identifier)
+            subparser = subparsers.add_parser(
+                process.identifier,
+                prog="birdy {0}".format(process.identifier) ,
+                help=parse_process_help(process)
+                )
+            # lazy build of sub-command
+            # TODO: maybe a better way to do this?
+            command = sys.argv[1]
+            if command==process.identifier:
+                self.build_command(subparser, process.identifier)
 
         # autocomplete
         argcomplete.autocomplete(parser)
 
         return parser
 
-    def create_subparser(self, subparsers, identifier):
+    def build_command(self, subparser, identifier):
+        logger.debug("build subparser for command=%s", identifier)
+        
         process = self.wps.describeprocess(identifier)
-
-        subparser = subparsers.add_parser(
-            process.identifier,
-            prog="birdy {0}".format(process.identifier) ,
-            help=parse_process_help(process)
-            )
 
         for input in process.dataInputs:
             subparser.add_argument(
