@@ -1,11 +1,15 @@
 from wpsparser import *
 
 import logging
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class Birdy(object):
     """
     Birdy is a command line client for Web Processing Services.
+
+    Documentation is available on readthedocs:
+    http://birdy.readthedocs.org/en/latest/
 
     see help:
     $ birdy -h
@@ -17,7 +21,7 @@ class Birdy(object):
         try:
             self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
         except:
-            logging.exception('Could not access wps %s', service)
+            logger.exception('Could not access wps %s', service)
             raise
 
     def create_parser(self):
@@ -54,7 +58,7 @@ class Birdy(object):
         argcomplete.autocomplete(parser)
 
         # parse only birdy with command
-        logging.debug(sys.argv)
+        logger.debug(sys.argv)
         # TODO: check args
         #args = parser.parse_args(sys.argv[1:2])
         # check if called with command
@@ -112,7 +116,7 @@ class Birdy(object):
                     inputs.append( (str(key), str(value) ) )
         # outputs
         output = self.OUTPUT_TYPE_MAP.keys()
-        #logging.debug(output)
+        #logger.debug(output)
         if args.output is not None:
             output = args.output
         # checks if single value (or list of values)
@@ -121,7 +125,7 @@ class Birdy(object):
         # list of tuple (output identifier, asReference attribute)
         outputs = [(str(identifier), self.OUTPUT_TYPE_MAP.get(identifier, True)) for identifier in output]
         # now excecute it ...
-        #logging.debug(outputs)
+        #logger.debug(outputs)
         execution = self.wps.execute(args.identifier, inputs, outputs)
         # waits for result (async call)
         monitor(execution, download=False)
@@ -159,11 +163,10 @@ class Birdy(object):
 
 def main():
     from sys import exit
-    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.ERROR)
 
     from os import environ 
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
-    logging.debug('using wps %s', service)
+    logger.debug('using wps %s', service)
 
     try:
         mybirdy = Birdy(service)
@@ -171,6 +174,6 @@ def main():
         args = parser.parse_args()
         execute(wps, args)
     except:
-        logging.exception('birdy failed!')
+        logger.exception('birdy failed!')
         exit(1)
 
