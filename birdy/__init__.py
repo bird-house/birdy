@@ -4,6 +4,7 @@ from wpsparser import *
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class Birdy(object):
     """
@@ -137,21 +138,21 @@ class Birdy(object):
 
         while execution.isComplete()==False:
             execution.checkStatus(sleepSecs=sleepSecs)
-            print 'Execution status: %s' % execution.status
+            logger.info('Execution status: %s', execution.status)
 
         if execution.isSucceded():
             if download:
                 execution.getOutput(filepath=filepath)
             else:
-                print "Output:"
+                logger.info("Output:")
                 for output in execution.processOutputs:               
                     if output.reference is not None:
-                        print '%s=%s (%s)' % (output.identifier, output.reference, output.mimeType)
+                        logger.info('%s=%s (%s)' % (output.identifier, output.reference, output.mimeType))
                     else:
-                        print '%s=%s' % (output.identifier, ", ".join(output.data))
+                        logger.info('%s=%s' % (output.identifier, ", ".join(output.data)))
         else:
             for ex in execution.errors:
-                print 'Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text)
+                logger.warn('Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text))
 
 
 def main():
