@@ -2,7 +2,7 @@ import sys
 from wpsparser import *
 
 import logging
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
 logger = logging.getLogger(__name__)
 
 class Birdy(object):
@@ -52,18 +52,11 @@ class Birdy(object):
             )
 
         for process in self.wps.processes:
-            parser_process = subparsers.add_parser(process.identifier)
+            subparsers.add_parser(process.identifier)
+            self.create_process_parser(subparsers, process.identifier)
 
         # autocomplete
         argcomplete.autocomplete(parser)
-
-        # parse only birdy with command
-        logger.debug(sys.argv)
-        # TODO: check args
-        #args = parser.parse_args(sys.argv[1:2])
-        # check if called with command
-        #if hasattr(args, "identifier"):
-        #    create_process_parser(subparsers, wps, args.identifier)
 
         return parser
 
@@ -128,7 +121,7 @@ class Birdy(object):
         #logger.debug(outputs)
         execution = self.wps.execute(args.identifier, inputs, outputs)
         # waits for result (async call)
-        monitor(execution, download=False)
+        self.monitor(execution, download=False)
 
     def monitor(self, execution, sleepSecs=3, download=False, filepath=None):
         """
@@ -165,13 +158,24 @@ def main():
     from os import environ 
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
     logger.debug('using wps %s', service)
+    logger.debug('args %s', sys.argv)
 
     try:
         mybirdy = Birdy(service)
-        parser = mybirdy.create_parser(wps)
-        args = parser.parse_args()
-        execute(wps, args)
+        parser = mybirdy.create_parser()
     except:
-        logger.exception('birdy failed!')
+        logger.exception('birdy init failed!')
         sys.exit(1)
+        
+    args = parser.parse_args()
+
+    try:
+        mybirdy.execute(args)
+    except:
+        logger.exception('birdy execute failed!')
+        sys.exit(1)
+
+if __name__ == '__main__':
+    sys.exit(main())
+
 
