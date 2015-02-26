@@ -18,8 +18,8 @@ class BirdyTestCase(WpsTestCase):
         """
         User passes no args, should fail with SystemExit
         """
-        birdy = Birdy()
-        parser = birdy.create_parser(self.wps)
+        birdy = Birdy(self.wps.url)
+        parser = birdy.create_parser()
         with self.assertRaises(SystemExit):
             parser.parse_args([])
             
@@ -30,8 +30,8 @@ class BirdyTestCase(WpsTestCase):
 
         TODO: overwrite exit method? See: http://bugs.python.org/issue9938
         """
-        birdy = Birdy()
-        parser = birdy.create_parser(self.wps)
+        birdy = Birdy(self.wps.url)
+        parser = birdy.create_parser()
         with self.assertRaises(SystemExit):
             parser.parse_args('-h'.split())
 
@@ -41,8 +41,8 @@ class BirdyTestCase(WpsTestCase):
         Try inout command
         """
         raise SkipTest
-        birdy = Birdy()
-        parser = birdy.create_parser(self.wps)
+        birdy = Birdy(self.wps.url)
+        parser = birdy.create_parser()
         args = parser.parse_args('inout'.split())
         nose.tools.ok_(args.identifier == 'inout', args)
         nose.tools.ok_(args.output == 'output', args)
