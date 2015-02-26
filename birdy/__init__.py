@@ -217,10 +217,11 @@ def create_parser(wps):
     argcomplete.autocomplete(parser)
     
     # parse only birdy with command
-    args = parser.parse_args(sys.argv[1:2])
+    logging.debug(sys.argv)
+    #args = parser.parse_args(sys.argv[1:2])
     # check if called with command
-    if hasattr(args, "identifier"):
-        create_process_parser(subparsers, wps, args.identifier)
+    #if hasattr(args, "identifier"):
+    #    create_process_parser(subparsers, wps, args.identifier)
         
     return parser
 
@@ -243,5 +244,3 @@ def main():
     args = parser.parse_args()
     execute(wps, args)
 
-if __name__ == '__main__':
-    main()
