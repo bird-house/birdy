@@ -1,3 +1,4 @@
+import sys
 from wpsparser import *
 
 import logging
@@ -37,7 +38,6 @@ class Birdy(object):
 
         import argparse
         import argcomplete
-        import sys
 
         parser = argparse.ArgumentParser(
             #prog="birdy",
@@ -162,8 +162,6 @@ class Birdy(object):
 
 
 def main():
-    from sys import exit
-
     from os import environ 
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
     logger.debug('using wps %s', service)
@@ -175,5 +173,5 @@ def main():
         execute(wps, args)
     except:
         logger.exception('birdy failed!')
-        exit(1)
+        sys.exit(1)
 
