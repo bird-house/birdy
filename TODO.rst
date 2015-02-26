@@ -3,9 +3,6 @@ Todo list
 
 * check argparse complete
   https://pypi.python.org/pypi/argcomplete/0.8.3
-* check optcomplete
-  https://binstar.org/rsignell/optcomplete
-  https://binstar.org/rsignell
 * esgf search on console (files, opendap, local files)
 * csw search on console
 * wps commandline tool similar to miklip:
@@ -16,13 +13,9 @@ birdy:
 * progress_bar 
 * more work on input, output 
 * get wps list form csw
-* refactor wps processes (e.a. wps) 
-* unit tests
-* choose bird (wps) by setting env variable (set as default)
 * chaining example
-* add wps caps caching
+* add wps caps and describe process caching
 * store output refs in variable?
-* bash completion for birdy
 
 
 
