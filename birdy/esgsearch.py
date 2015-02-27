@@ -3,12 +3,19 @@ import sys
 import logging
 logger = logging.getLogger(__name__)
 
+# see completer examples:
+# https://github.com/kislyuk/argcomplete/blob/master/argcomplete/completers.py
+
 def esgf_search_projects(prefix, parsed_args, **kwargs):
     choices = ("CMIP5", "CORDEX")
     return (choice for choice in choices if choice.startswith(prefix))
     
 def esgf_search_experiments(prefix, parsed_args, **kwargs):
     choices = ("historical", "rcp26", "rcp85")
+    return (choice for choice in choices if choice.startswith(prefix))
+
+def esgf_search_variables(prefix, parsed_args, **kwargs):
+    choices = ("ta", "tas", "pr")
     return (choice for choice in choices if choice.startswith(prefix))
 
 class ESGSearch(object):
@@ -34,8 +41,14 @@ class ESGSearch(object):
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
-        parser.add_argument("--project").completer = esgf_search_projects
-        parser.add_argument("--experiment").completer = esgf_search_experiments
+        parser.add_argument("--project", required=True).completer = esgf_search_projects
+        parser.add_argument("--experiment", required=True).completer = esgf_search_experiments
+        parser.add_argument("--variable", nargs="*").completer = esgf_search_variables
+
+        subparsers = parser.add_subparsers(dest='command', title='commands')
+        subparser = subparsers.add_parser("files", prog="esgsearch {0}".format("command"))
+        subparser.add_argument("--test")
+
         return parser
 
 def main():

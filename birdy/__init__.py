@@ -56,7 +56,6 @@ class Birdy(object):
             )
 
         for process in self.wps.processes:
-            subparsers.add_parser(process.identifier)
             subparser = subparsers.add_parser(
                 process.identifier,
                 prog="birdy {0}".format(process.identifier) ,
@@ -168,6 +167,8 @@ class Birdy(object):
 
 
 def main():
+    import argcomplete
+    
     logger.setLevel(logging.INFO)
     
     from os import environ 
@@ -175,6 +176,7 @@ def main():
    
     mybirdy = Birdy(service)
     parser = mybirdy.create_parser()
+    argcomplete.autocomplete(parser)
             
     args = parser.parse_args()
     mybirdy.execute(args)
