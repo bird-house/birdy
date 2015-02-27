@@ -38,9 +38,7 @@ class Birdy(object):
         lazy parsing subparser:
         http://stackoverflow.com/questions/22742450/argparse-on-demand-imports-for-types-choices-etc
         """
-
         import argparse
-        import argcomplete
 
         parser = argparse.ArgumentParser(
             prog="birdy",
@@ -72,9 +70,6 @@ class Birdy(object):
             # TODO: this matching is too dangerous !!!
             if process.identifier in sys.argv:
                 self.build_command(subparser, process.identifier)
-
-        # autocomplete
-        argcomplete.autocomplete(parser)
 
         return parser
 
@@ -178,13 +173,9 @@ def main():
     from os import environ 
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
    
-    try:
-        mybirdy = Birdy(service)
-        parser = mybirdy.create_parser()
-    except:
-        logger.exception('birdy init failed!')
-        sys.exit(1)
-        
+    mybirdy = Birdy(service)
+    parser = mybirdy.create_parser()
+            
     args = parser.parse_args()
     mybirdy.execute(args)
 
