@@ -4,10 +4,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 def esgf_search_projects(prefix, parsed_args, **kwargs):
-    return ("CMIP5", "CORDEX")
+    choices = ("CMIP5", "CORDEX")
+    return (choice for choice in choices if choice.startswith(prefix))
     
 def esgf_search_experiments(prefix, parsed_args, **kwargs):
-    return ("historical", "rcp26", "rcp85")
+    choices = ("historical", "rcp26", "rcp85")
+    return (choice for choice in choices if choice.startswith(prefix))
 
 class ESGSearch(object):
     """
