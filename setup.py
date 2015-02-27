@@ -45,6 +45,7 @@ setup(name='birdhouse-birdy',
       entry_points = {
           'console_scripts': [
               'birdy=birdy:main',
+              'esgsearch=birdy.esgsearch:main'
               ]}     
       ,
       )
