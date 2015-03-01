@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 # https://gist.github.com/bewest/1202975
 # https://github.com/conda/conda/blob/master/conda/cli/main.py
 
+# activate argcomplete
+# eval "$(register-python-argcomplete bin/esgsearch)"
+
 def esgf_search_projects(prefix, parsed_args, **kwargs):
     choices = ("CMIP5", "CORDEX")
     return (choice for choice in choices if choice.startswith(prefix))
