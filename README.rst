@@ -2,6 +2,10 @@
 Birdy
 =====
 
+.. image:: https://travis-ci.org/bird-house/birdy.svg?branch=master
+   :alt: Travis Build
+
+
 Birdy (the bird)
    *Birdy is not a bird but likes to play with them.*
 
