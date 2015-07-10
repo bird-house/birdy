@@ -11,4 +11,4 @@ Check out code from the birdy github repo and start the installation::
 
 Or install the anaconda package::
 
-   $ conda install -c https://conda.binstar.org/birdhouse birdhouse-birdy
+   $ conda install -c birdhouse birdhouse-birdy
