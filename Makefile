@@ -1,4 +1,4 @@
-VERSION := 0.2.2
+VERSION := 0.2.6
 RELEASE := master
 
 # Application
@@ -12,7 +12,7 @@ CPU_ARCH := $(shell uname -m 2>/dev/null || uname -p 2>/dev/null || echo "unknow
 # Anaconda 
 ANACONDA_HOME ?= $(HOME)/anaconda
 CONDA_ENV := birdhouse
-CONDA_ENVS_DIR := $(HOME)/.conda/envs
+CONDA_ENVS_DIR ?= $(HOME)/.conda/envs
 PREFIX := $(CONDA_ENVS_DIR)/$(CONDA_ENV)
 
 # choose anaconda installer depending on your OS
@@ -56,6 +56,7 @@ help:
 	@echo "\t clean       \t- Deletes all files that are created by running buildout."
 	@echo "\t distclean   \t- Removes *all* files that are not controlled by 'git'.\n\t\t\tWARNING: use it *only* if you know what you do!"
 	@echo "\t sysinstall  \t- Installs system packages from requirements.sh. You can also call 'bash requirements.sh' directly."
+	@echo "\t passwd      \t- Generate password for 'phoenix-password' in custom.cfg."
 	@echo "\t docs        \t- Generates HTML documentation with Sphinx."
 	@echo "\t selfupdate  \t- Updates this Makefile."
 	@echo "\nSupervisor targets:\n"
@@ -94,16 +95,17 @@ backup:
 
 .gitignore:
 	@echo "Setup default .gitignore ..."
-	@wget -q --no-check-certificate -O .gitignore "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/dot_gitignore"
+	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/dot_gitignore" --silent --insecure --output .gitignore 
 
+.PHONY: bootstrap.sh
 bootstrap.sh:
 	@echo "Update bootstrap.sh ..."
-	@wget -q --no-check-certificate -O bootstrap.sh "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/bootstrap.sh"
+	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/bootstrap.sh" --silent --insecure --output bootstrap.sh "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/bootstrap.sh"
 	@chmod 755 bootstrap.sh
 
 requirements.sh:
 	@echo "Setup default requirements.sh ..."
-	@wget -q --no-check-certificate -O requirements.sh "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/requirements.sh"
+	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/requirements.sh" --silent --insecure --output requirements.sh 
 	@chmod 755 requirements.sh
 
 custom.cfg:
@@ -120,14 +122,14 @@ init: .gitignore custom.cfg downloads
 
 bootstrap-buildout.py:
 	@echo "Update buildout bootstrap-buildout.py ..."
-	@test -f boostrap-buildout.py || wget --no-check-certificate -O bootstrap-buildout.py https://bootstrap.pypa.io/bootstrap-buildout.py
+	@test -f boostrap-buildout.py || curl https://bootstrap.pypa.io/bootstrap-buildout.py --insecure --silent --output bootstrap-buildout.py 
 
 ## Anaconda targets
 
 .PHONY: anaconda
 anaconda:
 	@echo "Installing Anaconda ..."
-	@test -d $(ANACONDA_HOME) || wget -q -c -O "$(DOWNLOAD_CACHE)/$(FN)" $(ANACONDA_URL)/$(FN)
+	@test -d $(ANACONDA_HOME) || curl $(ANACONDA_URL)/$(FN) --silent --insecure --output "$(DOWNLOAD_CACHE)/$(FN)" 
 	@test -d $(ANACONDA_HOME) || bash "$(DOWNLOAD_CACHE)/$(FN)" -b -p $(ANACONDA_HOME)   
 	@echo "Add '$(ANACONDA_HOME)/bin' to your PATH variable in '.bashrc'."
 
@@ -138,16 +140,15 @@ conda_config: anaconda
 	@"$(ANACONDA_HOME)/bin/conda" config --set ssl_verify false
 	@"$(ANACONDA_HOME)/bin/conda" config --add channels defaults
 	@"$(ANACONDA_HOME)/bin/conda" config --add channels birdhouse
-	@"$(ANACONDA_HOME)/bin/conda" config --add channels pingucarsti
 
 .PHONY: conda_env
 conda_env: anaconda conda_config
-	@test -d $(PREFIX) || "$(ANACONDA_HOME)/bin/conda" create -m -p $(PREFIX) -c birdhouse --yes python=2.7.8 setuptools pyopenssl genshi mako
+	@test -d $(PREFIX) || "$(ANACONDA_HOME)/bin/conda" create -m -p $(PREFIX) -c birdhouse --yes python setuptools ipython curl pyopenssl genshi mako
 
 .PHONY: conda_pinned
 conda_pinned: conda_env
 	@echo "Update pinned conda packages ..."
-	@test -d $(PREFIX) && wget -q -c -O "$(PREFIX)/conda-meta/pinned" https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/master/conda_pinned 
+	@test -d $(PREFIX) && curl https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/master/conda_pinned --silent --insecure --output "$(PREFIX)/conda-meta/pinned" 
 
 .PHONY: conda_clean
 conda_clean: anaconda conda_config
@@ -158,11 +159,10 @@ conda_clean: anaconda conda_config
 .PHONY: bootstrap
 bootstrap: init conda_env conda_pinned bootstrap-buildout.py
 	@echo "Bootstrap buildout ..."
-	@-test -f bin/buildout || "$(ANACONDA_HOME)/bin/conda" remove -y -n $(CONDA_ENV) curl setuptools
-	@test -f bin/buildout || bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV);python bootstrap-buildout.py -c custom.cfg --allow-site-packages"
+	@test -f bin/buildout || bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV);python bootstrap-buildout.py -c custom.cfg --allow-site-packages --setuptools-version=17.1.1 --buildout-version=2.4.0"
 
 .PHONY: sysinstall
-sysinstall: bootstrap.sh requirements.sh
+sysinstall:
 	@echo "\nInstalling system packages for bootstrap ..."
 	@bash bootstrap.sh -i
 	@echo "\nInstalling system packages for your application ..."
@@ -195,6 +195,14 @@ buildclean:
 	@echo "Removing bootstrap.sh ..."
 	@test -e bootstrap.sh && rm -v bootstrap.sh
 
+.PHONY: passwd
+passwd: custom.cfg
+	@echo "Generate Phoenix password ..."
+	@echo "Enter a password with at least 8 characters."
+	@bash -c "source $(ANACONDA_HOME)/bin/activate $(CONDA_ENV); python -c 'from IPython.lib import passwd; pw = passwd(algorithm=\"sha256\"); lines = [\"phoenix-password = \" + pw + \"\\n\" if line.startswith(\"phoenix-password\") else line for line in open(\"custom.cfg\", \"r\")]; file = open(\"custom.cfg\", \"w\"); file.writelines(lines); file.close()'"
+	@echo ""
+	@echo "Run 'make install restart' to activate this password." 
+
 .PHONY: test
 test:
 	@echo "Running tests (skip slow tests) ..."
@@ -213,8 +221,8 @@ docs:
 	@echo "open your browser: firefox docs/build/html/index.html"
 
 .PHONY: selfupdate
-selfupdate: bootstrap.sh
-	@wget -q --no-check-certificate -O Makefile "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/Makefile"
+selfupdate: bootstrap.sh requirements.sh
+	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/$(RELEASE)/Makefile" --silent --insecure --output Makefile 
 
 ## Supervisor targets
 
@@ -243,7 +251,7 @@ status:
 
 .dockerignore:
 	@echo "Update .dockerignore ..."
-	@wget -q --no-check-certificate -O .dockerignore "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/master/dot_dockerignore"
+	@curl "https://raw.githubusercontent.com/bird-house/birdhousebuilder.bootstrap/master/dot_dockerignore" --silent --insecure --output .dockerignore 
 
 .PHONY: Dockerfile
 Dockerfile: bootstrap
