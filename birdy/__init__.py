@@ -1,4 +1,5 @@
 import sys
+from owslib.wps import WebProcessingService
 from wpsparser import *
 
 import logging
@@ -18,7 +19,8 @@ class Birdy(object):
     OUTPUT_TYPE_MAP = {}
     
     def __init__(self, service):
-        from owslib.wps import WebProcessingService
+        self._complex_params = []
+        
         try:
             self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
         except:
@@ -89,6 +91,8 @@ class Birdy(object):
                 action="store",
                 help=parse_description(input),
             )
+            if is_complex_data(input):
+                self._complex_params.append(input.identifier) 
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
@@ -107,7 +111,9 @@ class Birdy(object):
         if args.debug:
             logger.setLevel(logging.DEBUG)
             logger.debug('using web processing service %s', self.wps.url)
-        
+
+        logger.debug(self._complex_params)
+            
         inputs = []
         # inputs 
         # TODO: this is probably not the way to do it
