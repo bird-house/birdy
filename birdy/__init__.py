@@ -1,6 +1,7 @@
 import sys
 from owslib.wps import WebProcessingService
 from wpsparser import *
+from utils import fix_local_url
 
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
@@ -124,6 +125,8 @@ class Birdy(object):
                 if not isinstance(values, list):
                     values = [values]
                 for value in values:
+                    if key in self._complex_params:
+                        value = fix_local_url(value)
                     inputs.append( (str(key), str(value) ) )
         # outputs
         output = self.OUTPUT_TYPE_MAP.keys()
