@@ -13,6 +13,44 @@ Birdy is a Python package to provide a command-line tool to work with Web Proces
 
 Birdy is part of the `Birdhouse <http://bird-house.github.io/>`_ project.
 
+Install from Anaconda
+=====================
+
+.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/installer/conda.svg
+   :alt: Ananconda Install
+
+.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/build.svg
+   :alt: Anaconda Build
+
+.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/version.svg
+   :alt: Anaconda Version
+
+.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/downloads.svg
+   :alt: Anaconda Downloads
+
+.. code-block:: sh
+
+   $ conda install -c birdhouse birdhouse-birdy
+
+Using the command line
+======================
+
+Help:
+
+.. code-block:: sh
+
+   $ birdy -h
+   usage: birdy [-h <command> [<args>]
+    
+   optional arguments:
+     -h, --help            show this help message and exit
+    
+   command:
+     List of available commands (wps processes)
+    
+     {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
+                           Run "birdy <command> -h" to get additional help.
+
 Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDocs and in the `docs/` folder.
 
 
