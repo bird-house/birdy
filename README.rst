@@ -3,6 +3,7 @@ Birdy
 =====
 
 .. image:: https://travis-ci.org/bird-house/birdy.svg?branch=master
+   :target: https://travis-ci.org/bird-house/birdy
    :alt: Travis Build
 
 
@@ -17,15 +18,19 @@ Install from Anaconda
 =====================
 
 .. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/installer/conda.svg
+   :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Ananconda Install
 
 .. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/build.svg
+   :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Anaconda Build
 
 .. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/version.svg
+   :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Anaconda Version
 
 .. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/downloads.svg
+   :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Anaconda Downloads
 
 .. code-block:: sh
