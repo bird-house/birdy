@@ -39,6 +39,10 @@ Help:
 
 .. code-block:: sh
 
+   # set WPS service
+   $ export WPS_SERVICE=http://localhost:8094/wps
+   
+   # show available processes
    $ birdy -h
    usage: birdy [-h <command> [<args>]
     
