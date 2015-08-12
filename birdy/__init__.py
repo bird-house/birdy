@@ -1,4 +1,5 @@
 import sys
+import urlparse
 from owslib.wps import WebProcessingService
 from wpsparser import *
 from utils import fix_local_url
@@ -125,9 +126,19 @@ class Birdy(object):
                 if not isinstance(values, list):
                     values = [values]
                 for value in values:
+                    content = ''
                     if key in self._complex_params:
-                        value = fix_local_url(value)
-                    inputs.append( (str(key), str(value) ) )
+                        url = fix_local_url(value)
+                        content = str(url)
+                        if not 'localhost' in self.wps.url:
+                            u = urlparse.urlsplit(url)
+                            if u.scheme in ['file']:
+                                with open(u.path, 'r') as fp:
+                                    content = fp.read()
+                    else:
+                        content = str(value)
+                        
+                    inputs.append( (str(key), content ) )
         # outputs
         output = self.OUTPUT_TYPE_MAP.keys()
         #logger.debug(output)

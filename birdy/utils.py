@@ -17,3 +17,4 @@ def fix_local_url(url):
             url = urlparse.urljoin('file://', abspath(path))
         logger.debug("fixed url = %s", url)
     return url
+
