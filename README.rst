@@ -40,7 +40,7 @@ Install from Anaconda
 Using the command line
 ======================
 
-Help:
+Get a list of available processes on WPS with URL http://localhost:8094/wps:
 
 .. code-block:: sh
 
@@ -60,7 +60,7 @@ Help:
      {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
                            Run "birdy <command> -h" to get additional help.
 
-Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDocs and in the `docs/` folder.
+Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDocs.
 
 
 
