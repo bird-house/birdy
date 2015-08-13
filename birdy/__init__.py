@@ -124,16 +124,9 @@ class Birdy(object):
                 if not isinstance(values, list):
                     values = [values]
                 for value in values:
-                    content = ''
-                    if key in self.complex_inputs:
-                        content = self._complex_value(key, value)
-                    else:
-                        content = self._literal_value(key, value)
-                        
-                    inputs.append( (str(key), content ) )
+                    inputs.append( (str(key), self._input_value(key, value) ) )
         # outputs
         output = self.outputs.keys()
-        #logger.debug(output)
         if args.output is not None:
             output = args.output
         # checks if single value (or list of values)
@@ -147,7 +140,15 @@ class Birdy(object):
         # waits for result (async call)
         self.monitor(execution, download=False)
 
-    def _complex_value(self, value):
+    def _input_value(self, key, value):
+        content = ''
+        if key in self.complex_inputs:
+            content = self._complex_value(key, value)
+        else:
+            content = self._literal_value(key, value)
+        return content
+            
+    def _complex_value(self, key, value):
         url = fix_local_url(value)
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
@@ -157,7 +158,7 @@ class Birdy(object):
             content = encode(url, self.complex_inputs[key])
         return content
             
-    def _literal_value(key, value):
+    def _literal_value(self, key, value):
         return str(value)
 
     def monitor(self, execution, sleepSecs=3, download=False, filepath=None):
