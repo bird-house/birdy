@@ -47,3 +47,7 @@ def test_encode():
 
     content = utils.encode(fp.name, mimetypes=["application/x-netcdf"])
     nose.tools.ok_(content == base64.b64encode('hello'), content)
+
+    url = "file://%s" % fp.name
+    content = utils.encode(url, mimetypes=["application/xml"])
+    nose.tools.ok_(content == 'hello')

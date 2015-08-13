@@ -129,10 +129,8 @@ class Birdy(object):
                         url = fix_local_url(value)
                         content = str(url)
                         if not 'localhost' in self.wps.url:
-                            u = urlparse.urlsplit(url)
-                            if u.scheme == 'file':
-                                logger.debug('encode file')
-                                content = encode(u.path, self.complex_inputs[key])
+                            logger.debug('encode file')
+                            content = encode(url, self.complex_inputs[key])
                     else:
                         content = str(value)
                         

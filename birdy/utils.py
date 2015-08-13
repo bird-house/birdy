@@ -22,18 +22,25 @@ def fix_local_url(url):
         logger.debug("fixed url = %s", url)
     return url
 
-def encode(path, mimetypes):
+def encode(url, mimetypes):
     """
-    Read file with given path and return content. If mimetype of file is binary then encode content with base64.
+    Read file with given url and return content. If mimetype of file is binary then encode content with base64.
 
-    :return: encoded content string or None
+    If url is not a file:// url return url itself.
+
+    :return: encoded content string or URL or None
     """
     encoded = None
-    with open(path, 'r') as fp:
-        content = fp.read()
-        # TODO: check all mimetypes ... use also python-magic to detect mime type
-        if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml' or mimetypes[0].lower().startswith('text/'):
-            encoded = str(content)
-        else:
-            encoded = base64.b64encode(content)
+    u = urlparse.urlsplit(url)
+    if not u.scheme or u.scheme == 'file':
+        with open(u.path, 'r') as fp:
+            content = fp.read()
+            # TODO: check all mimetypes ... use also python-magic to detect mime type
+            if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml' or mimetypes[0].lower().startswith('text/'):
+                encoded = str(content)
+            else:
+                encoded = base64.b64encode(content)
+    else:
+        # remote urls as reference
+        encoded = url
     return encoded
