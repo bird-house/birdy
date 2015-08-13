@@ -18,11 +18,10 @@ class Birdy(object):
     see help:
     $ birdy -h
     """
-    OUTPUT_TYPE_MAP = {}
+    outputs = {}
+    complex_inputs = {}
     
     def __init__(self, service):
-        self._complex_params = {}
-        
         try:
             self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
         except:
@@ -94,13 +93,13 @@ class Birdy(object):
                 help=parse_description(input),
             )
             if is_complex_data(input):
-                mime_types = ([str(value.mimeType.lower()) for value in input.supportedValues])
-                self._complex_params[input.identifier] = mime_types
+                mimetypes = ([str(value.mimeType) for value in input.supportedValues])
+                self.complex_inputs[input.identifier] = mimetypes
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
            help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
-           self.OUTPUT_TYPE_MAP[output.identifier] = is_complex_data(output)
+           self.outputs[output.identifier] = is_complex_data(output)
         subparser.add_argument(
             '--output',
             dest="output",
@@ -115,8 +114,6 @@ class Birdy(object):
             logger.setLevel(logging.DEBUG)
             logger.debug('using web processing service %s', self.wps.url)
 
-        logger.debug(self._complex_params)
-            
         inputs = []
         # inputs 
         # TODO: this is probably not the way to do it
@@ -128,19 +125,19 @@ class Birdy(object):
                     values = [values]
                 for value in values:
                     content = ''
-                    if key in self._complex_params:
+                    if key in self.complex_inputs:
                         url = fix_local_url(value)
                         content = str(url)
                         if not 'localhost' in self.wps.url:
                             u = urlparse.urlsplit(url)
                             if u.scheme in ['file']:
-                                content = utils.encode(u.path, self._complex_params[key])
+                                content = utils.encode(u.path, self.complex_inputs[key])
                     else:
                         content = str(value)
                         
                     inputs.append( (str(key), content ) )
         # outputs
-        output = self.OUTPUT_TYPE_MAP.keys()
+        output = self.outputs.keys()
         #logger.debug(output)
         if args.output is not None:
             output = args.output
@@ -148,7 +145,7 @@ class Birdy(object):
         if not isinstance(output, list):
             output = [output]
         # list of tuple (output identifier, asReference attribute)
-        outputs = [(str(identifier), self.OUTPUT_TYPE_MAP.get(identifier, True)) for identifier in output]
+        outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
         #logger.debug(outputs)
         execution = self.wps.execute(args.identifier, inputs, outputs)
