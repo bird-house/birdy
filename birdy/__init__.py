@@ -1,5 +1,6 @@
 import sys
 import urlparse
+import base64
 from owslib.wps import WebProcessingService
 from wpsparser import *
 from utils import fix_local_url
@@ -21,7 +22,7 @@ class Birdy(object):
     OUTPUT_TYPE_MAP = {}
     
     def __init__(self, service):
-        self._complex_params = []
+        self._complex_params = {}
         
         try:
             self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
@@ -94,7 +95,8 @@ class Birdy(object):
                 help=parse_description(input),
             )
             if is_complex_data(input):
-                self._complex_params.append(input.identifier) 
+                mime_types = ([str(value.mimeType.lower()) for value in input.supportedValues])
+                self._complex_params[input.identifier] = mime_types
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
@@ -135,6 +137,11 @@ class Birdy(object):
                             if u.scheme in ['file']:
                                 with open(u.path, 'r') as fp:
                                     content = fp.read()
+                                mime_type = self._complex_params[key][0]
+                                if mime_type == 'application/xml' or mime_type.startswith('text/'):
+                                    content = str(content)
+                                else:
+                                    content = base64.b64encode(content)
                     else:
                         content = str(value)
                         
