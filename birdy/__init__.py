@@ -1,8 +1,8 @@
 import sys
 import urlparse
 from owslib.wps import WebProcessingService
-from wpsparser import *
-from utils import fix_local_url
+from birdy.wpsparser import *
+from birdy.utils import fix_local_url, encode
 
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
@@ -130,8 +130,9 @@ class Birdy(object):
                         content = str(url)
                         if not 'localhost' in self.wps.url:
                             u = urlparse.urlsplit(url)
-                            if u.scheme in ['file']:
-                                content = utils.encode(u.path, self.complex_inputs[key])
+                            if u.scheme == 'file':
+                                logger.debug('encode file')
+                                content = encode(u.path, self.complex_inputs[key])
                     else:
                         content = str(value)
                         
