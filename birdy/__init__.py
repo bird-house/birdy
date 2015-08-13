@@ -126,14 +126,9 @@ class Birdy(object):
                 for value in values:
                     content = ''
                     if key in self.complex_inputs:
-                        url = fix_local_url(value)
-                        if 'localhost' in self.wps.url:
-                            content = str(url)
-                        else:
-                            logger.debug('encode file')
-                            content = encode(url, self.complex_inputs[key])
+                        content = self._complex_value(key, value)
                     else:
-                        content = str(value)
+                        content = self._literal_value(key, value)
                         
                     inputs.append( (str(key), content ) )
         # outputs
@@ -151,6 +146,19 @@ class Birdy(object):
         execution = self.wps.execute(args.identifier, inputs, outputs)
         # waits for result (async call)
         self.monitor(execution, download=False)
+
+    def _complex_value(self, value):
+        url = fix_local_url(value)
+        u = urlparse.urlparse(self.wps.url)
+        if 'localhost' in u.netloc:
+            content = str(url)
+        else:
+            logger.debug('encode file')
+            content = encode(url, self.complex_inputs[key])
+        return content
+            
+    def _literal_value(key, value):
+        return str(value)
 
     def monitor(self, execution, sleepSecs=3, download=False, filepath=None):
         """
