@@ -3,42 +3,84 @@
 Example Usage
 =============
 
-Show the processes on a Web Processing Service::
+Show the processes of a Web Processing Service:
 
-   $ export WPS_SERVICE="http://rsg.pml.ac.uk/wps/generic.cgi"
+.. code-block:: sh
+
+   $ export WPS_SERVICE=http://localhost:8094/wps
    $ birdy -h
-   usage: birdy [-h] <command> [<args>]
-
+   usage: birdy [<options>] <command> [<args>]
+    
+   Emu: WPS processes for testing and demos.
+    
    optional arguments:
      -h, --help            show this help message and exit
-
+     --debug               enable debug mode
+    
    command:
      List of available commands (wps processes)
+    
+     {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
+                           Run "birdy <command> -h" to get additional help.
+       helloworld          Hello World: Welcome user and say hello ...
+       ultimatequestionprocess
+                           Answer to Life, the Universe and Everything: Numerical
+                           solution that is the answer to Life, Universe and
+                           Everything. The process is an improvement to Deep
+                           Tought computer (therefore version 2.0) since it no
+                           longer takes 7.5 milion years, but only a few seconds
+                           to give a response, with an update of status every 10
+                           seconds.
+       wordcount           Word Counter: Counts words in a given text ...
+       inout               Testing all Data Types: Just testing data types like
+                           date, datetime etc ...
+       multiplesources     Multiple Sources: Process with multiple different
+                           sources ...
+       chomsky             Chomsky text generator: Generates a random chomsky
+                           text ...
+       zonal_mean          Zonal Mean: zonal mean in NetCDF File.
 
-     {temperatureConverter,oilspil,fetchMODISTimeStamp,fetchMODIS,fetchMRCS,r.colors,reprojectCoords,intersectBBOX,reprojectImage,mergeImages,compareImages,buoyGraphic,gml2svg,geotiff2png,dummyprocess,gdalinfo,ncdump,reducer,taverna,WCS_Process,NetCDF2JSON,json2plot}
-                        Run "birdy <command> -h" to get additional help.   
+
+Show help for wordcount:
+
+.. code-block:: sh
+
+    $ birdy wordcount -h
+    usage: birdy wordcount [-h] --text [TEXT] [--output [{output} [{output} ...]]]
+     
+    optional argumens:
+      -h, --help            show this help message and exit
+      --text [TEXT]         Text document: URL of text document, mime
+                            types=text/plain
+      --output [{output} [{output} ...]]
+                            Output: output=Word count result, mime
+                            types=text/plain (default: all outputs) 
+     
+
+Execute wordcount with a remote text document:
+
+.. code-block:: sh
+
+    $ birdy wordcount --text http://birdy.readthedocs.org/en/latest/tutorial.html
+    INFO:Execution status: ProcessAccepted
+    INFO:Execution status: ProcessSucceeded
+    INFO:Output:
+    INFO:output=http://localhost:8090/wpsoutputs/emu/output-7becb14c-41c6-11e5-ae23-68f72837e1b4.txt (text/plain)
+
+The result output is given as a reference document.
 
 
-Show help for a dummyprocess::
+You can also use a local file as input document:
 
-   $ birdy dummyprocess -h
-   usage: birdy dummyprocess [-h] --input2 [INPUT2] --input1 [INPUT1]
-                             [--output {output2,output1}]
+.. code-block:: sh
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     --input2 [INPUT2]     Input2 number
-     --input1 [INPUT1]     Input1 number
-     --output {output2,output1}
-                        Output: output2=Output2 subtract 1 result (default:
-                        output)output1=Output1 add 1 result (default: output)
+    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/introduction.html 
+    INFO:Execution status: ProcessAccepted
+    INFO:Execution status: ProcessSucceeded
+    INFO:Output:
+    INFO:output=http://localhost:8090/wpsoutputs/emu/output-f65f5358-41c6-11e5-ae23-68f72837e1b4.txt (text/plain)
 
 
-Execute dummyprocess::
-
-   $ birdy dummyprocess --input1 1 --input2 3 --output output1
-   Execution status: ProcessAccepted
-   Execution status: ProcessSucceeded
-   Output URL=http://earthserver.pml.ac.uk/wps/wpsoutputs/output1-cf94c9ea-7982-11e4-8e10-d4ae52675c92
+If you run this process on a remote WPS service then local files will be send inline and base64 encoded with the WPS execute request. Please use in this case *small files only* (a few megabytes)!
 
 

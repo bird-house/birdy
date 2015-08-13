@@ -1,6 +1,12 @@
 Change History
 **************
 
+0.1.1 (2015-08-13)
+==================
+
+* allow local file path for complex inputs.
+* send complex data inline with requet to remote wps service.
+
 0.1.0 (2014-12-02)
 ==================
 
