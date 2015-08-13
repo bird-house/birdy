@@ -37,10 +37,13 @@ def encode(url, mimetypes):
             content = fp.read()
             # TODO: check all mimetypes ... use also python-magic to detect mime type
             if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml' or mimetypes[0].lower().startswith('text/'):
-                encoded = str(content)
+                logger.debug('send content of %s', url)
+                encoded = content.encode('utf-8', 'ignore')
             else:
+                logger.debug('base64 encode content of %s', url)
                 encoded = base64.b64encode(content)
     else:
         # remote urls as reference
-        encoded = url
+        logger.debug('send url %s', url)
+        encoded = str(url)
     return encoded
