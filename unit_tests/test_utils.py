@@ -2,6 +2,9 @@ from unittest import TestCase
 import nose.tools
 from nose import SkipTest
 
+import tempfile
+import base64
+
 from birdy import utils
 
 def test_fix_local_url():
@@ -29,3 +32,18 @@ def test_fix_local_url():
     # TODO: replace ~
     #url = utils.fix_local_url('~/data/testfile.nc')
     #nose.tools.ok_(False, url)
+
+
+def test_encode():
+    fp = tempfile.NamedTemporaryFile(delete=False)
+    fp.write('hello')
+    fp.close()
+    
+    content = utils.encode(fp.name, mimetypes=["application/xml"])
+    nose.tools.ok_(content == 'hello')
+
+    content = utils.encode(fp.name, mimetypes=["TEXT/PLAIN"])
+    nose.tools.ok_(content == 'hello')
+
+    content = utils.encode(fp.name, mimetypes=["application/x-netcdf"])
+    nose.tools.ok_(content == base64.b64encode('hello'), content)

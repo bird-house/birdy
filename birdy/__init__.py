@@ -1,6 +1,5 @@
 import sys
 import urlparse
-import base64
 from owslib.wps import WebProcessingService
 from wpsparser import *
 from utils import fix_local_url
@@ -135,13 +134,7 @@ class Birdy(object):
                         if not 'localhost' in self.wps.url:
                             u = urlparse.urlsplit(url)
                             if u.scheme in ['file']:
-                                with open(u.path, 'r') as fp:
-                                    content = fp.read()
-                                mime_type = self._complex_params[key][0]
-                                if mime_type == 'application/xml' or mime_type.startswith('text/'):
-                                    content = str(content)
-                                else:
-                                    content = base64.b64encode(content)
+                                content = utils.encode(u.path, self._complex_params[key])
                     else:
                         content = str(value)
                         
