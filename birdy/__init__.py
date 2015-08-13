@@ -127,8 +127,9 @@ class Birdy(object):
                     content = ''
                     if key in self.complex_inputs:
                         url = fix_local_url(value)
-                        content = str(url)
-                        if not 'localhost' in self.wps.url:
+                        if 'localhost' in self.wps.url:
+                            content = str(url)
+                        else:
                             logger.debug('encode file')
                             content = encode(url, self.complex_inputs[key])
                     else:
