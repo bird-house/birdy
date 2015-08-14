@@ -139,6 +139,7 @@ class Birdy(object):
         execution = self.wps.execute(args.identifier, inputs, outputs)
         # waits for result (async call)
         self.monitor(execution, download=False)
+        return execution
 
     def _input_value(self, key, value):
         content = ''
@@ -206,12 +207,6 @@ def main():
             
     args = parser.parse_args()
     mybirdy.execute(args)
-
-    ## try:
-    ##     mybirdy.execute(args)
-    ## except:
-    ##     logger.exception('birdy execute failed!')
-    ##     sys.exit(1)
 
 if __name__ == '__main__':
     sys.exit(main())

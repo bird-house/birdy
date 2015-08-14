@@ -67,4 +67,15 @@ class BirdyTestCase(TestCase):
             nose.tools.ok_(e.code > 0, e)
         else:
             nose.tools.ok_(False, 'no error message')
-        
+
+    @attr('online')
+    @attr('slow')
+    def test_wordcount(self):
+        args = Args()
+        args.debug = True
+        args.identifier = 'wordcount'
+        args.text = 'http://birdy.readthedocs.org/en/latest/index.html'
+        args.output = None
+
+        execution = self.birdy.execute(args)
+        nose.tools.ok_(execution.isSucceded())
