@@ -3,15 +3,9 @@ import nose.tools
 from nose import SkipTest
 from nose.plugins.attrib import attr
 
-from __init__ import TESTDATA, SERVICE
+from __init__ import SERVICE, Args
 
 from birdy import Birdy
-
-class Args(object):
-    """
-    Namespace to collect parsed arguments
-    """
-    pass
 
 class BirdyTestCase(TestCase):
     """

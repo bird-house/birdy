@@ -2,7 +2,7 @@ import nose.tools
 from nose import SkipTest
 from nose.plugins.attrib import attr
 
-from __init__ import TESTDATA, WpsTestCase
+from __init__ import WpsTestCase
 
 from birdy.wpsparser import (
     parse_wps_description,
