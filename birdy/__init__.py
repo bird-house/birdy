@@ -153,9 +153,10 @@ class Birdy(object):
         url = fix_local_url(value)
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
+            logger.debug('use url: %s', url)
             content = str(url)
         else:
-            logger.debug('encode file')
+            logger.debug('encode content: %s', url)
             content = encode(url, self.complex_inputs[key])
         return content
             
