@@ -74,7 +74,7 @@ You can also use a local file as input document:
 
 .. code-block:: sh
 
-    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/introduction.html 
+    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/index.html 
     INFO:Execution status: ProcessAccepted
     INFO:Execution status: ProcessSucceeded
     INFO:Output:

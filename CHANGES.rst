@@ -1,6 +1,12 @@
 Change History
 **************
 
+0.1.2 (2015-08-14)
+==================
+
+* fixed encoding of input text files.
+* more unit tests.
+
 0.1.1 (2015-08-13)
 ==================
 
