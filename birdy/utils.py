@@ -38,7 +38,8 @@ def encode(url, mimetypes):
             # TODO: check all mimetypes ... use also python-magic to detect mime type
             if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml' or mimetypes[0].lower().startswith('text/'):
                 logger.debug('send content of %s', url)
-                encoded = content.encode('utf-8', 'ignore')
+                # TODO: need to fix owslib unicode and complex data type handling
+                encoded = str(content.decode('ascii', errors='ignore'))
             else:
                 logger.debug('base64 encode content of %s', url)
                 encoded = base64.b64encode(content)
