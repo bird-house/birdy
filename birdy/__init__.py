@@ -1,8 +1,8 @@
 import sys
 import urlparse
-from owslib.wps import WebProcessingService
+from owslib.wps import WebProcessingService, ComplexDataInput
 from birdy.wpsparser import *
-from birdy.utils import fix_local_url, encode
+from birdy.utils import fix_local_url, encode, is_file_url
 
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
@@ -118,7 +118,7 @@ class Birdy(object):
         # inputs 
         # TODO: this is probably not the way to do it
         for key in args.__dict__.keys():
-            if not key in ['identifier', 'output']:
+            if not key in ['identifier', 'output', 'debug']:
                 values = getattr(args, key)
                 # checks if single value (or list of values)
                 if not isinstance(values, list):
@@ -154,14 +154,15 @@ class Birdy(object):
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
             logger.debug('use url: %s', url)
-            content = str(url)
+            content = url
         else:
             logger.debug('encode content: %s', url)
-            content = encode(url, self.complex_inputs[key])
+            encoded = encode(url, self.complex_inputs[key])
+            content = ComplexDataInput(encoded)
         return content
             
     def _literal_value(self, key, value):
-        return str(value)
+        return value
 
     def monitor(self, execution, sleepSecs=3, download=False, filepath=None):
         """

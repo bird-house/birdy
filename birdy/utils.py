@@ -22,6 +22,12 @@ def fix_local_url(url):
         logger.debug("fixed url = %s", url)
     return url
 
+
+def is_file_url(url):
+    u = urlparse.urlsplit(url)
+    return not u.scheme or u.scheme == 'file'
+        
+
 def encode(url, mimetypes):
     """
     Read file with given url and return content. If mimetype of file is binary then encode content with base64.
@@ -46,5 +52,5 @@ def encode(url, mimetypes):
     else:
         # remote urls as reference
         logger.debug('send url %s', url)
-        encoded = str(url)
+        encoded = url
     return encoded
