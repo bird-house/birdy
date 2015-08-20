@@ -3,10 +3,7 @@ import nose.tools
 from nose import SkipTest
 from nose.plugins.attrib import attr
 
-from os.path import join, dirname
-__testdir__ = dirname(__file__)
-
-from __init__ import SERVICE, Args
+from __init__ import SERVICE, Args, resource_file
 
 from birdy import Birdy
 
@@ -38,7 +35,7 @@ class BirdySampleTestCase(TestCase):
     @attr('slow')
     def test_wordcount_file(self):
         self.args.identifier = 'wordcount'
-        self.args.text = join(__testdir__, 'the_great_gatsby.txt')
+        self.args.text = resource_file('the_great_gatsby.txt')
         self.birdy.complex_inputs['text'] = ['text/plain']
 
         execution = self.birdy.execute(self.args)
@@ -48,7 +45,7 @@ class BirdySampleTestCase(TestCase):
     @attr('slow')
     def test_wordcount_remote_service(self):
         self.args.identifier = 'wordcount'
-        self.args.text = join(__testdir__, 'the_great_gatsby.txt')
+        self.args.text = resource_file('the_great_gatsby.txt')
         birdy = Birdy('http://127.0.0.1:8094/wps')
         birdy.complex_inputs['text'] = ['text/plain']
 

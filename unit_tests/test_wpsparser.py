@@ -14,7 +14,6 @@ from birdy.wpsparser import (
 
 class WPSParserTestCase(WpsTestCase):
 
-    @attr('online')
     def test_parse_wps_description(self):
         # TODO: add test with unicode characters e.a:
         # http://geoprocessing.demo.52north.org:8080/52n-wps-webapp-3.3.1/WebProcessingService?Request=GetCapabilities&Service=WPS
