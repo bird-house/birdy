@@ -1,6 +1,13 @@
 Change History
 **************
 
+0.1.3 (2015-08-20)
+==================
+
+* more unit tests.
+* fixed unicode error in wps description.
+* using latest ComplexDataInput from owslib.wps. 
+
 0.1.2 (2015-08-14)
 ==================
 
