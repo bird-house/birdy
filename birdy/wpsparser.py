@@ -77,7 +77,5 @@ def parse_process_help(process):
     return help.encode(encoding='ascii')
 
 def parse_wps_description(wps):
-    description="{0}: {1}".format(
-        wps.identification.title,
-        wps.identification.abstract)
+    description="%s: %s" % (wps.identification.title, wps.identification.abstract)
     return description
