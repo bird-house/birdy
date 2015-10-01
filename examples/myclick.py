@@ -1,7 +1,37 @@
 import inspect
 import click
-from click.core import Option
-from click.decorators import _param_memo
+from click.core import Option, Command
+#from click.decorators import _param_memo
+
+def _make_command(f, name, attrs, cls):
+    if isinstance(f, Command):
+        raise TypeError('Attempted to convert a callback into a '
+                        'command twice.')
+    try:
+        params = f.__click_params__
+        params.reverse()
+        del f.__click_params__
+    except AttributeError:
+        params = []
+    help = attrs.get('help')
+    if help is None:
+        help = inspect.getdoc(f)
+        if isinstance(help, bytes):
+            help = help.decode('utf-8')
+    else:
+        help = inspect.cleandoc(help)
+    attrs['help'] = help
+    return cls(name=name or f.__name__.lower(),
+               callback=f, params=params, **attrs)
+
+
+def _param_memo(f, param):
+    if isinstance(f, Command):
+        f.params.append(param)
+    else:
+        if not hasattr(f, '__click_params__'):
+            f.__click_params__ = []
+        f.__click_params__.append(param)
 
 
 def option(*param_decls, **attrs):
@@ -32,11 +62,18 @@ class MyCLI(click.MultiCommand):
         return cmds
 
     def get_command(self, ctx, name):
-        @click.command()
+        #@click.command()
         #@option("--count", help="no help")
-        def cmd(*args, **kwargs):
+        def mycmd(*args, **kwargs):
             click.echo(name)
         opt = Option(("--count",), {'help': "no help"})
+        #cmd.params.append(opt)
+        params = []
+        #attrs = {'help': 'need more help'}
+        attrs = {}
+        cmd = Command(name, mycmd, params, **attrs)
+        if not hasattr(cmd, '__click_params__'):
+            cmd.__click_params__ = []
         cmd.__click_params__.append(option)
         
         return cmd
