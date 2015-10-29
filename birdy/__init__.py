@@ -23,7 +23,8 @@ class Birdy(object):
     
     def __init__(self, service):
         try:
-            self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
+            # TODO: ssl verification should be an option
+            self.wps = WebProcessingService(service, verbose=False, skip_caps=False, verify=False)
         except:
             logger.exception('Could not access wps %s', service)
             raise
