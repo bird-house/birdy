@@ -1,0 +1,4 @@
+argcomplete
+lxml
+owslib
+nose

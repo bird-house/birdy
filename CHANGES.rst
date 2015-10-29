@@ -1,6 +1,12 @@
 Change History
 **************
 
+0.1.4 (2015-10-29)
+==================
+
+* using ssl verify option of WebProcessingSerivce
+* moved python requirements to requirements/deploy.txt
+
 0.1.3 (2015-08-20)
 ==================
 
