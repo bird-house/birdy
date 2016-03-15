@@ -1,6 +1,12 @@
 Change History
 **************
 
+0.1.5 (2016-03-15)
+==================
+
+* fixed wps init (using standard owslib).
+* update makefile.
+
 0.1.4 (2015-10-29)
 ==================
 
