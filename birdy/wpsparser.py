@@ -2,7 +2,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 def is_complex_data(inoutput):
-    return 'ComplexData' in inoutput.dataType
+    if inoutput.dataType is None:
+        return False
+    else:
+        return 'ComplexData' in inoutput.dataType
+
+def is_bbox_data(inoutput):
+    if inoutput.dataType is None:
+        return False
+    else:
+        return 'BoxData' in inoutput.dataType
 
 def parse_default(input):
     default = None
@@ -12,6 +21,9 @@ def parse_default(input):
             if is_complex_data(input):
                 # TODO: get default value of complex type
                 default = None #input.defaultValue.mimeType
+            elif is_bbox_data(input):
+                # TODO: get default value of bbox
+                default = None
             else:
                 default = str(input.defaultValue)
     return default
@@ -23,10 +35,16 @@ def parse_description(input):
     if hasattr(input, 'abstract'):
         description = description + ": " + str(input.abstract)
     default = parse_default(input)
+    #logger.debug("id=%s, datatype=%s", input.identifier, input.dataType)
     if is_complex_data(input):
         if len(input.supportedValues) > 0: 
             mime_types = ",".join([str(value.mimeType) for value in input.supportedValues])
             description = description + ", mime types=" + mime_types
+    elif is_bbox_data(input):
+        logger.debug("bounding box input")
+        if len(input.supportedValues) > 0:
+            crs_list = ",".join(input.supportedValues)
+            description = description + ", supported CRS=" + crs_list
     if default is not None:
         description = description + " (default: " + str(default) + ")"
     return description.encode(encoding='ascii')

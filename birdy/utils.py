@@ -9,6 +9,9 @@ def fix_local_url(url):
     """
     If url is just a local path name then create a file:// URL. Otherwise return url just as it is.
     """
+    logger.debug("fix url %s", url)
+    if url is None:
+        return None
     u = urlparse.urlsplit(url)
     if not u.scheme:
         # build local file url

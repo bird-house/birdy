@@ -125,7 +125,9 @@ class Birdy(object):
                 if not isinstance(values, list):
                     values = [values]
                 for value in values:
-                    inputs.append( (str(key), self._input_value(key, value) ) )
+                    in_value = self._input_value(key, value)
+                    if in_value is not None:
+                        inputs.append( (str(key), in_value) )
         # outputs
         output = self.outputs.keys()
         if args.output is not None:
@@ -151,6 +153,7 @@ class Birdy(object):
         return content
             
     def _complex_value(self, key, value):
+        logger.debug("complex: key=%s, value=%s", key, value)
         url = fix_local_url(value)
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
