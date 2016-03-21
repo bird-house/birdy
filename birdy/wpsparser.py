@@ -11,7 +11,7 @@ def is_bbox_data(inoutput):
     if inoutput.dataType is None:
         return False
     else:
-        return 'BoxData' in inoutput.dataType
+        return 'BoundingBoxData' in inoutput.dataType
 
 def parse_default(input):
     default = None
