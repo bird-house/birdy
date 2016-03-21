@@ -1,0 +1,11 @@
+# conda env create environment.yml
+name: birdy
+channels:
+  - ioos
+  - birdhouse
+dependencies:
+  - python=2
+  - lxml
+  - owslib
+  - argcomplete
+  - nose
