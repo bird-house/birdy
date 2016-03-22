@@ -53,6 +53,15 @@ class BirdyTestCase(TestCase):
         nose.tools.ok_(Args.identifier == 'inout')
 
     @attr('online')
+    def test_bbox_command(self):
+        parser = self.birdy.create_parser()
+        try:
+            parser.parse_args('bbox -h'.split(), namespace=Args)
+        except SystemExit as e:
+            nose.tools.ok_(e.code == 0, e)
+        nose.tools.ok_(Args.identifier == 'bbox')
+
+    @attr('online')
     def test_invalid_command(self):
         parser = self.birdy.create_parser()
         try:
