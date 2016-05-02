@@ -22,6 +22,7 @@ class Birdy(object):
     complex_inputs = {}
     
     def __init__(self, service):
+        self.service = service
         try:
             self.wps = WebProcessingService(service, verbose=False, skip_caps=False, verify=False)
         except:
@@ -52,9 +53,12 @@ class Birdy(object):
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
-        ## parser.add_argument("--insecure", "-k"
+        ## parser.add_argument("--insecure", "-k",
         ##                     help="Allow connections to SSL sites without certs.",
         ##                     action="store_true")
+        parser.add_argument("--token", "-t",
+                            help="Token to access the WPS service.",
+                            action="store")
         subparsers = parser.add_subparsers(
             dest='identifier',
             title='command',
@@ -117,6 +121,11 @@ class Birdy(object):
         if args.debug:
             logger.setLevel(logging.DEBUG)
             logger.debug('using web processing service %s', self.wps.url)
+
+        if args.token:
+            # use access token to execute process
+            headers = {'Access-Token': args.token}
+            self.wps = WebProcessingService(self.wps.url, verbose=False, skip_caps=False, verify=False, headers=headers)
 
         inputs = []
         # inputs 
