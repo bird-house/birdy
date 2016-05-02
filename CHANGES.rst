@@ -1,6 +1,12 @@
 Change History
 **************
 
+0.1.7 (2016-05-02)
+==================
+
+* added twitcher token parameter.
+* using ssl verify option again.
+
 0.1.6 (2016-03-22)
 ==================
 
