@@ -16,6 +16,9 @@ Show the processes of a Web Processing Service:
    optional arguments:
      -h, --help            show this help message and exit
      --debug               enable debug mode
+     --token TOKEN, -t TOKEN
+                           Token to access the WPS service.
+
     
    command:
      List of available commands (wps processes)
@@ -83,4 +86,10 @@ You can also use a local file as input document:
 
 If you run this process on a remote WPS service then local files will be send inline and base64 encoded with the WPS execute request. Please use in this case *small files only* (a few megabytes)!
 
+If the WPS service is secured by a Twitcher security proxy service then you can provide an access token with the ``-token`` option:
+
+.. code-block:: sh
+
+    $ birdy --token abc123 wordcount --text http://birdy.readthedocs.org/en/latest/tutorial.html
+   
 
