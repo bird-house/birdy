@@ -23,11 +23,11 @@ class Birdy(object):
     
     def __init__(self, service):
         try:
-            # TODO: ssl verification should be an option
-            self.wps = WebProcessingService(service, verbose=False, skip_caps=False)
+            self.wps = WebProcessingService(service, verbose=False, skip_caps=False, verify=False)
         except:
-            logger.exception('Could not access wps %s', service)
+            logger.error('Could not access wps %s', service)
             raise
+       
 
     def create_parser(self):
         """
@@ -52,6 +52,9 @@ class Birdy(object):
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
+        ## parser.add_argument("--insecure", "-k"
+        ##                     help="Allow connections to SSL sites without certs.",
+        ##                     action="store_true")
         subparsers = parser.add_subparsers(
             dest='identifier',
             title='command',
