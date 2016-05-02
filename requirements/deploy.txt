@@ -1,4 +1,3 @@
 argcomplete
 lxml
 owslib
-nose
