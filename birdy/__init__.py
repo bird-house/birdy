@@ -8,6 +8,23 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+def _wps(url, skip_caps=True, token=None):
+    wps = None
+
+    try:
+        if 'verify' in WebProcessingService.__init__.func_code.co_varnames:
+            if token:
+                # use access token to execute process
+                headers = {'Access-Token': token}
+                wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps, verify=False, headers=headers)
+            else:
+                wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps, verify=False)
+        else:
+            wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps)
+    except:
+        raise Exception('Could not access wps %s', url)
+    return wps
+
 class Birdy(object):
     """
     Birdy is a command line client for Web Processing Services.
@@ -23,12 +40,8 @@ class Birdy(object):
     
     def __init__(self, service):
         self.service = service
-        try:
-            self.wps = WebProcessingService(service, verbose=False, skip_caps=False, verify=False)
-        except:
-            logger.error('Could not access wps %s', service)
-            raise
-       
+        self.wps = _wps(service, skip_caps=False)
+
 
     def create_parser(self):
         """
@@ -56,9 +69,10 @@ class Birdy(object):
         ## parser.add_argument("--insecure", "-k",
         ##                     help="Allow connections to SSL sites without certs.",
         ##                     action="store_true")
-        parser.add_argument("--token", "-t",
-                            help="Token to access the WPS service.",
-                            action="store")
+        if 'headers' in WebProcessingService.__init__.func_code.co_varnames:
+            parser.add_argument("--token", "-t",
+                                help="Token to access the WPS service.",
+                                action="store")
         subparsers = parser.add_subparsers(
             dest='identifier',
             title='command',
@@ -120,12 +134,11 @@ class Birdy(object):
     def execute(self, args):
         if args.debug:
             logger.setLevel(logging.DEBUG)
-            logger.debug('using web processing service %s', self.wps.url)
+            logger.debug('using web processing service %s', self.service)
 
-        if args.token:
+        if 'token' in args and args.token:
             # use access token to execute process
-            headers = {'Access-Token': args.token}
-            self.wps = WebProcessingService(self.wps.url, verbose=False, skip_caps=False, verify=False, headers=headers)
+            self.wps = _wps(self.service, skip_caps=False, token=args.token)
 
         inputs = []
         # inputs 
