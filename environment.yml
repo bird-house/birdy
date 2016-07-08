@@ -9,3 +9,6 @@ dependencies:
   - owslib
   - argcomplete
   - nose
+  - pyyaml
+  - sphinx
+  - mako
