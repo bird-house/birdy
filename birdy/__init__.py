@@ -8,6 +8,7 @@ import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
 logger = logging.getLogger(__name__)
 
+
 def _wps(url, skip_caps=True, token=None):
     wps = None
 
@@ -25,6 +26,7 @@ def _wps(url, skip_caps=True, token=None):
         raise Exception('Could not access wps %s', url)
     return wps
 
+
 class Birdy(object):
     """
     Birdy is a command line client for Web Processing Services.
@@ -37,11 +39,10 @@ class Birdy(object):
     """
     outputs = {}
     complex_inputs = {}
-    
+
     def __init__(self, service):
         self.service = service
         self.wps = _wps(service, skip_caps=False)
-
 
     def create_parser(self):
         """
@@ -62,7 +63,7 @@ class Birdy(object):
             prog="birdy",
             usage='''birdy [<options>] <command> [<args>]''',
             description=parse_wps_description(self.wps),
-            )
+        )
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
@@ -78,14 +79,14 @@ class Birdy(object):
             title='command',
             description='List of available commands (wps processes)',
             help='Run "birdy <command> -h" to get additional help.'
-            )
+        )
 
         for process in self.wps.processes:
             subparser = subparsers.add_parser(
                 process.identifier,
-                prog="birdy {0}".format(process.identifier) ,
+                prog="birdy {0}".format(process.identifier),
                 help=parse_process_help(process)
-                )
+            )
             #subparser.set_defaults(func=self.execute)
             # lazy build of sub-command
             # TODO: maybe a better way to do this?
@@ -99,12 +100,12 @@ class Birdy(object):
 
     def build_command(self, subparser, identifier):
         logger.debug("build subparser for command=%s", identifier)
-        
+
         process = self.wps.describeprocess(identifier)
 
         for input in process.dataInputs:
             subparser.add_argument(
-                '--'+input.identifier,
+                '--' + input.identifier,
                 dest=input.identifier,
                 required=parse_required(input),
                 nargs=parse_nargs(input),
@@ -120,8 +121,8 @@ class Birdy(object):
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
-           help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
-           self.outputs[output.identifier] = is_complex_data(output)
+            help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
+            self.outputs[output.identifier] = is_complex_data(output)
         subparser.add_argument(
             '--output',
             dest="output",
@@ -141,7 +142,7 @@ class Birdy(object):
             self.wps = _wps(self.service, skip_caps=False, token=args.token)
 
         inputs = []
-        # inputs 
+        # inputs
         # TODO: this is probably not the way to do it
         for key in args.__dict__.keys():
             if not key in ['identifier', 'output', 'debug']:
@@ -152,7 +153,7 @@ class Birdy(object):
                 for value in values:
                     in_value = self._input_value(key, value)
                     if in_value is not None:
-                        inputs.append( (str(key), in_value) )
+                        inputs.append((str(key), in_value))
         # outputs
         output = self.outputs.keys()
         if args.output is not None:
@@ -176,7 +177,7 @@ class Birdy(object):
         else:
             content = self._literal_value(key, value)
         return content
-            
+
     def _complex_value(self, key, value):
         logger.debug("complex: key=%s, value=%s", key, value)
         url = fix_local_url(value)
@@ -189,7 +190,7 @@ class Birdy(object):
             encoded = encode(url, self.complex_inputs[key])
             content = ComplexDataInput(encoded)
         return content
-            
+
     def _literal_value(self, key, value):
         return value
 
@@ -201,11 +202,10 @@ class Birdy(object):
         execution: WPSExecution instance
         sleepSecs: number of seconds to sleep in between check status invocations
         download: True to download the output when the process terminates, False otherwise
-        filepath: optional path to output file (if downloaded=True), otherwise filepath will be inferred from response document
-
+        filepath: optional path to output file (if downloaded=True), otherwise filepath
+        will be inferred from response document
         """
-
-        while execution.isComplete()==False:
+        while execution.isComplete() is False:
             execution.checkStatus(sleepSecs=sleepSecs)
             logger.info('Execution status: %s', execution.status)
 
@@ -214,7 +214,7 @@ class Birdy(object):
                 execution.getOutput(filepath=filepath)
             else:
                 logger.info("Output:")
-                for output in execution.processOutputs:               
+                for output in execution.processOutputs:
                     if output.reference is not None:
                         logger.info('%s=%s (%s)' % (output.identifier, output.reference, output.mimeType))
                     else:
@@ -226,20 +226,18 @@ class Birdy(object):
 
 def main():
     import argcomplete
-    
+
     logger.setLevel(logging.INFO)
-    
-    from os import environ 
+
+    from os import environ
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
-   
+
     mybirdy = Birdy(service)
     parser = mybirdy.create_parser()
     argcomplete.autocomplete(parser)
-            
+
     args = parser.parse_args()
     mybirdy.execute(args)
 
 if __name__ == '__main__':
     sys.exit(main())
-
-
