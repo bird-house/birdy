@@ -70,6 +70,11 @@ class Birdy(object):
         ## parser.add_argument("--insecure", "-k",
         ##                     help="Allow connections to SSL sites without certs.",
         ##                     action="store_true")
+        if 'async' in WebProcessingService.execute.func_code.co_varnames:
+            parser.add_argument(
+                "--sync", '-s',
+                help="Run sync execution. Default: false",
+                action="store_true")
         if 'headers' in WebProcessingService.__init__.func_code.co_varnames:
             parser.add_argument("--token", "-t",
                                 help="Token to access the WPS service.",
@@ -165,7 +170,15 @@ class Birdy(object):
         outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
         #logger.debug(outputs)
-        execution = self.wps.execute(args.identifier, inputs, outputs)
+        if 'sync' in args and args.sync:
+            # TODO: sync is non-default and avail only in patched owslib
+            execution = self.wps.execute(
+                identifier=args.identifier,
+                inputs=inputs, output=outputs,
+                async=False)
+        else:
+            execution = self.wps.execute(args.identifier, inputs, outputs)
+
         # waits for result (async call)
         self.monitor(execution, download=False)
         return execution
