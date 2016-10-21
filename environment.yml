@@ -1,8 +1,9 @@
 # conda env create environment.yml
 name: birdy
 channels:
-  - ioos
+  - defaults
   - birdhouse
+  - conda-forge
 dependencies:
   - python=2
   - lxml
