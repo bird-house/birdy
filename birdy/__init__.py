@@ -142,7 +142,7 @@ class Birdy(object):
             logger.setLevel(logging.DEBUG)
             logger.debug('using web processing service %s', self.service)
 
-        if 'token' in args and args.token:
+        if hasattr(args, 'token') and args.token:
             # use access token to execute process
             self.wps = _wps(self.service, skip_caps=False, token=args.token)
 
@@ -170,7 +170,7 @@ class Birdy(object):
         outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
         #logger.debug(outputs)
-        if 'sync' in args and args.sync:
+        if hasattr(args, 'sync') and args.sync:
             # TODO: sync is non-default and avail only in patched owslib
             execution = self.wps.execute(
                 identifier=args.identifier,
