@@ -309,6 +309,7 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'https://docs.python.org/': None}
 intersphinx_mapping = {'python': ('http://docs.python.org/', None),
+                       'birdhouse': ('http://birdhouse.readthedocs.io/en/latest/', None),
                        'phoenix': ('http://pyramid-phoenix.readthedocs.io/en/latest/', None),
                        'malleefowl': ('http://malleefowl.readthedocs.io/en/latest/', None),
                        'twitcher': ('http://twitcher.readthedocs.io/en/latest/', None),
@@ -334,7 +335,7 @@ rst_epilog = """
 .. _Birdhouse: http://birdhouse.readthedocs.io/en/latest/
 .. _Phoenix: http://pyramid-phoenix.readthedocs.io/en/latest/
 .. _Malleefowl: http://malleefowl.readthedocs.io/en/latest/
-.. _Twitcher: http://birdhouse-hummingbird.readthedocs.io/en/latest/
+.. _Twitcher: http://twitcher.readthedocs.io/en/latest/
 .. _Flyingpigeon: http://flyingpigeon.readthedocs.io/en/latest/
 .. _Hummingbird: http://birdhouse-hummingbird.readthedocs.io/en/latest/
 .. _Emu: http://emu.readthedocs.io/en/latest/
