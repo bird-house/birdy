@@ -1,8 +1,8 @@
 import sys
 import urlparse
 from owslib.wps import WebProcessingService, ComplexDataInput
-from birdy.wpsparser import *
-from birdy.utils import fix_local_url, encode, is_file_url
+from birdy import wpsparser
+from birdy.utils import fix_local_url, encode
 
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
@@ -63,14 +63,14 @@ class Birdy(object):
         parser = argparse.ArgumentParser(
             prog="birdy",
             usage='''birdy [<options>] <command> [<args>]''',
-            description=parse_wps_description(self.wps),
+            description=wpsparser.parse_wps_description(self.wps),
         )
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
-        ## parser.add_argument("--insecure", "-k",
-        ##                     help="Allow connections to SSL sites without certs.",
-        ##                     action="store_true")
+        # parser.add_argument("--insecure", "-k",
+        #                     help="Allow connections to SSL sites without certs.",
+        #                     action="store_true")
         if 'async' in WebProcessingService.execute.func_code.co_varnames:
             parser.add_argument(
                 "--sync", '-s',
@@ -91,13 +91,13 @@ class Birdy(object):
             subparser = subparsers.add_parser(
                 process.identifier,
                 prog="birdy {0}".format(process.identifier),
-                help=parse_process_help(process)
+                help=wpsparser.parse_process_help(process)
             )
-            #subparser.set_defaults(func=self.execute)
+            # subparser.set_defaults(func=self.execute)
             # lazy build of sub-command
             # TODO: maybe a better way to do this?
-            #command = sys.argv[1]
-            #if command==process.identifier:
+            # command = sys.argv[1]
+            # if command==process.identifier:
             # TODO: this matching is too dangerous !!!
             if process.identifier in sys.argv:
                 self.build_command(subparser, process.identifier)
@@ -113,22 +113,23 @@ class Birdy(object):
             subparser.add_argument(
                 '--' + input.identifier,
                 dest=input.identifier,
-                required=parse_required(input),
-                nargs=parse_nargs(input),
-                #type=parse_type(input),
-                choices=parse_choices(input),
-                default=parse_default(input),
+                required=wpsparser.parse_required(input),
+                nargs=wpsparser.parse_nargs(input),
+                # type=parse_type(input),
+                choices=wpsparser.parse_choices(input),
+                default=wpsparser.parse_default(input),
                 action="store",
-                help=parse_description(input),
+                help=wpsparser.parse_description(input),
             )
-            if is_complex_data(input):
+            if wpsparser.is_complex_data(input):
                 mimetypes = ([str(value.mimeType) for value in input.supportedValues])
                 self.complex_inputs[input.identifier] = mimetypes
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
-            help_msg = help_msg + str(output.identifier) + "=" + parse_description(output) + " (default: all outputs)"
-            self.outputs[output.identifier] = is_complex_data(output)
+            help_msg = help_msg + str(output.identifier) + "=" + wpsparser.parse_description(output)\
+                + " (default: all outputs)"
+            self.outputs[output.identifier] = wpsparser.is_complex_data(output)
         subparser.add_argument(
             '--output',
             dest="output",
@@ -151,7 +152,7 @@ class Birdy(object):
         # inputs
         # TODO: this is probably not the way to do it
         for key in args.__dict__.keys():
-            if not key in ['identifier', 'output', 'debug']:
+            if key not in ['identifier', 'output', 'debug']:
                 values = getattr(args, key)
                 # checks if single value (or list of values)
                 if not isinstance(values, list):
@@ -170,7 +171,7 @@ class Birdy(object):
         # list of tuple (output identifier, asReference attribute)
         outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
-        #logger.debug(outputs)
+        # logger.debug(outputs)
         if hasattr(args, 'sync') and args.sync:
             # TODO: sync is non-default and avail only in patched owslib
             execution = self.wps.execute(
@@ -252,6 +253,7 @@ def main():
 
     args = parser.parse_args()
     mybirdy.execute(args)
+
 
 if __name__ == '__main__':
     sys.exit(main())
