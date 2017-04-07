@@ -9,7 +9,11 @@ dependencies:
   - lxml
   - owslib
   - argcomplete
-  - nose
   - pyyaml
   - sphinx
   - mako
+# tests
+  - pytest
+  - flake8
+  - nose
+
