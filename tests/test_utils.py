@@ -1,6 +1,3 @@
-import pytest
-from unittest import TestCase
-
 import tempfile
 import base64
 
@@ -30,8 +27,8 @@ def test_fix_local_url():
     assert url.endswith('testfile.nc')
 
     # TODO: replace ~
-    #url = utils.fix_local_url('~/data/testfile.nc')
-    #nose.tools.ok_(False, url)
+    # url = utils.fix_local_url('~/data/testfile.nc')
+    # nose.tools.ok_(False, url)
 
 
 def test_encode():

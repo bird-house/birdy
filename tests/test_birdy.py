@@ -38,7 +38,7 @@ class BirdyTestCase(TestCase):
         """
         parser = self.birdy.create_parser()
         try:
-            args = parser.parse_args(['-h'], namespace=Args)
+            parser.parse_args(['-h'], namespace=Args)
         except SystemExit as e:
             assert e.code == 0
 
@@ -68,4 +68,4 @@ class BirdyTestCase(TestCase):
         except SystemExit as e:
             assert e.code > 0
         else:
-            raise Excpetion('no error message')
+            raise Exception('no error message')
