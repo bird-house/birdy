@@ -6,5 +6,6 @@ install:
   - make install
 script:
   - make test
+  - make pep8
 #after_success:
 # - coveralls
