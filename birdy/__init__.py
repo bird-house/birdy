@@ -200,7 +200,7 @@ class Birdy(object):
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
             LOGGER.debug('use url: %s', url)
-            content = url
+            content = ComplexDataInput(url)
         else:
             LOGGER.debug('encode content: %s', url)
             encoded = encode(url, self.complex_inputs[key])
