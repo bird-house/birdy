@@ -7,6 +7,7 @@ import base64
 
 from birdy import utils
 
+
 def test_fix_local_url():
     url = utils.fix_local_url('http://path/to/testfile.nc')
     nose.tools.ok_(url == 'http://path/to/testfile.nc', url)
@@ -38,7 +39,7 @@ def test_encode():
     fp = tempfile.NamedTemporaryFile(delete=False)
     fp.write('hello')
     fp.close()
-    
+
     content = utils.encode(fp.name, mimetypes=["application/xml"])
     nose.tools.ok_(content == 'hello')
 

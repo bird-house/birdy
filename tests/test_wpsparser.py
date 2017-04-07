@@ -10,13 +10,14 @@ from birdy.wpsparser import (
     is_complex_data,
     parse_default,
     parse_description
-    )
+)
+
 
 class WPSParserTestCase(WpsTestCase):
 
     def test_parse_wps_description(self):
         # TODO: add test with unicode characters e.a:
-        # http://geoprocessing.demo.52north.org:8080/52n-wps-webapp-3.3.1/WebProcessingService?Request=GetCapabilities&Service=WPS
+        # http://geoprocessing.demo.52north.org:8080/52n-wps-webapp-3.3.1/WebProcessingService?Request=GetCapabilities&Service=WPS  # noqa
         result = parse_wps_description(self.wps)
         nose.tools.ok_('Emu' in result, result)
 
@@ -30,7 +31,7 @@ class WPSParserTestCase(WpsTestCase):
     def test_is_complex_data(self):
         process = self.wps.describeprocess('helloworld')
         for input in process.dataInputs:
-            nose.tools.ok_(is_complex_data(input) == False)
+            nose.tools.ok_(is_complex_data(input) is False)
 
     @attr('online')
     def test_parse_default(self):
@@ -45,4 +46,3 @@ class WPSParserTestCase(WpsTestCase):
         for input in process.dataInputs:
             result = parse_description(input)
             nose.tools.ok_(len(result), result)
-        

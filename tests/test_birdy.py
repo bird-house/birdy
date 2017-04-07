@@ -7,6 +7,7 @@ from __init__ import SERVICE, Args
 
 from birdy import Birdy
 
+
 class BirdyTestCase(TestCase):
     """
     test command line client birdy:
@@ -29,7 +30,7 @@ class BirdyTestCase(TestCase):
             nose.tools.ok_(e.code > 0, e)
         else:
             nose.tools.ok_(False, 'no error message')
-            
+
     @attr('online')
     def test_help(self):
         """
@@ -70,4 +71,3 @@ class BirdyTestCase(TestCase):
             nose.tools.ok_(e.code > 0, e)
         else:
             nose.tools.ok_(False, 'no error message')
-

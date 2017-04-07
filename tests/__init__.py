@@ -5,6 +5,7 @@ from unittest import TestCase
 
 SERVICE = "http://localhost:8094/wps"
 
+
 def resource_file(filepath):
     return os.path.join(test_directory(), 'resources', filepath)
 
@@ -12,6 +13,7 @@ def resource_file(filepath):
 def test_directory():
     """Helper function to return path to the tests directory"""
     return os.path.dirname(__file__)
+
 
 class Args(object):
     """
@@ -32,6 +34,3 @@ class WpsTestCase(TestCase):
         with open(resource_file('wps_emu_caps.xml'), 'rb') as fp:
             xml = fp.read()
             cls.wps.getcapabilities(xml=xml)
-
-
-

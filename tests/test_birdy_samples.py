@@ -7,6 +7,7 @@ from __init__ import SERVICE, Args, resource_file
 
 from birdy import Birdy
 
+
 class BirdySampleTestCase(TestCase):
     """
     test command line client birdy:
@@ -51,5 +52,3 @@ class BirdySampleTestCase(TestCase):
 
         execution = birdy.execute(self.args)
         nose.tools.ok_(execution.isSucceded())
-
-        
