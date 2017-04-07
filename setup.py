@@ -13,15 +13,15 @@ long_description = (
 
 requires = [line.strip() for line in open('requirements/deploy.txt')]
 
-classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Science/Research',
-        'Operating System :: MacOS :: MacOS X',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX',
-        'Programming Language :: Python',
-        'Topic :: Scientific/Engineering :: Atmospheric Science',
-        ]
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Science/Research',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Programming Language :: Python',
+    'Topic :: Scientific/Engineering :: Atmospheric Science',
+]
 
 setup(name='birdhouse-birdy',
       version=version,
@@ -31,16 +31,14 @@ setup(name='birdhouse-birdy',
       keywords='wps pywps python birdy netcdf esgf birdhouse anaconda',
       author='Birdhouse',
       url='https://github.com/bird-house/birdy',
-      license = "Apache License v2.0",
+      license="Apache License v2.0",
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
       test_suite='nose.collector',
       install_requires=requires,
-      entry_points = {
+      entry_points={
           'console_scripts': [
               'birdy=birdy:main',
-              'esgsearch=birdy.esgsearch:main'
-              ]}     
-      ,
+              'esgsearch=birdy.esgsearch:main']},
       )
