@@ -13,17 +13,21 @@ logger = logging.getLogger(__name__)
 # activate argcomplete
 # eval "$(register-python-argcomplete bin/esgsearch)"
 
+
 def esgf_search_projects(prefix, parsed_args, **kwargs):
     choices = ("CMIP5", "CORDEX")
     return (choice for choice in choices if choice.startswith(prefix))
-    
+
+
 def esgf_search_experiments(prefix, parsed_args, **kwargs):
     choices = ("historical", "rcp26", "rcp85")
     return (choice for choice in choices if choice.startswith(prefix))
 
+
 def esgf_search_variables(prefix, parsed_args, **kwargs):
     choices = ("ta", "tas", "pr")
     return (choice for choice in choices if choice.startswith(prefix))
+
 
 class ESGSearch(object):
     """
@@ -45,8 +49,8 @@ class ESGSearch(object):
             #usage='''esgsearch [<options>] <command> [<args>]''',
             description="Query ESGF search",
             add_help=False,
-            )
-      
+        )
+
         parser.add_argument("--project", required=True).completer = esgf_search_projects
         parser.add_argument("--experiment", required=True).completer = esgf_search_experiments
         parser.add_argument("--variable", nargs="*").completer = esgf_search_variables
@@ -54,14 +58,11 @@ class ESGSearch(object):
         subparsers = parser.add_subparsers(dest='command', title='commands')
         subparser = subparsers.add_parser("files", prog="esgsearch {0}".format("command"))
 
-       
-
         # first sniff for basic debuggery, help fill in defaults
         ## try:
         ##     known, args = parser.parse_known_args()
         ## except:
-        ##     parser.print_help( ) 
-
+        ##     parser.print_help( )
         real_parser = argparse.ArgumentParser(add_help=False)
 
         real_parser.add_argument("--project", required=True).completer = esgf_search_projects
@@ -74,14 +75,15 @@ class ESGSearch(object):
 
         return parser, real_parser
 
+
 def main():
     import argcomplete
-    
+
     logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
     logger.setLevel(logging.INFO)
-    
+
     esgsearch = ESGSearch()
-    parser,real_parser = esgsearch.create_parser()
+    parser, real_parser = esgsearch.create_parser()
     argcomplete.autocomplete(parser)
     args = real_parser.parse_args()
 
