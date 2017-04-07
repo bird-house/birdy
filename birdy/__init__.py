@@ -74,7 +74,7 @@ class Birdy(object):
         if 'async' in WebProcessingService.execute.func_code.co_varnames:
             parser.add_argument(
                 "--sync", '-s',
-                help="Execute process in sync mode. Default: process is running async.",
+                help="Execute process in sync mode. Default: async mode.",
                 action="store_true")
         if 'headers' in WebProcessingService.__init__.func_code.co_varnames:
             parser.add_argument("--token", "-t",
