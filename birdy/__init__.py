@@ -1,4 +1,5 @@
 import sys
+import os
 import urlparse
 from owslib.wps import WebProcessingService, ComplexDataInput
 from birdy import wpsparser
@@ -222,7 +223,7 @@ class Birdy(object):
         """
         while execution.isComplete() is False:
             execution.checkStatus(sleepSecs=sleepSecs)
-            LOGGER.info('Execution status: %s', execution.status)
+            LOGGER.info('[%s %d/100] %s', execution.status, execution.percentCompleted, execution.statusMessage)
 
         if execution.isSucceded():
             if download:
@@ -244,8 +245,7 @@ def main():
 
     LOGGER.setLevel(logging.INFO)
 
-    from os import environ
-    service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
+    service = os.environ.get("WPS_SERVICE", "http://localhost:8094/wps")
 
     mybirdy = Birdy(service)
     parser = mybirdy.create_parser()
