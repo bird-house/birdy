@@ -39,7 +39,7 @@ def parse_description(input):
     if hasattr(input, 'abstract'):
         description = description + ": " + str(input.abstract)
     default = parse_default(input)
-    #logger.debug("id=%s, datatype=%s", input.identifier, input.dataType)
+    # logger.debug("id=%s, datatype=%s", input.identifier, input.dataType)
     if is_complex_data(input):
         if len(input.supportedValues) > 0:
             mime_types = ",".join([str(value.mimeType) for value in input.supportedValues])

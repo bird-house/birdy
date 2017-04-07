@@ -46,7 +46,7 @@ class ESGSearch(object):
 
         parser = argparse.ArgumentParser(
             prog="esgsearch",
-            #usage='''esgsearch [<options>] <command> [<args>]''',
+            # usage='''esgsearch [<options>] <command> [<args>]''',
             description="Query ESGF search",
             add_help=False,
         )
@@ -59,10 +59,10 @@ class ESGSearch(object):
         subparser = subparsers.add_parser("files", prog="esgsearch {0}".format("command"))
 
         # first sniff for basic debuggery, help fill in defaults
-        ## try:
-        ##     known, args = parser.parse_known_args()
-        ## except:
-        ##     parser.print_help( )
+        # try:
+        #     known, args = parser.parse_known_args()
+        # except:
+        #     parser.print_help( )
         real_parser = argparse.ArgumentParser(add_help=False)
 
         real_parser.add_argument("--project", required=True).completer = esgf_search_projects
@@ -85,7 +85,8 @@ def main():
     esgsearch = ESGSearch()
     parser, real_parser = esgsearch.create_parser()
     argcomplete.autocomplete(parser)
-    args = real_parser.parse_args()
+    real_parser.parse_args()
+
 
 if __name__ == '__main__':
     sys.exit(main())
