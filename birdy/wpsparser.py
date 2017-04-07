@@ -1,17 +1,20 @@
 import logging
 logger = logging.getLogger(__name__)
 
+
 def is_complex_data(inoutput):
     if inoutput.dataType is None:
         return False
     else:
         return 'ComplexData' in inoutput.dataType
 
+
 def is_bbox_data(inoutput):
     if inoutput.dataType is None:
         return False
     else:
         return 'BoundingBoxData' in inoutput.dataType
+
 
 def parse_default(input):
     default = None
@@ -20,13 +23,14 @@ def parse_default(input):
         if default is not None:
             if is_complex_data(input):
                 # TODO: get default value of complex type
-                default = None #input.defaultValue.mimeType
+                default = None  # input.defaultValue.mimeType
             elif is_bbox_data(input):
                 # TODO: get default value of bbox
                 default = None
             else:
                 default = str(input.defaultValue)
     return default
+
 
 def parse_description(input):
     description = ''
@@ -37,7 +41,7 @@ def parse_description(input):
     default = parse_default(input)
     #logger.debug("id=%s, datatype=%s", input.identifier, input.dataType)
     if is_complex_data(input):
-        if len(input.supportedValues) > 0: 
+        if len(input.supportedValues) > 0:
             mime_types = ",".join([str(value.mimeType) for value in input.supportedValues])
             description = description + ", mime types=" + mime_types
     elif is_bbox_data(input):
@@ -49,19 +53,21 @@ def parse_description(input):
         description = description + " (default: " + str(default) + ")"
     return description.encode(encoding='ascii')
 
+
 def parse_type(input):
     # TODO: see https://docs.python.org/2/library/argparse.html#type
     if 'boolean' in input.dataType:
-        parsed_type=type(True)
+        parsed_type = type(True)
     elif 'integer' in input.dataType:
-        parsed_type=type(1)
+        parsed_type = type(1)
     elif 'float' in input.dataType:
-        parsed_type=type(1.0)
+        parsed_type = type(1.0)
     elif 'ComplexData' in input.dataType:
-        parsed_type=type('http://')
+        parsed_type = type('http://')
     else:
-        parsed_type=type('')
+        parsed_type = type('')
     return parsed_type
+
 
 def parse_choices(input):
     choices = None
@@ -69,11 +75,13 @@ def parse_choices(input):
         choices = input.allowedValues
     return choices
 
+
 def parse_required(input):
     required = True
     if input.minOccurs == 0:
         required = False
     return required
+
 
 def parse_nargs(input):
     nargs = '?'
@@ -86,6 +94,7 @@ def parse_nargs(input):
         nargs == 1
     return nargs
 
+
 def parse_process_help(process):
     help = ''
     if hasattr(process, "title"):
@@ -94,6 +103,7 @@ def parse_process_help(process):
         help = help + str(process.abstract)
     return help.encode(encoding='ascii')
 
+
 def parse_wps_description(wps):
-    description="%s: %s" % (wps.identification.title, wps.identification.abstract)
+    description = "%s: %s" % (wps.identification.title, wps.identification.abstract)
     return description

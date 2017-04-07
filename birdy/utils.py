@@ -5,6 +5,7 @@ from os.path import curdir, abspath, join
 import logging
 logger = logging.getLogger(__name__)
 
+
 def fix_local_url(url):
     """
     If url is just a local path name then create a file:// URL. Otherwise return url just as it is.
@@ -29,7 +30,7 @@ def fix_local_url(url):
 def is_file_url(url):
     u = urlparse.urlsplit(url)
     return not u.scheme or u.scheme == 'file'
-        
+
 
 def encode(url, mimetypes):
     """
@@ -45,7 +46,8 @@ def encode(url, mimetypes):
         with open(u.path, 'r') as fp:
             content = fp.read()
             # TODO: check all mimetypes ... use also python-magic to detect mime type
-            if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml' or mimetypes[0].lower().startswith('text/'):
+            if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml'\
+               or mimetypes[0].lower().startswith('text/'):
                 logger.debug('send content of %s', url)
                 # TODO: need to fix owslib unicode and complex data type handling
                 encoded = str(content.decode('ascii', errors='ignore'))
