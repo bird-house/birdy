@@ -1,6 +1,16 @@
 Change History
 **************
 
+current
+=======
+
+* updated buildout and Makefile.
+* updated conda environment.
+* fixed tests.
+* replaced nose by pytest.
+* pep8.
+* fixed travis.
+
 0.1.8 (2016-05-02)
 ==================
 
