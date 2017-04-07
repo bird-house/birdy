@@ -10,8 +10,12 @@ dependencies:
   - owslib
   - argcomplete
   - pyyaml
-  - sphinx
   - mako
 # tests
   - pytest
   - flake8
+# ipython
+  - ipython
+# sphinx
+  - sphinx
+  - sphinx_rtd_theme
