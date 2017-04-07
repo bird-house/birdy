@@ -74,7 +74,7 @@ class Birdy(object):
         if 'async' in WebProcessingService.execute.func_code.co_varnames:
             parser.add_argument(
                 "--sync", '-s',
-                help="Run sync execution. Default: false",
+                help="Execute process in sync mode. Default: process is running async.",
                 action="store_true")
         if 'headers' in WebProcessingService.__init__.func_code.co_varnames:
             parser.add_argument("--token", "-t",
@@ -152,7 +152,7 @@ class Birdy(object):
         # inputs
         # TODO: this is probably not the way to do it
         for key in args.__dict__.keys():
-            if key not in ['identifier', 'output', 'debug']:
+            if key not in ['identifier', 'output', 'debug', 'sync', 'token']:
                 values = getattr(args, key)
                 # checks if single value (or list of values)
                 if not isinstance(values, list):
@@ -172,7 +172,7 @@ class Birdy(object):
         outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
         # logger.debug(outputs)
-        if hasattr(args, 'sync') and args.sync:
+        if hasattr(args, 'sync') and args.sync is True:
             # TODO: sync is non-default and avail only in patched owslib
             execution = self.wps.execute(
                 identifier=args.identifier,
