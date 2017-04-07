@@ -1,6 +1,5 @@
+import pytest
 from unittest import TestCase
-import nose.tools
-from nose import SkipTest
 
 import tempfile
 import base64
@@ -10,25 +9,25 @@ from birdy import utils
 
 def test_fix_local_url():
     url = utils.fix_local_url('http://path/to/testfile.nc')
-    nose.tools.ok_(url == 'http://path/to/testfile.nc', url)
+    assert url == 'http://path/to/testfile.nc'
 
     url = utils.fix_local_url('testfile.nc')
-    nose.tools.ok_(url.startswith('file:///'), url)
-    nose.tools.ok_(url.endswith('testfile.nc'), url)
+    assert url.startswith('file:///')
+    assert url.endswith('testfile.nc')
 
     url = utils.fix_local_url('/tmp/data/testfile.nc')
-    nose.tools.ok_(url == 'file:///tmp/data/testfile.nc', url)
+    assert url == 'file:///tmp/data/testfile.nc'
 
     url = utils.fix_local_url('  /home/data/testfile.nc  ')
-    nose.tools.ok_(url == 'file:///home/data/testfile.nc', url)
+    assert url == 'file:///home/data/testfile.nc'
 
     url = utils.fix_local_url('../../testfile.nc')
-    nose.tools.ok_(url.startswith('file:///'), url)
-    nose.tools.ok_(url.endswith('testfile.nc'), url)
+    assert url.startswith('file:///')
+    assert url.endswith('testfile.nc')
 
     url = utils.fix_local_url('  ../../testfile.nc  ')
-    nose.tools.ok_(url.startswith('file:///'), url)
-    nose.tools.ok_(url.endswith('testfile.nc'), url)
+    assert url.startswith('file:///')
+    assert url.endswith('testfile.nc')
 
     # TODO: replace ~
     #url = utils.fix_local_url('~/data/testfile.nc')
@@ -41,14 +40,14 @@ def test_encode():
     fp.close()
 
     content = utils.encode(fp.name, mimetypes=["application/xml"])
-    nose.tools.ok_(content == 'hello')
+    assert content == 'hello'
 
     content = utils.encode(fp.name, mimetypes=["TEXT/PLAIN"])
-    nose.tools.ok_(content == 'hello')
+    assert content == 'hello'
 
     content = utils.encode(fp.name, mimetypes=["application/x-netcdf"])
-    nose.tools.ok_(content == base64.b64encode('hello'), content)
+    assert content == base64.b64encode('hello')
 
     url = "file://%s" % fp.name
     content = utils.encode(url, mimetypes=["application/xml"])
-    nose.tools.ok_(content == 'hello')
+    assert content == 'hello'

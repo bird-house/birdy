@@ -1,7 +1,5 @@
+import pytest
 from unittest import TestCase
-import nose.tools
-from nose import SkipTest
-from nose.plugins.attrib import attr
 
 from __init__ import SERVICE, Args
 
@@ -18,7 +16,7 @@ class BirdyTestCase(TestCase):
     def setUp(self):
         self.birdy = Birdy(SERVICE)
 
-    @attr('online')
+    @pytest.mark.online
     def test_with_empty_args(self):
         """
         User passes no args, should fail with SystemExit
@@ -27,11 +25,11 @@ class BirdyTestCase(TestCase):
         try:
             parser.parse_args([], namespace=Args)
         except SystemExit as e:
-            nose.tools.ok_(e.code > 0, e)
+            assert e.code > 0
         else:
-            nose.tools.ok_(False, 'no error message')
+            assert False
 
-    @attr('online')
+    @pytest.mark.online
     def test_help(self):
         """
         Help messages ends with SystemExit
@@ -42,32 +40,32 @@ class BirdyTestCase(TestCase):
         try:
             args = parser.parse_args(['-h'], namespace=Args)
         except SystemExit as e:
-            nose.tools.ok_(e.code == 0, e)
+            assert e.code == 0
 
-    @attr('online')
+    @pytest.mark.online
     def test_inout_command(self):
         parser = self.birdy.create_parser()
         try:
             parser.parse_args('inout -h'.split(), namespace=Args)
         except SystemExit as e:
-            nose.tools.ok_(e.code == 0, e)
-        nose.tools.ok_(Args.identifier == 'inout')
+            assert e.code == 0
+        assert Args.identifier == 'inout'
 
-    @attr('online')
+    @pytest.mark.online
     def test_bbox_command(self):
         parser = self.birdy.create_parser()
         try:
             parser.parse_args('bbox -h'.split(), namespace=Args)
         except SystemExit as e:
-            nose.tools.ok_(e.code == 0, e)
-        nose.tools.ok_(Args.identifier == 'bbox')
+            assert e.code == 0
+        assert Args.identifier == 'bbox'
 
-    @attr('online')
+    @pytest.mark.online
     def test_invalid_command(self):
         parser = self.birdy.create_parser()
         try:
             parser.parse_args('fake_cmd -h'.split(), namespace=Args)
         except SystemExit as e:
-            nose.tools.ok_(e.code > 0, e)
+            assert e.code > 0
         else:
-            nose.tools.ok_(False, 'no error message')
+            raise Excpetion('no error message')
