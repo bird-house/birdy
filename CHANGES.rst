@@ -1,8 +1,8 @@
 Change History
 **************
 
-current
-=======
+0.1.9 (2017-04-07)
+==================
 
 * updated buildout and Makefile.
 * updated conda environment.
@@ -10,6 +10,8 @@ current
 * replaced nose by pytest.
 * pep8.
 * fixed travis.
+* fixed ComplexData input.
+* show status message in log.
 
 0.1.8 (2016-05-02)
 ==================
