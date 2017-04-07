@@ -13,6 +13,7 @@ def _wps(url, skip_caps=True, token=None):
     wps = None
 
     try:
+        # TODO: use verify option
         if 'verify' in WebProcessingService.__init__.func_code.co_varnames:
             if token:
                 # use access token to execute process
