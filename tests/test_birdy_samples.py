@@ -25,7 +25,7 @@ class BirdySampleTestCase(TestCase):
     @attr('online')
     @attr('slow')
     def test_wordcount_http(self):
-        self.args.identifier = 'wordcount'
+        self.args.identifier = 'wordcounter'
         self.args.text = 'http://birdy.readthedocs.org/en/latest/index.html'
         self.birdy.complex_inputs['text'] = ['text/plain']
 
@@ -35,7 +35,7 @@ class BirdySampleTestCase(TestCase):
     @attr('online')
     @attr('slow')
     def test_wordcount_file(self):
-        self.args.identifier = 'wordcount'
+        self.args.identifier = 'wordcounter'
         self.args.text = resource_file('the_great_gatsby.txt')
         self.birdy.complex_inputs['text'] = ['text/plain']
 
@@ -45,7 +45,7 @@ class BirdySampleTestCase(TestCase):
     @attr('online')
     @attr('slow')
     def test_wordcount_remote_service(self):
-        self.args.identifier = 'wordcount'
+        self.args.identifier = 'wordcounter'
         self.args.text = resource_file('the_great_gatsby.txt')
         birdy = Birdy('http://127.0.0.1:8094/wps')
         birdy.complex_inputs['text'] = ['text/plain']
