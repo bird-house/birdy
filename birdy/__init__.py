@@ -5,8 +5,8 @@ from birdy import wpsparser
 from birdy.utils import fix_local_url, encode
 
 import logging
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.WARN)
-logger = logging.getLogger(__name__)
+logging.basicConfig(format='%(message)s', level=logging.WARN)
+LOGGER = logging.getLogger(__name__)
 
 
 def _wps(url, skip_caps=True, token=None):
@@ -105,7 +105,7 @@ class Birdy(object):
         return parser
 
     def build_command(self, subparser, identifier):
-        logger.debug("build subparser for command=%s", identifier)
+        LOGGER.debug("build subparser for command=%s", identifier)
 
         process = self.wps.describeprocess(identifier)
 
@@ -141,8 +141,8 @@ class Birdy(object):
 
     def execute(self, args):
         if args.debug:
-            logger.setLevel(logging.DEBUG)
-            logger.debug('using web processing service %s', self.service)
+            LOGGER.setLevel(logging.DEBUG)
+            LOGGER.debug('using web processing service %s', self.service)
 
         if hasattr(args, 'token') and args.token:
             # use access token to execute process
@@ -171,7 +171,7 @@ class Birdy(object):
         # list of tuple (output identifier, asReference attribute)
         outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
         # now excecute it ...
-        # logger.debug(outputs)
+        # LOGGER.debug(outputs)
         if hasattr(args, 'sync') and args.sync is True:
             # TODO: sync is non-default and avail only in patched owslib
             execution = self.wps.execute(
@@ -194,14 +194,14 @@ class Birdy(object):
         return content
 
     def _complex_value(self, key, value):
-        logger.debug("complex: key=%s, value=%s", key, value)
+        LOGGER.debug("complex: key=%s, value=%s", key, value)
         url = fix_local_url(value)
         u = urlparse.urlparse(self.wps.url)
         if 'localhost' in u.netloc:
-            logger.debug('use url: %s', url)
+            LOGGER.debug('use url: %s', url)
             content = url
         else:
-            logger.debug('encode content: %s', url)
+            LOGGER.debug('encode content: %s', url)
             encoded = encode(url, self.complex_inputs[key])
             content = ComplexDataInput(encoded)
         return content
@@ -222,27 +222,27 @@ class Birdy(object):
         """
         while execution.isComplete() is False:
             execution.checkStatus(sleepSecs=sleepSecs)
-            logger.info('Execution status: %s', execution.status)
+            LOGGER.info('Execution status: %s', execution.status)
 
         if execution.isSucceded():
             if download:
                 execution.getOutput(filepath=filepath)
             else:
-                logger.info("Output:")
+                LOGGER.info("Output:")
                 for output in execution.processOutputs:
                     if output.reference is not None:
-                        logger.info('%s=%s (%s)' % (output.identifier, output.reference, output.mimeType))
+                        LOGGER.info('%s=%s (%s)' % (output.identifier, output.reference, output.mimeType))
                     else:
-                        logger.info('%s=%s' % (output.identifier, ", ".join(output.data)))
+                        LOGGER.info('%s=%s' % (output.identifier, ", ".join(output.data)))
         else:
             for ex in execution.errors:
-                logger.warn('Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text))
+                LOGGER.warn('Error: code=%s, locator=%s, text=%s' % (ex.code, ex.locator, ex.text))
 
 
 def main():
     import argcomplete
 
-    logger.setLevel(logging.INFO)
+    LOGGER.setLevel(logging.INFO)
 
     from os import environ
     service = environ.get("WPS_SERVICE", "http://localhost:8094/wps")
