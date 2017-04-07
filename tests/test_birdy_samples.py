@@ -1,7 +1,5 @@
+import pytest
 from unittest import TestCase
-import nose.tools
-from nose import SkipTest
-from nose.plugins.attrib import attr
 
 from __init__ import SERVICE, Args, resource_file
 
@@ -22,28 +20,25 @@ class BirdySampleTestCase(TestCase):
         self.args.identifier = None
         self.args.output = None
 
-    @attr('online')
-    @attr('slow')
+    @pytest.mark.online
     def test_wordcount_http(self):
         self.args.identifier = 'wordcounter'
         self.args.text = 'http://birdy.readthedocs.org/en/latest/index.html'
         self.birdy.complex_inputs['text'] = ['text/plain']
 
         execution = self.birdy.execute(self.args)
-        nose.tools.ok_(execution.isSucceded())
+        assert execution.isSucceded() is True
 
-    @attr('online')
-    @attr('slow')
+    @pytest.mark.online
     def test_wordcount_file(self):
         self.args.identifier = 'wordcounter'
         self.args.text = resource_file('the_great_gatsby.txt')
         self.birdy.complex_inputs['text'] = ['text/plain']
 
         execution = self.birdy.execute(self.args)
-        nose.tools.ok_(execution.isSucceded())
+        assert execution.isSucceded() is True
 
-    @attr('online')
-    @attr('slow')
+    @pytest.mark.online
     def test_wordcount_remote_service(self):
         self.args.identifier = 'wordcounter'
         self.args.text = resource_file('the_great_gatsby.txt')
@@ -51,4 +46,4 @@ class BirdySampleTestCase(TestCase):
         birdy.complex_inputs['text'] = ['text/plain']
 
         execution = birdy.execute(self.args)
-        nose.tools.ok_(execution.isSucceded())
+        assert execution.isSucceded() is True

@@ -1,6 +1,4 @@
-import nose.tools
-from nose import SkipTest
-from nose.plugins.attrib import attr
+import pytest
 
 from __init__ import WpsTestCase
 
@@ -19,30 +17,30 @@ class WPSParserTestCase(WpsTestCase):
         # TODO: add test with unicode characters e.a:
         # http://geoprocessing.demo.52north.org:8080/52n-wps-webapp-3.3.1/WebProcessingService?Request=GetCapabilities&Service=WPS  # noqa
         result = parse_wps_description(self.wps)
-        nose.tools.ok_('Emu' in result, result)
+        assert 'Emu' in result
 
-    @attr('online')
+    @pytest.mark.online
     def test_parse_process_help(self):
         process = self.wps.describeprocess('hello')
         result = parse_process_help(process)
-        nose.tools.ok_('Hello' in result, result)
+        assert 'Hello' in result
 
-    @attr('online')
+    @pytest.mark.online
     def test_is_complex_data(self):
         process = self.wps.describeprocess('hello')
         for input in process.dataInputs:
-            nose.tools.ok_(is_complex_data(input) is False)
+            assert is_complex_data(input) is False
 
-    @attr('online')
+    @pytest.mark.online
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_parse_default(self):
-        raise SkipTest
         process = self.wps.describeprocess('hello')
         for input in process.dataInputs:
-            nose.tools.ok_(False, parse_default(input))
+            assert parse_default(input) is False
 
-    @attr('online')
+    @pytest.mark.online
     def test_parse_description(self):
         process = self.wps.describeprocess('hello')
         for input in process.dataInputs:
             result = parse_description(input)
-            nose.tools.ok_(len(result), result)
+            assert len(result) > 0
