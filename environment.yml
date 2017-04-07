@@ -15,5 +15,3 @@ dependencies:
 # tests
   - pytest
   - flake8
-  - nose
-
