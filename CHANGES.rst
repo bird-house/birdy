@@ -1,6 +1,14 @@
 Change History
 **************
 
+0.1_dev
+==================
+
+* removed buildout ... just using conda.
+* cleaned up docs.
+* updated travis.
+* fixed tests.
+
 0.1.9 (2017-04-07)
 ==================
 
