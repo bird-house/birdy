@@ -30,6 +30,7 @@ class BirdySampleTestCase(TestCase):
         assert execution.isSucceded() is True
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="file url not accepted")
     def test_wordcount_file(self):
         self.args.identifier = 'wordcounter'
         self.args.text = resource_file('the_great_gatsby.txt')
