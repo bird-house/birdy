@@ -1,4 +1,4 @@
 include *.rst
 graft birdy
-graft unit_tests
+graft tests
 global-exclude *.pyc *.*~
