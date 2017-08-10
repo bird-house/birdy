@@ -60,6 +60,7 @@ class Birdy(object):
         http://stackoverflow.com/questions/22742450/argparse-on-demand-imports-for-types-choices-etc
         """
         import argparse
+        from birdy import __version__
 
         parser = argparse.ArgumentParser(
             prog="birdy",
@@ -69,6 +70,8 @@ class Birdy(object):
         parser.add_argument("--debug",
                             help="enable debug mode",
                             action="store_true")
+        parser.add_argument('--version', action='version',
+                            version='%(prog)s {}'.format(__version__))
         # parser.add_argument("--insecure", "-k",
         #                     help="Allow connections to SSL sites without certs.",
         #                     action="store_true")
@@ -141,6 +144,9 @@ class Birdy(object):
         )
 
     def execute(self, args):
+        if args.version:
+            print version
+            sys.exit(0)
         if args.debug:
             LOGGER.setLevel(logging.DEBUG)
             LOGGER.debug('using web processing service %s', self.service)
