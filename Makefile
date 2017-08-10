@@ -23,7 +23,7 @@ srcclean:
 	@-find $(APP_ROOT) -type f -name "*.pyc" -print | xargs rm
 
 .PHONY: distclean
-distclean: backup clean
+distclean: clean
 	@echo "Cleaning distribution ..."
 	@git diff --quiet HEAD || echo "There are uncommited changes! Not doing 'git clean' ..."
 	@-git clean -dfx
