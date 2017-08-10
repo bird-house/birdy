@@ -14,8 +14,3 @@ dependencies:
 # tests
   - pytest
   - flake8
-# ipython
-  - ipython
-# sphinx
-  - sphinx
-  - sphinx_rtd_theme
