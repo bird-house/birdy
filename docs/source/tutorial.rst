@@ -10,19 +10,19 @@ Show the processes of a Web Processing Service:
    $ export WPS_SERVICE=http://localhost:8094/wps
    $ birdy -h
    usage: birdy [<options>] <command> [<args>]
-    
+
    Emu: WPS processes for testing and demos.
-    
+
    optional arguments:
      -h, --help            show this help message and exit
      --debug               enable debug mode
      --token TOKEN, -t TOKEN
                            Token to access the WPS service.
 
-    
+
    command:
      List of available commands (wps processes)
-    
+
      {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
                            Run "birdy <command> -h" to get additional help.
        helloworld          Hello World: Welcome user and say hello ...
@@ -50,15 +50,15 @@ Show help for wordcount:
 
     $ birdy wordcount -h
     usage: birdy wordcount [-h] --text [TEXT] [--output [{output} [{output} ...]]]
-     
+
     optional argumens:
       -h, --help            show this help message and exit
       --text [TEXT]         Text document: URL of text document, mime
                             types=text/plain
       --output [{output} [{output} ...]]
                             Output: output=Word count result, mime
-                            types=text/plain (default: all outputs) 
-     
+                            types=text/plain (default: all outputs)
+
 
 Execute wordcount with a remote text document:
 
@@ -77,7 +77,7 @@ You can also use a local file as input document:
 
 .. code-block:: sh
 
-    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/index.html 
+    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/index.html
     INFO:Execution status: ProcessAccepted
     INFO:Execution status: ProcessSucceeded
     INFO:Output:
@@ -91,5 +91,3 @@ If the WPS service is secured by a Twitcher security proxy service then you can 
 .. code-block:: sh
 
     $ birdy --token abc123 wordcount --text http://birdy.readthedocs.org/en/latest/tutorial.html
-   
-

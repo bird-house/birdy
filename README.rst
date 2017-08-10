@@ -10,7 +10,8 @@ Birdy
 Birdy (the bird)
    *Birdy is not a bird but likes to play with them.*
 
-Birdy is a Python package to provide a command-line tool to work with Web Processing Services (WPS). It is using OWSLib from the GeoPython project.
+Birdy is a Python command-line tool to work with Web Processing Services (WPS).
+It is using OWSLib from the GeoPython project.
 
 Birdy is part of the `Birdhouse <http://bird-house.github.io/>`_ project.
 
@@ -46,21 +47,18 @@ Get a list of available processes on WPS with URL http://localhost:8094/wps:
 
    # set WPS service
    $ export WPS_SERVICE=http://localhost:8094/wps
-   
+
    # show available processes
    $ birdy -h
    usage: birdy [-h <command> [<args>]
-    
+
    optional arguments:
      -h, --help            show this help message and exit
-    
+
    command:
      List of available commands (wps processes)
-    
+
      {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
                            Run "birdy <command> -h" to get additional help.
 
 Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDocs.
-
-
-
