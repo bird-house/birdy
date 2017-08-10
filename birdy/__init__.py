@@ -5,6 +5,8 @@ from owslib.wps import WebProcessingService, ComplexDataInput
 from birdy import wpsparser
 from birdy.utils import fix_local_url, encode
 
+__version__ = "0.1_dev"
+
 import logging
 logging.basicConfig(format='%(message)s', level=logging.WARN)
 LOGGER = logging.getLogger(__name__)
@@ -24,7 +26,7 @@ def _wps(url, skip_caps=True, token=None):
                 wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps, verify=False)
         else:
             wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps)
-    except:
+    except Exception:
         raise Exception('Could not access wps %s', url)
     return wps
 
