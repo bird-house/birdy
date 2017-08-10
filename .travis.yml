@@ -3,9 +3,9 @@ python:
   - "2.7"
 sudo: false
 install:
-  - make install
+  - conda env create -f environment.yml
+  - source activate birdy
+  - python setup.py develop
 script:
-  - make test
-  - make pep8
-#after_success:
-# - coveralls
+  - pytest
+  - flake8
