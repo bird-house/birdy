@@ -144,9 +144,6 @@ class Birdy(object):
         )
 
     def execute(self, args):
-        if args.version:
-            print version
-            sys.exit(0)
         if args.debug:
             LOGGER.setLevel(logging.DEBUG)
             LOGGER.debug('using web processing service %s', self.service)
