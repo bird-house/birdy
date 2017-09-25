@@ -1,7 +1,7 @@
 import pytest
 from unittest import TestCase
 
-from __init__ import SERVICE, Args, resource_file
+from .common import SERVICE, Args, resource_file
 
 from birdy import Birdy
 

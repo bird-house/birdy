@@ -1,7 +1,7 @@
 import pytest
 from unittest import TestCase
 
-from __init__ import SERVICE, Args
+from .common import SERVICE, Args
 
 from birdy import Birdy
 

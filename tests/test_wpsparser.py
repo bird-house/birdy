@@ -1,6 +1,6 @@
 import pytest
 
-from __init__ import WpsTestCase
+from .common import WpsTestCase
 
 from birdy.wpsparser import (
     parse_wps_description,
