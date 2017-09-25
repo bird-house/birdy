@@ -5,7 +5,6 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=2
   - lxml
   - owslib
   - argcomplete
