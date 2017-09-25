@@ -10,20 +10,17 @@ logging.basicConfig(format='%(message)s', level=logging.WARN)
 LOGGER = logging.getLogger("BIRDY")
 
 
-def _wps(url, skip_caps=True, token=None):
-    wps = None
-
+def _wps(url, skip_caps=True, verify=False, token=None):
+    wps = WebProcessingService(url, verbose=False, skip_caps=True)
+    if hasattr(wps, 'verify'):
+        wps.verify = verify
+    if hasattr(wps, 'headers'):
+        if token:
+            # use access token to execute process
+            wps.headers = {'Access-Token': token}
     try:
-        # TODO: use verify option
-        if 'verify' in WebProcessingService.__init__.func_code.co_varnames:
-            if token:
-                # use access token to execute process
-                headers = {'Access-Token': token}
-                wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps, verify=False, headers=headers)
-            else:
-                wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps, verify=False)
-        else:
-            wps = WebProcessingService(url, verbose=False, skip_caps=skip_caps)
+        if not skip_caps:
+            wps.getcapabilities()
     except Exception:
         raise Exception('Could not access wps %s', url)
     return wps
@@ -75,15 +72,13 @@ class Birdy(object):
         # parser.add_argument("--insecure", "-k",
         #                     help="Allow connections to SSL sites without certs.",
         #                     action="store_true")
-        if 'async' in WebProcessingService.execute.func_code.co_varnames:
-            parser.add_argument(
-                "--sync", '-s',
-                help="Execute process in sync mode. Default: async mode.",
-                action="store_true")
-        if 'headers' in WebProcessingService.__init__.func_code.co_varnames:
-            parser.add_argument("--token", "-t",
-                                help="Token to access the WPS service.",
-                                action="store")
+        parser.add_argument(
+            "--sync", '-s',
+            help="Execute process in sync mode. Default: async mode.",
+            action="store_true")
+        parser.add_argument("--token", "-t",
+                            help="Token to access the WPS service.",
+                            action="store")
         subparsers = parser.add_subparsers(
             dest='identifier',
             title='command',

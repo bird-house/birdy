@@ -101,7 +101,7 @@ def parse_process_help(process):
         help = help + str(process.title) + ": "
     if hasattr(process, "abstract"):
         help = help + str(process.abstract)
-    return help.encode(encoding='ascii')
+    return help
 
 
 def parse_wps_description(wps):
