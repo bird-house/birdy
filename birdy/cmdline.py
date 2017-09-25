@@ -7,7 +7,7 @@ from .utils import fix_local_url, encode
 
 import logging
 logging.basicConfig(format='%(message)s', level=logging.WARN)
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("BIRDY")
 
 
 def _wps(url, skip_caps=True, token=None):

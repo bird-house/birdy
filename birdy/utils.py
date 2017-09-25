@@ -3,14 +3,14 @@ import base64
 from os.path import curdir, abspath, join
 
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger('BIRDY')
 
 
 def fix_local_url(url):
     """
     If url is just a local path name then create a file:// URL. Otherwise return url just as it is.
     """
-    logger.debug("fix url %s", url)
+    LOGGER.debug("fix url %s", url)
     if url is None:
         return None
     u = urlparse.urlsplit(url)
@@ -23,7 +23,7 @@ def fix_local_url(url):
         else:
             # relative path
             url = urlparse.urljoin('file://', abspath(path))
-        logger.debug("fixed url = %s", url)
+        LOGGER.debug("fixed url = %s", url)
     return url
 
 
@@ -48,14 +48,14 @@ def encode(url, mimetypes):
             # TODO: check all mimetypes ... use also python-magic to detect mime type
             if len(mimetypes) == 0 or mimetypes[0].lower() == 'application/xml'\
                or mimetypes[0].lower().startswith('text/'):
-                logger.debug('send content of %s', url)
+                LOGGER.debug('send content of %s', url)
                 # TODO: need to fix owslib unicode and complex data type handling
                 encoded = str(content.decode('ascii', errors='ignore'))
             else:
-                logger.debug('base64 encode content of %s', url)
+                LOGGER.debug('base64 encode content of %s', url)
                 encoded = base64.b64encode(content)
     else:
         # remote urls as reference
-        logger.debug('send url %s', url)
+        LOGGER.debug('send url %s', url)
         encoded = url
     return encoded
