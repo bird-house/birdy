@@ -1,4 +1,4 @@
-from ._compat import urlparse
+from ._compat import urlparse, urlsplit, urljoin
 import base64
 from os.path import curdir, abspath, join
 
@@ -13,22 +13,22 @@ def fix_local_url(url):
     LOGGER.debug("fix url %s", url)
     if url is None:
         return None
-    u = urlparse.urlsplit(url)
+    u = urlsplit(url)
     if not u.scheme:
         # build local file url
         path = u.path.strip()
         if path.startswith('/'):
             # absolute path
-            url = urlparse.urljoin('file://', path)
+            url = urljoin('file://', path)
         else:
             # relative path
-            url = urlparse.urljoin('file://', abspath(path))
+            url = urljoin('file://', abspath(path))
         LOGGER.debug("fixed url = %s", url)
     return url
 
 
 def is_file_url(url):
-    u = urlparse.urlsplit(url)
+    u = urlsplit(url)
     return not u.scheme or u.scheme == 'file'
 
 
@@ -41,7 +41,7 @@ def encode(url, mimetypes):
     :return: encoded content string or URL or None
     """
     encoded = None
-    u = urlparse.urlsplit(url)
+    u = urlsplit(url)
     if not u.scheme or u.scheme == 'file':
         with open(u.path, 'r') as fp:
             content = fp.read()

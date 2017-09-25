@@ -9,7 +9,8 @@ if PY2:
     text_type = unicode  # noqa
     # from StringIO import StringIO
     from urlparse import urlparse
-    # from urlparse import urljoin
+    from urlparse import urlsplit
+    from urlparse import urljoin
     # from urllib2 import urlopen
 
 else:
@@ -17,5 +18,6 @@ else:
     text_type = str
     # from io import StringIO
     from urllib.parse import urlparse
-    # from urllib.parse import urljoin
+    from urllib.parse import urlsplit
+    from urllib.parse import urljoin
     # from urllib.request import urlopen
