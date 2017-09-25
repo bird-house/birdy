@@ -51,7 +51,7 @@ def parse_description(input):
             description = description + ", supported CRS=" + crs_list
     if default is not None:
         description = description + " (default: " + str(default) + ")"
-    return description.encode(encoding='ascii')
+    return str(description)
 
 
 def parse_type(input):

@@ -168,7 +168,7 @@ class Birdy(object):
         if not isinstance(output, list):
             output = [output]
         # list of tuple (output identifier, asReference attribute)
-        outputs = [(str(identifier), self.outputs.get(identifier, True)) for identifier in output]
+        outputs = [(str(identifier), self.outputs.get(str(identifier), True)) for identifier in output]
         # now excecute it ...
         # LOGGER.debug(outputs)
         if hasattr(args, 'sync') and args.sync is True:
