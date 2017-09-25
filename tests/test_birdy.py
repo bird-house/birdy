@@ -17,6 +17,7 @@ class BirdyTestCase(TestCase):
         self.birdy = Birdy(SERVICE)
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="needs some work")
     def test_with_empty_args(self):
         """
         User passes no args, should fail with SystemExit
@@ -43,22 +44,13 @@ class BirdyTestCase(TestCase):
             assert e.code == 0
 
     @pytest.mark.online
-    def test_inout_command(self):
+    def test_hello_command(self):
         parser = self.birdy.create_parser()
         try:
-            parser.parse_args('inout -h'.split(), namespace=Args)
+            parser.parse_args('hello -h'.split(), namespace=Args)
         except SystemExit as e:
             assert e.code == 0
-        assert Args.identifier == 'inout'
-
-    @pytest.mark.online
-    def test_bbox_command(self):
-        parser = self.birdy.create_parser()
-        try:
-            parser.parse_args('bbox -h'.split(), namespace=Args)
-        except SystemExit as e:
-            assert e.code == 0
-        assert Args.identifier == 'bbox'
+        assert Args.identifier == 'hello'
 
     @pytest.mark.online
     def test_invalid_command(self):

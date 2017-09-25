@@ -38,13 +38,3 @@ class BirdySampleTestCase(TestCase):
 
         execution = self.birdy.execute(self.args)
         assert execution.isSucceded() is True
-
-    @pytest.mark.online
-    def test_wordcount_remote_service(self):
-        self.args.identifier = 'wordcounter'
-        self.args.text = resource_file('the_great_gatsby.txt')
-        birdy = Birdy('http://127.0.0.1:8094/wps')
-        birdy.complex_inputs['text'] = ['text/plain']
-
-        execution = birdy.execute(self.args)
-        assert execution.isSucceded() is True

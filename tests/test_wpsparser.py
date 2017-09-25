@@ -20,12 +20,14 @@ class WPSParserTestCase(WpsTestCase):
         assert 'Emu' in result
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_parse_process_help(self):
         process = self.wps.describeprocess('hello')
         result = parse_process_help(process)
         assert 'Hello' in result
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_is_complex_data(self):
         process = self.wps.describeprocess('hello')
         for input in process.dataInputs:
@@ -39,6 +41,7 @@ class WPSParserTestCase(WpsTestCase):
             assert parse_default(input) is False
 
     @pytest.mark.online
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_parse_description(self):
         process = self.wps.describeprocess('hello')
         for input in process.dataInputs:
