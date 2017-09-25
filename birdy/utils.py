@@ -50,10 +50,10 @@ def encode(url, mimetypes):
                or mimetypes[0].lower().startswith('text/'):
                 LOGGER.debug('send content of %s', url)
                 # TODO: need to fix owslib unicode and complex data type handling
-                encoded = str(content.decode('ascii', errors='ignore'))
+                encoded = str(content)
             else:
                 LOGGER.debug('base64 encode content of %s', url)
-                encoded = base64.b64encode(content)
+                encoded = base64.b64encode(content.encode())
     else:
         # remote urls as reference
         LOGGER.debug('send url %s', url)
