@@ -1,6 +1,6 @@
 import sys
 import os
-import urlparse
+from ._compat import urlparse
 from owslib.wps import WebProcessingService, ComplexDataInput
 from . import wpsparser
 from .utils import fix_local_url, encode
@@ -200,7 +200,7 @@ class Birdy(object):
     def _complex_value(self, key, value):
         LOGGER.debug("complex: key=%s, value=%s", key, value)
         url = fix_local_url(value)
-        u = urlparse.urlparse(self.wps.url)
+        u = urlparse(self.wps.url)
         if 'localhost' in u.netloc:
             LOGGER.debug('use url: %s', url)
             content = ComplexDataInput(url)

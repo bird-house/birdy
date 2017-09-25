@@ -1,4 +1,4 @@
-import urlparse
+from ._compat import urlparse
 import base64
 from os.path import curdir, abspath, join
 
