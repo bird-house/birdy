@@ -1,13 +1,14 @@
 Change History
 **************
 
-0.1_dev
+0.2.0 (2017-09-25)
 ==================
 
 * removed buildout ... just using conda.
 * cleaned up docs.
 * updated travis.
 * fixed tests.
+* added compat module for python 3.x
 
 0.1.9 (2017-04-07)
 ==================
