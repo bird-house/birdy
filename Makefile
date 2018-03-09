@@ -10,7 +10,8 @@ help:
 	@echo "  test        to run tests (but skip long running tests)."
 	@echo "  testall     to run all tests (including long running tests)."
 	@echo "  pep8        to run pep8 code style checks."
-	@echo "  clean    to remove all *.pyc files."
+	@echo "  docs        to generate the Sphinx documentation."
+	@echo "  clean       to remove all *.pyc files."
 	@echo "  distclean   to remove *all* files that are not controlled by 'git'. WARNING: use it *only* if you know what you do!"
 
 
@@ -42,3 +43,9 @@ testall:
 pep8:
 	@echo "Running pep8 code style checks ..."
 	flake8
+
+.PHONY: docs
+docs:
+	@echo "Generating docs with Sphinx ..."
+	$(MAKE) -C $@ clean html
+	@echo "open your browser: firefox docs/build/html/index.html"
