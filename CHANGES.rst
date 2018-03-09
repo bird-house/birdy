@@ -1,6 +1,11 @@
 Change History
 **************
 
+Current
+=======
+
+* Fixed Sphinx and updated docs: #15.
+
 0.2.0 (2017-09-25)
 ==================
 
@@ -55,7 +60,7 @@ Change History
 
 * more unit tests.
 * fixed unicode error in wps description.
-* using latest ComplexDataInput from owslib.wps. 
+* using latest ComplexDataInput from owslib.wps.
 
 0.1.2 (2015-08-14)
 ==================
