@@ -56,7 +56,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Birdy'
-copyright = u'2015, Birdhouse'
+copyright = u'2018, Birdhouse'
 author = u'Birdhouse'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -117,18 +117,18 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'alabaster'
+html_theme = 'alabaster'
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 # http://docs.readthedocs.org/en/latest/faq.html?highlight=autodoc#how-do-i-change-behavior-for-read-the-docs
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-
-if on_rtd:
-    html_theme = 'default'
-else:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+#
+# if on_rtd:
+#     html_theme = 'default'
+# else:  # only import and set the theme if we're building docs locally
+#     import sphinx_rtd_theme
+#     html_theme = 'sphinx_rtd_theme'
+#     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # otherwise, readthedocs.org uses their theme by default, so no need to specify it
 
@@ -331,19 +331,5 @@ rst_epilog = """
 .. _reStructuredText: http://sphinx-doc.org/rest.html
 .. _Read the Docs: https://readthedocs.org
 .. _Anaconda: https://www.continuum.io/
-.. _Buildout: http://www.buildout.org/en/latest/ 
-.. _Birdhouse: http://birdhouse.readthedocs.io/en/latest/
-.. _Phoenix: http://pyramid-phoenix.readthedocs.io/en/latest/
-.. _Malleefowl: http://malleefowl.readthedocs.io/en/latest/
-.. _Twitcher: http://twitcher.readthedocs.io/en/latest/
-.. _Flyingpigeon: http://flyingpigeon.readthedocs.io/en/latest/
-.. _Hummingbird: http://birdhouse-hummingbird.readthedocs.io/en/latest/
-.. _Emu: http://emu.readthedocs.io/en/latest/
-.. _Birdy: http://birdy.readthedocs.io/en/latest/
-.. _Bootstrap: http://birdhousebuilderbootstrap.readthedocs.io/en/latest/
-.. _icclim: http://icclim.readthedocs.io/en/latest/
-.. _PyWPS: http://pywps.org/
-.. _dispel4py: https://github.com/dispel4py/dispel4py
-.. _esgf-pyclient: https://github.com/ESGF/esgf-pyclient
+.. _Buildout: http://www.buildout.org/en/latest/
 """
-
