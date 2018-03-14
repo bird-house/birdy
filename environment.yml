@@ -2,8 +2,8 @@
 name: birdy
 channels:
   - birdhouse
-  - defaults
   - conda-forge
+  - defaults
 dependencies:
   - lxml
   - owslib
