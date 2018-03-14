@@ -4,7 +4,13 @@ Change History
 Current
 =======
 
+Fixes:
+
 * Fixed Sphinx and updated docs: #15.
+
+New Features:
+
+* Fix #14: added ``--cert`` option to use x509 certificates.
 
 0.2.0 (2017-09-25)
 ==================

@@ -1,5 +1,6 @@
 import sys
 import os
+
 from ._compat import urlparse
 from owslib.wps import WebProcessingService, ComplexDataInput
 from . import wpsparser
@@ -10,10 +11,13 @@ logging.basicConfig(format='%(message)s', level=logging.WARN)
 LOGGER = logging.getLogger("BIRDY")
 
 
-def _wps(url, skip_caps=True, verify=False, token=None):
+def _wps(url, skip_caps=True, verify_ssl=True, token=None, cert=None):
     wps = WebProcessingService(url, verbose=False, skip_caps=True)
     if hasattr(wps, 'verify'):
-        wps.verify = verify
+        wps.verify = verify_ssl
+        LOGGER.debug('verify_ssl=%s', wps.verify)
+    if hasattr(wps, 'cert'):
+        wps.cert = cert
     if hasattr(wps, 'headers'):
         if token:
             # use access token to execute process
@@ -22,7 +26,8 @@ def _wps(url, skip_caps=True, verify=False, token=None):
         if not skip_caps:
             wps.getcapabilities()
     except Exception:
-        raise Exception('Could not access wps %s', url)
+        LOGGER.warn('Could not get WPS capabilities: %s', url)
+        raise
     return wps
 
 
@@ -41,7 +46,11 @@ class Birdy(object):
 
     def __init__(self, service):
         self.service = service
-        self.wps = _wps(service, skip_caps=False)
+        try:
+            self.wps = _wps(service, skip_caps=False, verify_ssl=True)
+        except Exception:
+            LOGGER.warn('Disabled automatically SSL verification.')
+            self.wps = _wps(service, skip_caps=False, verify_ssl=False)
 
     def create_parser(self):
         """
@@ -65,13 +74,16 @@ class Birdy(object):
             description=wpsparser.parse_wps_description(self.wps),
         )
         parser.add_argument("--debug",
-                            help="enable debug mode",
+                            help="enable debug mode.",
                             action="store_true")
         parser.add_argument('--version', action='version',
                             version='%(prog)s {}'.format(__version__))
-        # parser.add_argument("--insecure", "-k",
-        #                     help="Allow connections to SSL sites without certs.",
-        #                     action="store_true")
+        parser.add_argument("-k", "--insecure",  # like curl
+                            help="Don't validate the server's certificate.",
+                            action="store_true")
+        parser.add_argument("--cert",
+                            help="Client side certificate containing both certificate and private key.",
+                            action="store")
         parser.add_argument(
             "--sync", '-s',
             help="Execute process in sync mode. Default: async mode.",
@@ -143,15 +155,17 @@ class Birdy(object):
             LOGGER.setLevel(logging.DEBUG)
             LOGGER.debug('using web processing service %s', self.service)
 
-        if hasattr(args, 'token') and args.token:
-            # use access token to execute process
-            self.wps = _wps(self.service, skip_caps=False, token=args.token)
+        # use access token to execute process
+        self.wps = _wps(self.service, skip_caps=False,
+                        verify_ssl=not args.insecure,
+                        token=args.token,
+                        cert=args.cert)
 
         inputs = []
         # inputs
         # TODO: this is probably not the way to do it
         for key in args.__dict__.keys():
-            if key not in ['identifier', 'output', 'debug', 'sync', 'token']:
+            if key not in ['identifier', 'output', 'debug', 'sync', 'token', 'insecure']:
                 values = getattr(args, key)
                 # checks if single value (or list of values)
                 if not isinstance(values, list):
@@ -250,7 +264,10 @@ def main():
     argcomplete.autocomplete(parser)
 
     args = parser.parse_args()
-    mybirdy.execute(args)
+    try:
+        mybirdy.execute(args)
+    except Exception:
+        LOGGER.exception('Process execution failed! Try with "-k" option to disable SSL verification.')
 
 
 if __name__ == '__main__':

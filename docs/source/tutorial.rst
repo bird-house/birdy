@@ -15,7 +15,11 @@ Show the processes of a Web Processing Service:
 
    optional arguments:
      -h, --help            show this help message and exit
-     --debug               enable debug mode
+     --debug               enable debug mode.
+     --version             show program's version number and exit.
+     -k, --insecure        Don't validate the server's certificate.
+     --cert CERT           Client side certificate containing both certificate
+                           and private key.
      --token TOKEN, -t TOKEN
                            Token to access the WPS service.
 
