@@ -11,5 +11,5 @@ dependencies:
   - pyyaml
   - mako
 # tests
-  - pytest
-  - flake8
+#  - pytest
+#  - flake8
