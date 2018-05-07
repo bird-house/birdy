@@ -184,14 +184,19 @@ class Birdy(object):
         # list of tuple (output identifier, asReference attribute)
         outputs = [(str(identifier), self.outputs.get(str(identifier), True)) for identifier in output]
         # now excecute it ...
-        # LOGGER.debug(outputs)
-        if hasattr(args, 'sync') and args.sync is True:
+        try:
             # TODO: sync is non-default and avail only in patched owslib
+            from owslib.wps import SYNC, ASYNC
+            if hasattr(args, 'sync') and args.sync is True:
+                mode = SYNC
+            else:
+                mode = ASYNC
             execution = self.wps.execute(
                 identifier=args.identifier,
                 inputs=inputs, output=outputs,
-                async=False)
-        else:
+                mode=mode)
+        except Exception:
+            LOGGER.warn("Setting execution mode is not supported. Using default async mode.")
             execution = self.wps.execute(args.identifier, inputs, outputs)
 
         # waits for result (async call)

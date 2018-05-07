@@ -1,5 +1,5 @@
 import logging
-LOGGER = logging.getLogger("birdy")
+LOGGER = logging.getLogger("BIRDY")
 
 
 def is_complex_data(inoutput):
