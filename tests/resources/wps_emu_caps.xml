@@ -55,8 +55,8 @@
 		<wps:Process wps:processVersion="1.0">
 			<ows:Identifier>helloworld</ows:Identifier>
 			<ows:Title>Hello World</ows:Title>
-			<ows:Abstract>Welcome user and say hello ...</ows:Abstract>
-                        <ows:Metadata xlink:title="Documentation" xlink:href="http://emu.readthedocs.org/en/latest/" />
+			<ows:Abstract>Welcome user and say hello ... [100% quick response]</ows:Abstract>
+      <ows:Metadata xlink:title="Documentation" xlink:href="http://emu.readthedocs.org/en/latest/" />
 		</wps:Process>
 		<wps:Process wps:processVersion="2.0">
 			<ows:Identifier>ultimatequestionprocess</ows:Identifier>
@@ -81,19 +81,9 @@
                         <ows:Metadata xlink:title="Barfoo" xlink:href="http://bar/foo" />
 		</wps:Process>
 		<wps:Process wps:processVersion="1.0">
-			<ows:Identifier>multiplesources</ows:Identifier>
-			<ows:Title>Multiple Sources</ows:Title>
-			<ows:Abstract>Process with multiple different sources ...</ows:Abstract>
-		</wps:Process>
-		<wps:Process wps:processVersion="1.0">
 			<ows:Identifier>chomsky</ows:Identifier>
 			<ows:Title>Chomsky text generator</ows:Title>
 			<ows:Abstract> Generates a random chomsky text ...</ows:Abstract>
-		</wps:Process>
-		<wps:Process wps:processVersion="0.2">
-			<ows:Identifier>zonal_mean</ows:Identifier>
-			<ows:Title>Zonal Mean</ows:Title>
-			<ows:Abstract>zonal mean in NetCDF File.</ows:Abstract>
 		</wps:Process>
 	</wps:ProcessOfferings>
 	<wps:Languages>

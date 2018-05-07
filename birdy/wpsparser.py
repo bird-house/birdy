@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger("birdy")
 
 
 def is_complex_data(inoutput):
@@ -39,13 +39,13 @@ def parse_description(input):
     if hasattr(input, 'abstract'):
         description = description + ": " + str(input.abstract)
     default = parse_default(input)
-    # logger.debug("id=%s, datatype=%s", input.identifier, input.dataType)
+    # LOGGER.debug("id=%s, datatype=%s", input.identifier, input.dataType)
     if is_complex_data(input):
         if len(input.supportedValues) > 0:
             mime_types = ",".join([str(value.mimeType) for value in input.supportedValues])
             description = description + ", mime types=" + mime_types
     elif is_bbox_data(input):
-        logger.debug("bounding box input")
+        LOGGER.debug("bounding box input")
         if len(input.supportedValues) > 0:
             crs_list = ",".join(input.supportedValues)
             description = description + ", supported CRS=" + crs_list
@@ -96,14 +96,12 @@ def parse_nargs(input):
 
 
 def parse_process_help(process):
-    help = ''
-    if hasattr(process, "title"):
-        help = help + str(process.title) + ": "
-    if hasattr(process, "abstract"):
-        help = help + str(process.abstract)
+    help = "{}: {}".format(process.title or process.identifier, process.abstract or '')
+    # escape "%" with "%%" in argparse help
+    help = help.replace(r"%", r"%%")
     return help
 
 
 def parse_wps_description(wps):
-    description = "%s: %s" % (wps.identification.title, wps.identification.abstract)
+    description = "{0.title}: {0.abstract}".format(wps.identification)
     return description
