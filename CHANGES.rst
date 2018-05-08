@@ -1,6 +1,18 @@
 Change History
 **************
 
+0.2.2 (2018-05-08)
+==================
+
+Fixes:
+
+* Update travis for Python 3.x (#19).
+* Fix parsing of WPS capabilities with ``%`` (#18).
+
+New Features:
+
+* using ``mode`` for async execution in OWSLib (#22).
+
 0.2.1 (2018-03-14)
 ==================
 
