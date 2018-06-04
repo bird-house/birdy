@@ -7,12 +7,12 @@ Usage
 Using the command line
 ======================
 
-Get a list of available processes on WPS with URL http://localhost:8094/wps:
+Get a list of available processes on WPS with URL http://localhost:5000/wps:
 
 .. code-block:: sh
 
    # set WPS service
-   $ export WPS_SERVICE=http://localhost:8094/wps
+   $ export WPS_SERVICE=http://localhost:5000/wps
 
    # show available processes
    $ birdy -h

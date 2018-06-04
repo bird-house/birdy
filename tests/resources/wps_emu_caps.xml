@@ -53,37 +53,15 @@
 	</ows:OperationsMetadata>
 	<wps:ProcessOfferings>
 		<wps:Process wps:processVersion="1.0">
-			<ows:Identifier>helloworld</ows:Identifier>
+			<ows:Identifier>hello</ows:Identifier>
 			<ows:Title>Hello World</ows:Title>
 			<ows:Abstract>Welcome user and say hello ... [100% quick response]</ows:Abstract>
       <ows:Metadata xlink:title="Documentation" xlink:href="http://emu.readthedocs.org/en/latest/" />
-		</wps:Process>
-		<wps:Process wps:processVersion="2.0">
-			<ows:Identifier>ultimatequestionprocess</ows:Identifier>
-			<ows:Title>Answer to Life, the Universe and Everything</ows:Title>
-			<ows:Abstract>Numerical solution that is the answer to Life, Universe and Everything. The process is an improvement to Deep Tought computer (therefore version 2.0) since it no longer takes 7.5 milion years, but only a few seconds to give a response, with an update of status every 10 seconds.</ows:Abstract>
-		</wps:Process>
-		<wps:Process wps:processVersion="0.1">
-			<ows:Identifier>dummyprocess</ows:Identifier>
-			<ows:Title>Dummy Process</ows:Title>
-			<ows:Abstract>The Dummy process is used for testing the WPS structure. The process will accept 2 input numbers and will return the XML result with an add one and subtract one operation</ows:Abstract>
 		</wps:Process>
 		<wps:Process wps:processVersion="1.0">
 			<ows:Identifier>wordcount</ows:Identifier>
 			<ows:Title>Word Counter</ows:Title>
 			<ows:Abstract>Counts words in a given text ...</ows:Abstract>
-		</wps:Process>
-		<wps:Process wps:processVersion="0.2">
-			<ows:Identifier>inout</ows:Identifier>
-			<ows:Title>Testing all Data Types</ows:Title>
-			<ows:Abstract>Just testing data types like date, datetime etc ...</ows:Abstract>
-                        <ows:Metadata xlink:title="Foobar" xlink:href="http://foo/bar" />
-                        <ows:Metadata xlink:title="Barfoo" xlink:href="http://bar/foo" />
-		</wps:Process>
-		<wps:Process wps:processVersion="1.0">
-			<ows:Identifier>chomsky</ows:Identifier>
-			<ows:Title>Chomsky text generator</ows:Title>
-			<ows:Abstract> Generates a random chomsky text ...</ows:Abstract>
 		</wps:Process>
 	</wps:ProcessOfferings>
 	<wps:Languages>

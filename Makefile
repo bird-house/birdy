@@ -21,7 +21,7 @@ clean: srcclean
 .PHONY: srcclean
 srcclean:
 	@echo "Removing *.pyc files ..."
-	@-find $(APP_ROOT) -type f -name "*.pyc" -print | xargs rm
+	@-find . -type f -name "*.pyc" -print | xargs rm
 
 .PHONY: distclean
 distclean: clean

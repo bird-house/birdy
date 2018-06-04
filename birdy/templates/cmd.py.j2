@@ -1,0 +1,38 @@
+import click
+from click import STRING, INT, FLOAT, BOOL
+from owslib.wps import WebProcessingService
+from owslib.wps import ComplexDataInput
+from owslib.wps import SYNC, ASYNC
+from birdy.cli.types import COMPLEX
+from birdy.cli.misc import monitor
+
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.version_option(version="{{ version }}")
+{% for option in options %}
+@click.option('--{{ option.name }}', default='{{ option.default }}', help='{{ option.help }}',
+              type={{ option.type }}, multiple={{ option.multiple }})
+{% endfor %}
+@click.pass_context
+def cli(ctx, **options):
+    """{{ help }}"""
+    headers = {}
+    if 'token' in ctx.obj:
+        headers = {'Access-Token': ctx.obj['token']}
+    verify = not ctx.obj.get('insecure', False)
+    cert = ctx.obj.get('cert')
+    wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers)
+    inputs = []
+    for opt in options.keys():
+        if isinstance(options[opt], ComplexDataInput):
+            inputs.append(("{}".format(opt), options[opt]))
+        else:
+            inputs.append(("{}".format(opt), "{}".format(options[opt])))
+    if ctx.obj.get('sync', False):
+        mode = SYNC
+    else:
+        mode = ASYNC
+    execution = wps.execute('{{ name }}', inputs=inputs, output='output', mode=mode)
+    monitor(execution)

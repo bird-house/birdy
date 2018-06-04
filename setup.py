@@ -40,6 +40,5 @@ setup(name='birdhouse-birdy',
       install_requires=requires,
       entry_points={
           'console_scripts': [
-              'birdy=birdy:main',
-              'esgsearch=birdy.esgsearch:main']},
+              'birdy=birdy.cli.run:cli']},
       )
