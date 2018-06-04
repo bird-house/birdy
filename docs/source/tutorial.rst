@@ -7,7 +7,7 @@ Show the processes of a Web Processing Service:
 
 .. code-block:: sh
 
-   $ export WPS_SERVICE=http://localhost:8094/wps
+   $ export WPS_SERVICE=http://localhost:5000/wps
    $ birdy -h
    usage: birdy [<options>] <command> [<args>]
 
