@@ -1,6 +1,15 @@
 Change History
 **************
 
+0.3.0 (2018-06-05)
+==================
+
+Changes:
+
+* Use bumpversion (#29).
+* Use click for CLI (#6).
+* Using GitHub templates for issues, PRs and contribution guide.
+
 0.2.2 (2018-05-08)
 ==================
 
