@@ -8,7 +8,8 @@ from birdy.cli.types import COMPLEX
 
 
 template_env = Environment(
-    loader=PackageLoader('birdy', 'templates')
+    loader=PackageLoader('birdy', 'templates'),
+    autoescape=True,
 )
 
 
@@ -38,7 +39,7 @@ class BirdyCLI(click.MultiCommand):
                     name=process.identifier,
                     url=self.wps.url,
                     version=process.processVersion,
-                    help=BirdyCLI.format_process_help(process),
+                    help=BirdyCLI.format_command_help(process),
                     options=[])
 
     def list_commands(self, ctx):
@@ -62,39 +63,38 @@ class BirdyCLI(click.MultiCommand):
             for inp in pp.dataInputs:
                 cmd['options'].append(dict(
                     name=inp.identifier,
-                    default=BirdyCLI.get_default(inp),
+                    default=BirdyCLI.get_param_default(inp),
                     help=inp.title or '',
-                    type=BirdyCLI.get_type(inp),
+                    type=BirdyCLI.get_param_type(inp),
                     multiple=inp.maxOccurs > 1))
         return cmd
 
     @staticmethod
-    def format_process_help(process):
-        help = "{}: {}".format(process.title or process.identifier, process.abstract or '')
-        return help
+    def format_command_help(process):
+        return "{}: {}".format(process.title or process.identifier, process.abstract or '')
 
     @staticmethod
-    def get_default(input):
-        if 'ComplexData' in input.dataType:
+    def get_param_default(param):
+        if 'ComplexData' in param.dataType:
             # TODO: get default value of complex type
             default = None
-        elif 'BoundingBoxData' in input.dataType:
+        elif 'BoundingBoxData' in param.dataType:
             # TODO: get default value of bbox
             default = None
         else:
-            default = getattr(input, 'defaultValue', None)
+            default = getattr(param, 'defaultValue', None)
         return default
 
     @staticmethod
-    def get_type(input):
-        if 'boolean' in input.dataType:
-            type = click.BOOL
-        elif 'integer' in input.dataType:
-            type = click.INT
-        elif 'float' in input.dataType:
-            type = click.FLOAT
-        elif 'ComplexData' in input.dataType:
-            type = COMPLEX
+    def get_param_type(param):
+        if 'boolean' in param.dataType:
+            param_type = click.BOOL
+        elif 'integer' in param.dataType:
+            param_type = click.INT
+        elif 'float' in param.dataType:
+            param_type = click.FLOAT
+        elif 'ComplexData' in param.dataType:
+            param_type = COMPLEX
         else:
-            type = click.STRING
-        return type
+            param_type = click.STRING
+        return param_type
