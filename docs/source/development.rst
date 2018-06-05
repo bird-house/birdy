@@ -37,6 +37,7 @@ Make a new version of Birdy in the following steps:
 * Update ``CHANGES.rst`` with the next version.
 * Dry Run: ``bumpversion --dry-run --verbose --new-version 0.3.1 patch``
 * Do it: ``bumpversion --new-version 0.3.1 patch``
+* Push it: ``git push --tags``
 
 See the bumpversion_ documentation for details.
 
