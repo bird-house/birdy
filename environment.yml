@@ -11,5 +11,5 @@ dependencies:
   - click
   - jinja2
 # tests
-  - pytest
-  - flake8
+#  - pytest
+#  - flake8
