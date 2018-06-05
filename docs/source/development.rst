@@ -31,12 +31,12 @@ Use the Makefile::
 Bump a new version
 ===================
 
-Make a new version of Birdy in the following steps::
+Make a new version of Birdy in the following steps:
 
-  * Make sure everything is commit to GitHub.
-  * Update `CHANGES.rst` with the next version.
-  * Dry Run: `bumpversion --dry-run --verbose --new-version 0.3.1 patch`
-  * Do it: `bumpversion --new-version 0.3.1 patch`
+* Make sure everything is commit to GitHub.
+* Update ``CHANGES.rst`` with the next version.
+* Dry Run: ``bumpversion --dry-run --verbose --new-version 0.3.1 patch``
+* Do it: ``bumpversion --new-version 0.3.1 patch``
 
 See the bumpversion_ documentation for details.
 
