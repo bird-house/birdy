@@ -38,3 +38,12 @@ Check out code from the birdy GitHub repo and start the installation:
    $ cd birdy
    $ conda env create -f environment.yml
    $ python setup.py install
+
+Using bash completion
++++++++++++++++++++++
+
+You can enable bash completion for Birdy by using the following script::
+
+  $ . birdy-complete.sh
+
+For details read the `Click documentation <http://click.pocoo.org/6/bashcomplete/>`_.
