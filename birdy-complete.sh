@@ -1,3 +1,5 @@
+#!/bin/bash
+
 _birdy_completion() {
     COMPREPLY=( $( env COMP_WORDS="${COMP_WORDS[*]}" \
                    COMP_CWORD=$COMP_CWORD \
