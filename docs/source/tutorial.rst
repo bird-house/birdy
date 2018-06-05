@@ -9,89 +9,65 @@ Show the processes of a Web Processing Service:
 
    $ export WPS_SERVICE=http://localhost:5000/wps
    $ birdy -h
-   usage: birdy [<options>] <command> [<args>]
+    Usage: birdy [OPTIONS] COMMAND [ARGS]...
 
-   Emu: WPS processes for testing and demos.
+      Birdy is a command line client for Web Processing Services.
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     --debug               enable debug mode.
-     --version             show program's version number and exit.
-     -k, --insecure        Don't validate the server's certificate.
-     --cert CERT           Client side certificate containing both certificate
-                           and private key.
-     --token TOKEN, -t TOKEN
-                           Token to access the WPS service.
+      Documentation is available on readthedocs:
+      http://birdy.readthedocs.org/en/latest/
 
+    Options:
+      --version         Show the version and exit.
+      -k, --insecure    Don't validate the server's certificate.
+      --cert TEXT       Client side certificate containing both certificate and
+                        private key.
+      -s, --sync        Execute process in sync mode. Default: async mode.
+      -t, --token TEXT  Token to access the WPS service.
+      -h, --help        Show this message and exit.
 
-   command:
-     List of available commands (wps processes)
+    Commands:
+      ultimate_question         Answer to the ultimate question: This process...
+      sleep                     Sleep Process: Testing a long running...
+      nap                       Afternoon Nap (supports sync calls only):...
+      bbox                      Bounding box in- and out: Give bounding box,...
+      hello                     Say Hello: Just says a friendly Hello.Returns...
+      dummyprocess              Dummy Process: DummyProcess to check the WPS...
+      wordcounter               Word Counter: Counts words in a given text.
+      chomsky                   Chomsky text generator: Generates a random...
+      inout                     In and Out: Testing all WPS input and output...
+      binaryoperatorfornumbers  Binary Operator for Numbers: Performs...
+      show_error                Show a WPS Error: This process will fail...
 
-     {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
-                           Run "birdy <command> -h" to get additional help.
-       helloworld          Hello World: Welcome user and say hello ...
-       ultimatequestionprocess
-                           Answer to Life, the Universe and Everything: Numerical
-                           solution that is the answer to Life, Universe and
-                           Everything. The process is an improvement to Deep
-                           Tought computer (therefore version 2.0) since it no
-                           longer takes 7.5 milion years, but only a few seconds
-                           to give a response, with an update of status every 10
-                           seconds.
-       wordcount           Word Counter: Counts words in a given text ...
-       inout               Testing all Data Types: Just testing data types like
-                           date, datetime etc ...
-       multiplesources     Multiple Sources: Process with multiple different
-                           sources ...
-       chomsky             Chomsky text generator: Generates a random chomsky
-                           text ...
-       zonal_mean          Zonal Mean: zonal mean in NetCDF File.
-
-
-Show help for wordcount:
+Show help for wordcounter:
 
 .. code-block:: sh
 
-    $ birdy wordcount -h
-    usage: birdy wordcount [-h] --text [TEXT] [--output [{output} [{output} ...]]]
+    $ birdy wordcounter -h
+    Usage: birdy wordcounter [OPTIONS]
 
-    optional argumens:
-      -h, --help            show this help message and exit
-      --text [TEXT]         Text document: URL of text document, mime
-                            types=text/plain
-      --output [{output} [{output} ...]]
-                            Output: output=Word count result, mime
-                            types=text/plain (default: all outputs)
+      Word Counter: Counts words in a given text.
+
+    Options:
+      --version       Show the version and exit.
+      --text COMPLEX  Text document
+      -h, --help      Show this message and exit.
 
 
-Execute wordcount with a remote text document:
+Execute wordcounter with a remote text document:
 
 .. code-block:: sh
 
-    $ birdy wordcount --text http://birdy.readthedocs.org/en/latest/tutorial.html
-    INFO:Execution status: ProcessAccepted
-    INFO:Execution status: ProcessSucceeded
-    INFO:Output:
-    INFO:output=http://localhost:8090/wpsoutputs/emu/output-7becb14c-41c6-11e5-ae23-68f72837e1b4.txt (text/plain)
+    $ birdy wordcounter --text http://birdy.readthedocs.org/en/latest/tutorial.html
+    ProcessSucceeded  [####################################]  100%  0d 00:01:39
+    Output:
+    output=http://localhost:5000/outputs/0876142e-68c4-11e8-83c7-109836a7cf3a/out_CK146m.txt
+
 
 The result output is given as a reference document.
 
-
-You can also use a local file as input document:
-
-.. code-block:: sh
-
-    $ birdy wordcount --text /usr/share/doc/gimp-help-en/html/en/index.html
-    INFO:Execution status: ProcessAccepted
-    INFO:Execution status: ProcessSucceeded
-    INFO:Output:
-    INFO:output=http://localhost:8090/wpsoutputs/emu/output-f65f5358-41c6-11e5-ae23-68f72837e1b4.txt (text/plain)
-
-
-If you run this process on a remote WPS service then local files will be send inline and base64 encoded with the WPS execute request. Please use in this case *small files only* (a few megabytes)!
-
-If the WPS service is secured by a Twitcher security proxy service then you can provide an access token with the ``--token`` option:
+If the WPS service is secured by a Twitcher security proxy service then you can
+provide an access token with the ``--token`` option:
 
 .. code-block:: sh
 
-    $ birdy --token abc123 wordcount --text http://birdy.readthedocs.org/en/latest/tutorial.html
+    $ birdy --token abc123 wordcounter --text http://birdy.readthedocs.org/en/latest/tutorial.html
