@@ -6,3 +6,5 @@
    installation
    usage
    tutorial
+   development
+   changes

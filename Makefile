@@ -29,6 +29,12 @@ distclean: clean
 	@git diff --quiet HEAD || echo "There are uncommited changes! Not doing 'git clean' ..."
 	@-git clean -dfx
 
+PHONY: bootstrap_dev
+bootstrap_dev:
+	@echo "Installing development requirements for tests and docs ..."
+	@-bash -c "conda install -y -n birdy pytest flake8 sphinx bumpversion"
+	@-bash -c "pip install -r requirements_dev.txt"
+
 .PHONY: test
 test:
 	@echo "Running tests (skip slow and online tests) ..."
@@ -48,4 +54,4 @@ pep8:
 docs:
 	@echo "Generating docs with Sphinx ..."
 	$(MAKE) -C $@ clean html
-	@echo "open your browser: firefox docs/build/html/index.html"
+	@echo "open your browser: open docs/build/html/index.html"
