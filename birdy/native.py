@@ -18,10 +18,15 @@ out = fp.subset_countries('CAN', ...)
 """
 
 
-@wrapt.decorator
-def wrapper(wrapped, instance, args, kwargs):
-    instance.call(wrapped.name, *args, **kwds)
-    return wrapped(*args, **kwargs)
+def with_arguments(self):
+    @wrapt.decorator
+    def wrapper(wrapped, instance, args, kwds):
+        sig = funcsigs.signature(wrapped)
+        ba = sig.bind(*args, **kwds)
+        out = self.call(wrapped.__name__, **ba.arguments)
+        return out
+    return wrapper
+
 
 
 
@@ -42,7 +47,6 @@ def native_client(url):
     # Fill mod.__dict__ with the processes
     for name, func in gen.build_module():
         mod.__dict__[name] = func
-        break
 
     return mod
 
@@ -51,7 +55,7 @@ class BirdModule(Birdy):
     This is a metaprogramming class to generate python objects behaving like regular python functions but actually
     executing a remote WPS process.
     """
-
+    processes = {}
     def build_module(self):
         for process in self.wps.processes:
             yield process.identifier, self.build_function(process.identifier)
@@ -60,19 +64,22 @@ class BirdModule(Birdy):
     def build_function(self, pid):
         """Create a custom function signature with docstring, instantiate it
         and pass it to a wrapper which will actually call the process."""
+        self.processes[pid] = self.wps.describeprocess(pid)
         sig = self.build_function_sig(pid)
-        exec(sig)
-        return wrapper(locals()[pid], self)
+        #print(sig)
+        exec (sig)
+        f = locals()[pid]
+        return with_arguments(self)(f)
 
 
     def call(self, identifier, *args, **kwds):
+        from owslib.wps import SYNC, ASYNC
         frame = inspect.currentframe()
         args = inspect.getargvalues(frame)
-        cargs = inspect.getcallargs(self.call, args.locals['args'], args.locals['kwds'])
 
 
         inputs = []
-        for key, value in cargs['named'].items():
+        for key, values in args.locals['kwds'].items():
             if not isinstance(values, list):
                 values = [values]
             for value in values:
@@ -80,17 +87,29 @@ class BirdModule(Birdy):
                 if in_value is not None:
                     inputs.append((str(key), in_value))
 
-        return self.wps.execute(identifier=identifier, inputs=inputs, mode='sync')
+        outputs = self.build_output(self.processes[identifier])
+
+        resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
+        out = []
+        for o in resp.processOutputs:
+            if len(o.data) == 1:
+                out.append(o.data[0])
+            else:
+                out.append(o.data)
+
+        if len(out) == 1:
+            return out[0]
+        else:
+            return out
+
 
     def build_function_sig(self, pid):
-        proc = self.wps.describeprocess(pid)
+        proc = self.processes[pid]
         args, kwds = self.get_args(proc)
         doc = self.build_doc(proc)
 
         template="\ndef {}({}):\n{}\n    pass"
-        return template.format(pid, ', '.join(args + ['{}={}'.format(k,v) for k,v in kwds.iteritems()]), doc)
-
-
+        return template.format(pid, ', '.join(args + ['{}={}'.format(k,repr(v)) for k,v in kwds.iteritems()]), doc)
 
     def get_args(self, process):
         """Return a list of positional arguments and a dictionary of optional keyword arguments
@@ -105,16 +124,23 @@ class BirdModule(Birdy):
                 kwds[input.identifier] = wpsparser.parse_default(input)
         return args, kwds
 
-    def build_doc(self, proc):
+    def build_output(self, process):
+        outputs = []
+        for o in process.processOutputs:
+            outputs.append( (o.identifier, True ))
+
+        return outputs
+
+    def build_doc(self, process):
 
         doc = ['    '+3*'\"']
-        doc.append(proc.abstract)
+        doc.append(process.abstract)
         doc.append('')
 
         # Inputs
         doc.append('Parameters')
         doc.append('----------')
-        for i in proc.dataInputs:
+        for i in process.dataInputs:
             doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
             doc.append("    {}".format(i.abstract or i.title))
             #if i.metadata:
@@ -124,7 +150,7 @@ class BirdModule(Birdy):
         # Outputs
         doc.append("Returns")
         doc.append("-------")
-        for i in proc.processOutputs:
+        for i in process.processOutputs:
             doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
             doc.append("    {}".format(i.abstract or i.title))
         doc.extend(['', ''])
