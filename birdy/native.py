@@ -7,14 +7,12 @@ from birdy import wpsparser
 import functools
 
 """
-The idea is to be able to do something like
+To test, launch emu, then
+
 
 from birdy import native_client
-
-fp = native_client('http://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps')
-
-out = fp.subset_countries('CAN', ...)
-
+emu = native_client('http://127.0.0.1:5000/')
+emu.hello('Carsten')
 """
 
 
