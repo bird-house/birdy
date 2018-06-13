@@ -6,9 +6,7 @@ from setuptools import setup
 version = __import__('birdy').__version__
 description = 'Birdy provides a command-line tool to work with Web Processing Services.'
 long_description = (
-    open('README.rst').read() + '\n' +
-    open('AUTHORS.rst').read() + '\n' +
-    open('CHANGES.rst').read()
+    open('README.rst').read() + '\n' + open('AUTHORS.rst').read() + '\n' + open('CHANGES.rst').read()
 )
 
 requires = [line.strip() for line in open('requirements.txt')]
@@ -28,18 +26,15 @@ setup(name='birdhouse-birdy',
       description=description,
       long_description=long_description,
       classifiers=classifiers,
-      keywords='wps pywps python birdy esgf birdhouse',
+      keywords='wps pywps python birdy birdhouse',
       author='Birdhouse',
       author_email="wps-dev@dkrz.de",
       url='https://github.com/bird-house/birdy',
       license="Apache License v2.0",
       packages=find_packages(),
       include_package_data=True,
-      zip_safe=False,
-      test_suite='nose.collector',
       install_requires=requires,
       entry_points={
           'console_scripts': [
-              'birdy=birdy:main',
-              'esgsearch=birdy.esgsearch:main']},
+              'birdy=birdy.cli.run:cli']},
       )

@@ -7,26 +7,37 @@ Usage
 Using the command line
 ======================
 
-Get a list of available processes on WPS with URL http://localhost:8094/wps:
+Get a list of available processes on WPS with URL http://localhost:5000/wps:
 
 .. code-block:: sh
 
    # set WPS service
-   $ export WPS_SERVICE=http://localhost:8094/wps
+   $ export WPS_SERVICE=http://localhost:5000/wps
 
    # show available processes
    $ birdy -h
-   usage: birdy [-h <command> [<args>]
+   Usage: birdy [OPTIONS] COMMAND [ARGS]...
 
-   optional arguments:
-     -h, --help            show this help message and exit
+     Birdy is a command line client for Web Processing Services.
 
-   command:
-     List of available commands (wps processes)
+     Documentation is available on readthedocs:
+     http://birdy.readthedocs.org/en/latest/
 
-     {helloworld,ultimatequestionprocess,wordcount,inout,multiplesources,chomsky,zonal_mean}
-                           Run "birdy <command> -h" to get additional help.
+   Options:
+     --version         Show the version and exit.
+     -k, --insecure    Don't validate the server's certificate.
+     --cert TEXT       Client side certificate containing both certificate and
+                       private key.
+     -s, --sync        Execute process in sync mode. Default: async mode.
+     -t, --token TEXT  Token to access the WPS service.
+     -h, --help        Show this message and exit.
 
+   Commands:
+     ultimate_question         Answer to the ultimate question: This process...
+     sleep                     Sleep Process: Testing a long running...
+     nap                       Afternoon Nap (supports sync calls only):...
+     bbox                      Bounding box in- and out: Give bounding box,...
+     hello                     Say Hello: Just says a friendly Hello.Returns...
 
 
 Use client certificate to access WPS service

@@ -1,15 +1,15 @@
-# conda env create environment.yml
+# conda env create -f environment.yml
 name: birdy
 channels:
   - birdhouse
   - conda-forge
   - defaults
 dependencies:
+  - six
   - lxml
-  - owslib
-  - argcomplete
-  - pyyaml
-  - mako
+  - owslib>=0.17
+  - click
+  - jinja2
 # tests
 #  - pytest
 #  - flake8

@@ -1,6 +1,29 @@
 Change History
 **************
 
+0.3.2 (2018-06-06)
+==================
+
+Changes:
+
+* Fix MANIFEST.in.
+
+0.3.1 (2018-06-06)
+==================
+
+Changes:
+
+* Fix bumpversion.
+
+0.3.0 (2018-06-05)
+==================
+
+Changes:
+
+* Use bumpversion (#29).
+* Use click for CLI (#6).
+* Using GitHub templates for issues, PRs and contribution guide.
+
 0.2.2 (2018-05-08)
 ==================
 

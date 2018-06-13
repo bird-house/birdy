@@ -21,13 +21,19 @@ clean: srcclean
 .PHONY: srcclean
 srcclean:
 	@echo "Removing *.pyc files ..."
-	@-find $(APP_ROOT) -type f -name "*.pyc" -print | xargs rm
+	@-find . -type f -name "*.pyc" -print | xargs rm
 
 .PHONY: distclean
 distclean: clean
 	@echo "Cleaning distribution ..."
 	@git diff --quiet HEAD || echo "There are uncommited changes! Not doing 'git clean' ..."
 	@-git clean -dfx
+
+PHONY: bootstrap_dev
+bootstrap_dev:
+	@echo "Installing development requirements for tests and docs ..."
+	@-bash -c "conda install -y -n birdy pytest flake8 sphinx bumpversion"
+	@-bash -c "pip install -r requirements_dev.txt"
 
 .PHONY: test
 test:
@@ -48,4 +54,4 @@ pep8:
 docs:
 	@echo "Generating docs with Sphinx ..."
 	$(MAKE) -C $@ clean html
-	@echo "open your browser: firefox docs/build/html/index.html"
+	@echo "open your browser: open docs/build/html/index.html"
