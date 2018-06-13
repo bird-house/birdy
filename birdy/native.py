@@ -1,10 +1,11 @@
 import types
 import inspect
 import wrapt
-import funcsigs
+from funcsigs import signature #Py2 Py3 would be from inspect import signature
+from collections import OrderedDict
 from birdy import Birdy
 from birdy import wpsparser
-import functools
+
 
 """
 To test, launch emu, then
@@ -13,48 +14,60 @@ To test, launch emu, then
 from birdy import native_client
 emu = native_client('http://127.0.0.1:5000/')
 emu.hello('Carsten')
+
+
+---
+emu.wordcounter('http://www.gutenberg.org/cache/epub/19033/pg19033.txt')
+
+Fails with 
+owslib.wps.WPSException : {'locator': None, 'code': 'NoApplicableCode', 'text': 'Process error: wps_wordcounter.py._handler Line 55 cannot use a string pattern on a bytes-like object'}
 """
-
-
-def with_arguments(self):
-    @wrapt.decorator
-    def wrapper(wrapped, instance, args, kwds):
-        sig = funcsigs.signature(wrapped)
-        ba = sig.bind(*args, **kwds)
-        out = self.call(wrapped.__name__, **ba.arguments)
-        return out
-    return wrapper
-
-
 
 
 # TODO: Deal with authorizations
 def native_client(url):
-    """Return an automatically generated module with the processes from given WPS service.
+    """Return a module with functions calling the WPS processes
+     available at the given url.
 
     Parameters
     ----------
     url : str
       Link to WPS provider.
 
+
+    Returns
+    -------
+    out : module
+      A module where WPS processes can be called using normal python functions.
+
+
+    Example
+    -------
+    >>> emu = native_client('<url for emu wps server>')
+    >>> emu.hello('stranger')
+    'Hello stranger'
+
     """
-    gen = BirdModule(url)
+    bm = BirdModule(url)
 
-    mod = types.ModuleType(gen.wps.identification.title.split()[0].lower(), gen.wps.identification.abstract)
+    # Create module with name from WPS identification.
+    mod = types.ModuleType(bm.wps.identification.title.split()[0].lower(), bm.wps.identification.abstract)
 
-    # Fill mod.__dict__ with the processes
-    for name, func in gen.build_module():
+
+    for name, func in bm.build_module():
         mod.__dict__[name] = func
 
     return mod
 
 class BirdModule(Birdy):
     """
-    This is a metaprogramming class to generate python objects behaving like regular python functions but actually
-    executing a remote WPS process.
+    Construct functions out of WPS processes so they behave as native python functions.
     """
+    # Store the process description returned by wps.describeprocess.
     processes = {}
+
     def build_module(self):
+        """Yield the sequence of functions representing WPS processes. """
         for process in self.wps.processes:
             yield process.identifier, self.build_function(process.identifier)
 
@@ -62,15 +75,47 @@ class BirdModule(Birdy):
     def build_function(self, pid):
         """Create a custom function signature with docstring, instantiate it
         and pass it to a wrapper which will actually call the process."""
-        self.processes[pid] = self.wps.describeprocess(pid)
-        sig = self.build_function_sig(pid)
+
+        # Get the process metadata.
+        self.processes[pid] = proc = self.wps.describeprocess(pid)
+        self.complex_inputs[pid] = OrderedDict()
+        self.outputs[pid] = OrderedDict()
+
+        # Create a dummy signature and docstring for the function.
+        sig = self.build_function_sig(proc)
+        doc = self.build_doc(proc)
+
         #print(sig)
+        # Create function in the local scope and assign docstring.
         exec (sig)
         f = locals()[pid]
-        return with_arguments(self)(f)
+        f.__doc__ = doc
+
+        # Decorate, note that it's the decorator who's calling `execute`.
+        return self.decorate()(f)
 
 
-    def call(self, identifier, *args, **kwds):
+    def decorate(self):
+        """Decorator calling the WPS, using the arguments passed to the wrapped function.
+        The wrapped function is a dummy used only for its signature and docstring.
+
+        The wrapt.decorator is used to retain the dummy function name and docstring.
+        """
+
+        @wrapt.decorator
+        def wrapper(wrapped, instance, args, kwds):
+            """Bind the function's arguments to the signature."""
+            sig = signature(wrapped)
+            ba = sig.bind(*args, **kwds)
+            out = self.execute(wrapped.__name__, **ba.arguments)
+            return out
+
+        return wrapper
+
+    def execute(self, identifier, *args, **kwds):
+        """
+
+        """
         from owslib.wps import SYNC, ASYNC
         frame = inspect.currentframe()
         args = inspect.getargvalues(frame)
@@ -87,13 +132,19 @@ class BirdModule(Birdy):
 
         outputs = self.build_output(self.processes[identifier])
 
+        # Execute request in synchronous mode
         resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
+
+        # Parse output
         out = []
         for o in resp.processOutputs:
-            if len(o.data) == 1:
-                out.append(o.data[0])
+            if o.reference is not None:
+                out.append(o.reference)
             else:
-                out.append(o.data)
+                if len(o.data) == 1:
+                    out.append(o.data[0])
+                else:
+                    out.append(o.data)
 
         if len(out) == 1:
             return out[0]
@@ -101,13 +152,14 @@ class BirdModule(Birdy):
             return out
 
 
-    def build_function_sig(self, pid):
-        proc = self.processes[pid]
-        args, kwds = self.get_args(proc)
-        doc = self.build_doc(proc)
+    def build_function_sig(self, process):
+        """Return the process function signature."""
 
-        template="\ndef {}({}):\n{}\n    pass"
-        return template.format(pid, ', '.join(args + ['{}={}'.format(k,repr(v)) for k,v in kwds.iteritems()]), doc)
+        template="\ndef {}({}):\n    pass"
+
+        args, kwds = self.get_args(process)
+
+        return template.format(process.identifier, ', '.join(args + ['{}={}'.format(k,repr(v)) for k,v in kwds.iteritems()]))
 
     def get_args(self, process):
         """Return a list of positional arguments and a dictionary of optional keyword arguments
@@ -120,18 +172,24 @@ class BirdModule(Birdy):
                 args.append(input.identifier)
             else:
                 kwds[input.identifier] = wpsparser.parse_default(input)
+
+            if wpsparser.is_complex_data(input):
+                mimetypes = ([str(value.mimeType) for value in input.supportedValues])
+                self.complex_inputs[process.identifier][input.identifier] = mimetypes
+
         return args, kwds
 
     def build_output(self, process):
-        outputs = []
-        for o in process.processOutputs:
-            outputs.append( (o.identifier, True ))
+        """Return output list."""
+        for output in process.processOutputs:
+            self.outputs[process.identifier][output.identifier] = wpsparser.is_complex_data(output)
 
-        return outputs
+        return self.outputs[process.identifier].items()
 
     def build_doc(self, process):
+        """Return function docstring built from WPS metadata."""
 
-        doc = ['    '+3*'\"']
+        doc = [3*'\"']
         doc.append(process.abstract)
         doc.append('')
 
@@ -153,7 +211,7 @@ class BirdModule(Birdy):
             doc.append("    {}".format(i.abstract or i.title))
         doc.extend(['', ''])
         doc.append(3 * '\"')
-        return '\n    '.join(doc)
+        return '\n'.join(doc)
 
 
     def fmt_type(self, obj):

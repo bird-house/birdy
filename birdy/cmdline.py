@@ -41,7 +41,7 @@ class Birdy(object):
     see help:
     $ birdy -h
     """
-    outputs = {}
+    outputs = {} # These values are used by all processes, so if two processes share the same output names, could there be a clash?
     complex_inputs = {}
 
     def __init__(self, service):
@@ -183,7 +183,7 @@ class Birdy(object):
             output = [output]
         # list of tuple (output identifier, asReference attribute)
         outputs = [(str(identifier), self.outputs.get(str(identifier), True)) for identifier in output]
-        # now excecute it ...
+        # now execute it ...
         try:
             # TODO: sync is non-default and avail only in patched owslib
             from owslib.wps import SYNC, ASYNC
