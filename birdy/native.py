@@ -1,12 +1,12 @@
+import os
 import types
 import inspect
 import wrapt
 from funcsigs import signature #Py2 Py3 would be from inspect import signature
 from collections import OrderedDict
-from birdy import Birdy
-from birdy import wpsparser, utils
-
-
+from owslib.wps import ComplexDataInput, ComplexData
+from birdy.cli.base import BirdyCLI
+from owslib.wps import WebProcessingService
 """
 To test, launch emu, then
 
@@ -19,13 +19,11 @@ emu.hello('Carsten')
 ---
 emu.wordcounter('http://www.gutenberg.org/cache/epub/19033/pg19033.txt')
 
-Fails with 
-owslib.wps.WPSException : {'locator': None, 'code': 'NoApplicableCode', 'text': 'Process error: wps_wordcounter.py._handler Line 55 cannot use a string pattern on a bytes-like object'}
 """
 
 
 # TODO: Deal with authorizations
-def native_client(url):
+def native_client(url, name=None):
     """Return a module with functions calling the WPS processes
      available at the given url.
 
@@ -33,7 +31,8 @@ def native_client(url):
     ----------
     url : str
       Link to WPS provider.
-
+    name : None
+      Module name. Overrides WPS identification is provided.
 
     Returns
     -------
@@ -48,10 +47,10 @@ def native_client(url):
     'Hello stranger'
 
     """
-    bm = BirdModule(url)
+    bm = BirdyMod(name=name, url=url)
 
     # Create module with name from WPS identification.
-    mod = types.ModuleType(bm.wps.identification.title.split()[0].lower(), bm.wps.identification.abstract)
+    mod = types.ModuleType(name or bm.wps.identification.title.split()[0].lower(), bm.wps.identification.abstract)
 
 
     for name, func in bm.build_module():
@@ -59,12 +58,23 @@ def native_client(url):
 
     return mod
 
-class BirdModule(Birdy):
+class BirdyMod():
     """
     Construct functions out of WPS processes so they behave as native python functions.
     """
-    # Store the process description returned by wps.describeprocess.
-    processes = {}
+    def __init__(self, name=None, url=None, xml=None):
+
+        self.url = os.environ.get('WPS_SERVICE') or url
+        self.xml = xml
+        self.wps = WebProcessingService(self.url, verify=True, skip_caps=True)
+        self.wps.getcapabilities()
+        self.processes = OrderedDict()
+        self.name = name
+
+        # Store the process description returned by wps.describeprocess.
+
+        self.inputs = {}
+        self.outputs = {}
 
     def build_module(self):
         """Yield the sequence of functions representing WPS processes. """
@@ -78,7 +88,7 @@ class BirdModule(Birdy):
 
         # Get the process metadata.
         self.processes[pid] = proc = self.wps.describeprocess(pid)
-        self.complex_inputs[pid] = OrderedDict()
+        self.inputs[pid] = OrderedDict()
         self.outputs[pid] = OrderedDict()
 
         # Create a dummy signature and docstring for the function.
@@ -123,18 +133,22 @@ class BirdModule(Birdy):
 
         inputs = []
         for key, values in args.locals['kwds'].items():
-            if not isinstance(values, list):
-                values = [values]
-            for value in values:
-                in_value = self._input_value(key, value, identifier)
-                if in_value is not None:
-                    inputs.append((str(key), in_value))
+            inp = self.inputs[identifier][key]
+            typ = BirdyCLI.get_param_type(inp)
+            if values is not None:
+                values = typ.convert(values, key, None)
+            1/0
+            if isinstance(values, ComplexDataInput):
+                inputs.append(("{}".format(key), values))
+            else:
+                inputs.append(("{}".format(key), "{}".format(values)))
 
         outputs = self.build_output(self.processes[identifier])
 
         # Execute request in synchronous mode
         print(inputs)
-        resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
+        print(outputs)
+        resp = self.wps.execute(identifier=identifier, inputs=inputs, output='output', mode=SYNC)
 
         # Parse output
         out = []
@@ -169,23 +183,26 @@ class BirdModule(Birdy):
         args = []
         kwds = {}
         for input in process.dataInputs:
-            if wpsparser.parse_required(input):
+
+            # Store for future reference. See `execute`.
+            self.inputs[process.identifier][input.identifier] = input
+
+            default = BirdyCLI.get_param_default(input)
+            if default is None:
                 args.append(input.identifier)
             else:
-                kwds[input.identifier] = wpsparser.parse_default(input)
+                kwds[input.identifier] = default
 
-            if wpsparser.is_complex_data(input):
-                mimetypes = ([str(value.mimeType) for value in input.supportedValues])
-                self.complex_inputs[process.identifier][input.identifier] = mimetypes
+        for output in process.processOutputs:
+            # Store for future reference. See `execute`.
+
+            self.outputs[process.identifier][output.identifier] = output
 
         return args, kwds
 
     def build_output(self, process):
         """Return output list."""
-        for output in process.processOutputs:
-            self.outputs[process.identifier][output.identifier] = wpsparser.is_complex_data(output)
-
-        return self.outputs[process.identifier].items()
+        return [(k, v.dataType=='ComplexData') for k,v in self.outputs[process.identifier].items()]
 
     def build_doc(self, process):
         """Return function docstring built from WPS metadata."""
