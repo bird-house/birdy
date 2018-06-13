@@ -137,7 +137,7 @@ class BirdyMod():
             typ = BirdyCLI.get_param_type(inp)
             if values is not None:
                 values = typ.convert(values, key, None)
-            1/0
+
             if isinstance(values, ComplexDataInput):
                 inputs.append(("{}".format(key), values))
             else:
@@ -146,9 +146,9 @@ class BirdyMod():
         outputs = self.build_output(self.processes[identifier])
 
         # Execute request in synchronous mode
-        print(inputs)
-        print(outputs)
-        resp = self.wps.execute(identifier=identifier, inputs=inputs, output='output', mode=SYNC)
+        #print(inputs)
+        #print(outputs)
+        resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
 
         # Parse output
         out = []
@@ -156,10 +156,14 @@ class BirdyMod():
             if o.reference is not None:
                 out.append(o.retrieveData())
             else:
-                if len(o.data) == 1:
-                    out.append(o.data[0])
+                typ = BirdyCLI.get_param_type(o)
+                data = [typ.convert(d, o.identifier, None) for d in o.data]
+
+                if len(data) == 1:
+                    out.append(data[0])
                 else:
-                    out.append(o.data)
+                    out.append(data)
+
 
         if len(out) == 1:
             return out[0]
