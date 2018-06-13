@@ -185,7 +185,7 @@ class BirdyMod():
         with their default values."""
 
         args = []
-        kwds = {}
+        kwds = OrderedDict()
         for input in process.dataInputs:
 
             # Store for future reference. See `execute`.
