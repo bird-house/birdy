@@ -1,5 +1,6 @@
 import sys
 import os
+from collections import OrderedDict
 
 from ._compat import urlparse
 from owslib.wps import WebProcessingService, ComplexDataInput
@@ -41,7 +42,7 @@ class Birdy(object):
     see help:
     $ birdy -h
     """
-    outputs = {} # These values are used by all processes, so if two processes share the same output names, could there be a clash?
+    outputs = {}
     complex_inputs = {}
 
     def __init__(self, service):
@@ -119,6 +120,7 @@ class Birdy(object):
         LOGGER.debug("build subparser for command=%s", identifier)
 
         process = self.wps.describeprocess(identifier)
+        self.complex_inputs[process.identifier] = OrderedDict()
 
         for input in process.dataInputs:
             subparser.add_argument(
@@ -134,13 +136,13 @@ class Birdy(object):
             )
             if wpsparser.is_complex_data(input):
                 mimetypes = ([str(value.mimeType) for value in input.supportedValues])
-                self.complex_inputs[input.identifier] = mimetypes
+                self.complex_inputs[identifier][input.identifier] = mimetypes
         output_choices = [output.identifier for output in process.processOutputs]
         help_msg = "Output: "
         for output in process.processOutputs:
             help_msg = help_msg + str(output.identifier) + "=" + wpsparser.parse_description(output)\
                 + " (default: all outputs)"
-            self.outputs[output.identifier] = wpsparser.is_complex_data(output)
+            self.outputs[identifier][output.identifier] = wpsparser.is_complex_data(output)
         subparser.add_argument(
             '--output',
             dest="output",
@@ -171,18 +173,18 @@ class Birdy(object):
                 if not isinstance(values, list):
                     values = [values]
                 for value in values:
-                    in_value = self._input_value(key, value)
+                    in_value = self._input_value(key, value, args.identifier)
                     if in_value is not None:
                         inputs.append((str(key), in_value))
         # outputs
-        output = self.outputs.keys()
+        output = self.outputs[args.identifier].keys()
         if args.output is not None:
             output = args.output
         # checks if single value (or list of values)
         if not isinstance(output, list):
             output = [output]
         # list of tuple (output identifier, asReference attribute)
-        outputs = [(str(identifier), self.outputs.get(str(identifier), True)) for identifier in output]
+        outputs = [(str(identifier), self.outputs[args.identifier].get(str(identifier), True)) for identifier in output]
         # now execute it ...
         try:
             # TODO: sync is non-default and avail only in patched owslib
@@ -203,15 +205,15 @@ class Birdy(object):
         self.monitor(execution, download=False)
         return execution
 
-    def _input_value(self, key, value):
+    def _input_value(self, key, value, pid):
         content = ''
         if key in self.complex_inputs:
-            content = self._complex_value(key, value)
+            content = self._complex_value(key, value, pid)
         else:
-            content = self._literal_value(key, value)
+            content = self._literal_value(key, value, pid)
         return content
 
-    def _complex_value(self, key, value):
+    def _complex_value(self, key, value, pid):
         LOGGER.debug("complex: key=%s, value=%s", key, value)
         url = fix_local_url(value)
         u = urlparse(self.wps.url)
@@ -220,11 +222,11 @@ class Birdy(object):
             content = ComplexDataInput(url)
         else:
             LOGGER.debug('encode content: %s', url)
-            encoded = encode(url, self.complex_inputs[key])
+            encoded = encode(url, self.complex_inputs[pid][key])
             content = ComplexDataInput(encoded)
         return content
 
-    def _literal_value(self, key, value):
+    def _literal_value(self, key, value, pid):
         return value
 
     def monitor(self, execution, sleepSecs=3, download=False, filepath=None):

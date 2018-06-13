@@ -4,7 +4,7 @@ import wrapt
 from funcsigs import signature #Py2 Py3 would be from inspect import signature
 from collections import OrderedDict
 from birdy import Birdy
-from birdy import wpsparser
+from birdy import wpsparser, utils
 
 
 """
@@ -126,20 +126,21 @@ class BirdModule(Birdy):
             if not isinstance(values, list):
                 values = [values]
             for value in values:
-                in_value = self._input_value(key, value)
+                in_value = self._input_value(key, value, identifier)
                 if in_value is not None:
                     inputs.append((str(key), in_value))
 
         outputs = self.build_output(self.processes[identifier])
 
         # Execute request in synchronous mode
+        print(inputs)
         resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
 
         # Parse output
         out = []
         for o in resp.processOutputs:
             if o.reference is not None:
-                out.append(o.reference)
+                out.append(o.retrieveData())
             else:
                 if len(o.data) == 1:
                     out.append(o.data[0])
