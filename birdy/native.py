@@ -97,7 +97,7 @@ class BirdyMod():
 
         # print(sig)
         # Create function in the local scope and assign docstring.
-        exec (sig)
+        exec(sig)
         f = locals()[pid]
         f.__doc__ = doc
 
