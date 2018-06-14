@@ -2,7 +2,7 @@ import os
 import types
 import inspect
 import wrapt
-from funcsigs import signature #Py2 Py3 would be from inspect import signature
+from funcsigs import signature  # Py2 Py3 would be from inspect import signature
 from collections import OrderedDict
 from owslib.wps import ComplexDataInput, ComplexData
 from birdy.cli.base import BirdyCLI
@@ -52,11 +52,11 @@ def native_client(url, name=None):
     # Create module with name from WPS identification.
     mod = types.ModuleType(name or bm.wps.identification.title.split()[0].lower(), bm.wps.identification.abstract)
 
-
     for name, func in bm.build_module():
         mod.__dict__[name] = func
 
     return mod
+
 
 class BirdyMod():
     """
@@ -81,7 +81,6 @@ class BirdyMod():
         for process in self.wps.processes:
             yield process.identifier, self.build_function(process.identifier)
 
-
     def build_function(self, pid):
         """Create a custom function signature with docstring, instantiate it
         and pass it to a wrapper which will actually call the process."""
@@ -95,7 +94,7 @@ class BirdyMod():
         sig = self.build_function_sig(proc)
         doc = self.build_doc(proc)
 
-        #print(sig)
+        # print(sig)
         # Create function in the local scope and assign docstring.
         exec (sig)
         f = locals()[pid]
@@ -103,7 +102,6 @@ class BirdyMod():
 
         # Decorate, note that it's the decorator who's calling `execute`.
         return self.decorate()(f)
-
 
     def decorate(self):
         """Decorator calling the WPS, using the arguments passed to the wrapped function.
@@ -130,7 +128,6 @@ class BirdyMod():
         frame = inspect.currentframe()
         args = inspect.getargvalues(frame)
 
-
         inputs = []
         for key, values in args.locals['kwds'].items():
             inp = self.inputs[identifier][key]
@@ -146,8 +143,8 @@ class BirdyMod():
         outputs = self.build_output(self.processes[identifier])
 
         # Execute request in synchronous mode
-        #print(inputs)
-        #print(outputs)
+        # print(inputs)
+        # print(outputs)
         resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
 
         # Parse output
@@ -164,21 +161,21 @@ class BirdyMod():
                 else:
                     out.append(data)
 
-
         if len(out) == 1:
             return out[0]
         else:
             return out
 
-
     def build_function_sig(self, process):
         """Return the process function signature."""
 
-        template="\ndef {}({}):\n    pass"
+        template = "\ndef {}({}):\n    pass"
 
         args, kwds = self.get_args(process)
 
-        return template.format(process.identifier, ', '.join(args + ['{}={}'.format(k,repr(v)) for k,v in kwds.iteritems()]))
+        return template.format(
+            process.identifier,
+            ', '.join(args + ['{}={}'.format(k, repr(v)) for k, v in kwds.iteritems()]))
 
     def get_args(self, process):
         """Return a list of positional arguments and a dictionary of optional keyword arguments
@@ -206,12 +203,12 @@ class BirdyMod():
 
     def build_output(self, process):
         """Return output list."""
-        return [(k, v.dataType=='ComplexData') for k,v in self.outputs[process.identifier].items()]
+        return [(k, v.dataType == 'ComplexData') for k, v in self.outputs[process.identifier].items()]
 
     def build_doc(self, process):
         """Return function docstring built from WPS metadata."""
 
-        doc = [3*'\"']
+        doc = [3 * '\"']
         doc.append(process.abstract)
         doc.append('')
 
@@ -221,7 +218,7 @@ class BirdyMod():
         for i in process.dataInputs:
             doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
             doc.append("    {}".format(i.abstract or i.title))
-            #if i.metadata:
+            # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
         doc.append('')
 
@@ -234,7 +231,6 @@ class BirdyMod():
         doc.extend(['', ''])
         doc.append(3 * '\"')
         return '\n'.join(doc)
-
 
     def fmt_type(self, obj):
         """Input and output type formatting (type, default and allowed
@@ -275,10 +271,3 @@ class BirdyMod():
         except Exception as e:
             raise type(e)(e.message + ' in {0} docstring'.format(obj.identifier))
         return doc
-
-
-
-
-
-
-
