@@ -7,6 +7,7 @@ from collections import OrderedDict
 from owslib.wps import ComplexDataInput, ComplexData
 from birdy.cli.base import BirdyCLI
 from owslib.wps import WebProcessingService
+from six import iteritems
 """
 To test, launch emu, then
 
@@ -175,7 +176,7 @@ class BirdyMod():
 
         return template.format(
             process.identifier,
-            ', '.join(args + ['{}={}'.format(k, repr(v)) for k, v in kwds.iteritems()]))
+            ', '.join(args + ['{}={}'.format(k, repr(v)) for k, v in iteritems(kwds)]))
 
     def get_args(self, process):
         """Return a list of positional arguments and a dictionary of optional keyword arguments
