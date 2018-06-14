@@ -2,6 +2,7 @@ import pytest
 from birdy import native_client
 
 
+@pytest.mark.online
 def test_BirdyMod():
     m = native_client(url="http://localhost:5000/wps")
     assert m.hello('david') == 'Hello david'
