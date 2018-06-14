@@ -1,3 +1,13 @@
+"""
+To test this module, launch emu, then
+
+from birdy import native_client
+emu = native_client('http://127.0.0.1:5000/')
+emu.hello('Carsten')
+---
+emu.wordcounter('http://www.gutenberg.org/cache/epub/19033/pg19033.txt')
+"""
+
 import os
 import types
 import inspect
@@ -8,19 +18,6 @@ from owslib.wps import ComplexDataInput, ComplexData
 from birdy.cli.base import BirdyCLI
 from owslib.wps import WebProcessingService
 from six import iteritems
-"""
-To test, launch emu, then
-
-
-from birdy import native_client
-emu = native_client('http://127.0.0.1:5000/')
-emu.hello('Carsten')
-
-
----
-emu.wordcounter('http://www.gutenberg.org/cache/epub/19033/pg19033.txt')
-
-"""
 
 
 # TODO: Deal with authorizations
