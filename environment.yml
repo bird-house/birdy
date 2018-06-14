@@ -10,6 +10,8 @@ dependencies:
   - owslib>=0.17
   - click
   - jinja2
+  - wrapt
+  - funcsigs
 # tests
 #  - pytest
 #  - flake8
