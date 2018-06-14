@@ -10,14 +10,12 @@ emu.wordcounter('http://www.gutenberg.org/cache/epub/19033/pg19033.txt')
 
 import os
 import types
-import inspect
 import wrapt
 from funcsigs import signature  # Py2 Py3 would be from inspect import signature
 from collections import OrderedDict
-from owslib.wps import ComplexDataInput, ComplexData
+from owslib.wps import ComplexDataInput
 from birdy.cli.base import BirdyCLI
 from owslib.wps import WebProcessingService
-from six import iteritems
 
 
 # TODO: Deal with authorizations
@@ -56,7 +54,7 @@ def native_client(url, name=None):
     return mod
 
 
-class BirdyMod():
+class BirdyMod:
     """
     Construct functions out of WPS processes so they behave as native python functions.
     """
@@ -70,7 +68,6 @@ class BirdyMod():
         self.name = name
 
         # Store the process description returned by wps.describeprocess.
-
         self.inputs = {}
         self.outputs = {}
 
@@ -92,7 +89,6 @@ class BirdyMod():
         sig = self.build_function_sig(proc)
         doc = self.build_doc(proc)
 
-        # print(sig)
         # Create function in the local scope and assign docstring.
         exec(sig)
         f = locals()[pid]
@@ -110,7 +106,22 @@ class BirdyMod():
 
         @wrapt.decorator
         def wrapper(wrapped, instance, args, kwds):
-            """Bind the function's arguments to the signature."""
+            """Bind the function's arguments to the signature and execute the request.
+
+            Parameters
+            ----------
+            wrapped : function
+              Dummy function whose signature is used to map positional arguments to input identifiers.
+            instance : object
+              None in this case. This is required by the wrapt.decorator.
+
+
+            Notes
+            -----
+            Positional and keyword arguments are all mapped to keyword arguments according
+            to the dummy function's signature. These keyword arguments are then passed to
+            `execute`.
+            """
             sig = signature(wrapped)
             ba = sig.bind(*args, **kwds)
             out = self.execute(wrapped.__name__, **ba.arguments)
@@ -118,17 +129,29 @@ class BirdyMod():
 
         return wrapper
 
-    def execute(self, identifier, *args, **kwds):
-        """
+    def execute(self, identifier, **kwds):
+        """Sends an execute request to the WPS server.
+
+        Parameters
+        ----------
+        identifier : str
+          Process identifier.
+
+        kwds : {}
+          Process input dictionary, keyed by input identifier. Type conversion,
+          for example to `ComplexDataInput` is done within this method.
+
+        Notes
+        -----
 
         """
-        from owslib.wps import SYNC, ASYNC
-        frame = inspect.currentframe()
-        args = inspect.getargvalues(frame)
+        from owslib.wps import SYNC
 
         inputs = []
-        for key, values in args.locals['kwds'].items():
+        for key, values in kwds.items():
             inp = self.inputs[identifier][key]
+
+            # Input type conversion
             typ = BirdyCLI.get_param_type(inp)
             if values is not None:
                 values = typ.convert(values, key, None)
@@ -141,11 +164,9 @@ class BirdyMod():
         outputs = self.build_output(self.processes[identifier])
 
         # Execute request in synchronous mode
-        # print(inputs)
-        # print(outputs)
         resp = self.wps.execute(identifier=identifier, inputs=inputs, output=outputs, mode=SYNC)
 
-        # Parse output
+        # Output type conversion
         out = []
         for o in resp.processOutputs:
             if o.reference is not None:
@@ -173,7 +194,7 @@ class BirdyMod():
 
         return template.format(
             process.identifier,
-            ', '.join(args + ['{}={}'.format(k, repr(v)) for k, v in iteritems(kwds)]))
+            ', '.join(args + ['{}={}'.format(k, repr(v)) for k, v in kwds.items()]))
 
     def get_args(self, process):
         """Return a list of positional arguments and a dictionary of optional keyword arguments
@@ -181,16 +202,16 @@ class BirdyMod():
 
         args = []
         kwds = OrderedDict()
-        for input in process.dataInputs:
+        for inp in process.dataInputs:
 
             # Store for future reference. See `execute`.
-            self.inputs[process.identifier][input.identifier] = input
+            self.inputs[process.identifier][inp.identifier] = inp
 
-            default = BirdyCLI.get_param_default(input)
+            default = BirdyCLI.get_param_default(inp)
             if default is None:
-                args.append(input.identifier)
+                args.append(inp.identifier)
             else:
-                kwds[input.identifier] = default
+                kwds[inp.identifier] = default
 
         for output in process.processOutputs:
             # Store for future reference. See `execute`.
@@ -206,7 +227,7 @@ class BirdyMod():
     def build_doc(self, process):
         """Return function docstring built from WPS metadata."""
 
-        doc = [3 * '\"']
+        doc = list([3 * '\"'])
         doc.append(process.abstract)
         doc.append('')
 
@@ -230,7 +251,8 @@ class BirdyMod():
         doc.append(3 * '\"')
         return '\n'.join(doc)
 
-    def fmt_type(self, obj):
+    @staticmethod
+    def fmt_type(obj):
         """Input and output type formatting (type, default and allowed
         values).
         """
