@@ -89,8 +89,7 @@ class Config:
 
     @asobject.setter
     def asobject(self, value):
-        assert type(value) == bool
-        self._asobject = value
+        self._asobject = bool(value)
 
     @property
     def convert(self):
@@ -111,6 +110,8 @@ class TextConverter:
           Output object to be converted.
         """
         self.obj = output
+        self.check()
+
 
     @property
     def default(self):
@@ -132,7 +133,7 @@ class TextConverter:
         self._default = value
 
     def check(self):
-        assert True
+        return None
 
     def __call__(self, data=None):
         """Do the conversion from text or bytes to python object."""
@@ -176,7 +177,8 @@ class Netcdf4Converter(TextConverter):
 
     def check(self):
         import netCDF4
-        assert netCDF4.getlibversion() > '4.5'
+        if netCDF4.getlibversion() < '4.5':
+            raise NotImplementedError
 
     @property
     def netcdf4(self):
@@ -252,10 +254,11 @@ def native_client(url, name=None, processes=None, **kwds):
         processes = bm.processes.keys()
 
     else:
-        if type(processes) in six.string_types:
+        if isinstance(processes, six.string_types):
             processes = [processes, ]
-        for p in processes:
-            assert p in bm.processes.keys()
+
+        if not set(processes).issubset(bm.processes.keys()):
+            raise ValueError("Unrecognized process name.")
 
     # Generate module functions based on `describeProcess` response.
     for p in processes:

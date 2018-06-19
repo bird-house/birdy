@@ -36,17 +36,14 @@ def test_only_one():
 
 @pytest.mark.online
 def test_netcdf():
-    try:
-        import netCDF4 as nc
-        assert nc.getlibversion() > '4.5'
-    except ImportError:
-        pytest.skip("Test requires netCDF4>=4.5.")
 
-    m = native_client(url=url, processes=['output_formats'], asobject=True)
-    ncdata, jsondata = m.output_formats()
-    assert isinstance(ncdata, nc.Dataset)
-    ncdata.close()
-    assert isinstance(jsondata, dict)
+    import netCDF4 as nc
+    if nc.getlibversion() > '4.5':
+        m = native_client(url=url, processes=['output_formats'], asobject=True)
+        ncdata, jsondata = m.output_formats()
+        assert isinstance(ncdata, nc.Dataset)
+        ncdata.close()
+        assert isinstance(jsondata, dict)
 
 
 def count_mod_func(mod):
@@ -69,5 +66,7 @@ def test_jsonconverter():
 
 def test_config():
     c = native.Config()
-    with pytest.raises(AssertionError):
-        c.asobject = 1
+    c.asobject = 1
+    assert c.asobject == True
+
+
