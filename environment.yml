@@ -13,5 +13,5 @@ dependencies:
   - wrapt
   - funcsigs
 # tests
-#  - pytest
+  - pytest # Otherwise there is a risk of loosing a lot of time finding which test don't work...
 #  - flake8
