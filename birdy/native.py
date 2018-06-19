@@ -59,7 +59,7 @@ import six
 
 
 # TODO: Add credentials and tokens
-class Config:
+class Config(object):
     """Configuration class for the BirdMod class and the module it generates. It is designed to
     be used dynamically to modify the behavior of the module before or after its generation.
 
@@ -97,7 +97,7 @@ class Config:
         return self._convert
 
 
-class TextConverter:
+class TextConverter(object):
     mimetype = 'text/plain'
     _default = 'str'
 
@@ -126,12 +126,13 @@ class TextConverter:
             raise Exception("This instance has no converter for {}.".format(value))
 
         except ImportError as e:
-            print("{} converter has unmet dependencies: {}".format(value))
+            print("{} converter has unmet dependencies: {}".format(value, e))
             raise e
 
         self._default = value
 
-    def check(self):
+    @staticmethod
+    def check():
         return None
 
     def __call__(self, data=None):
@@ -174,7 +175,8 @@ class Netcdf4Converter(TextConverter):
     mimetype = 'application/x-netcdf'
     _default = 'netcdf4'
 
-    def check(self):
+    @staticmethod
+    def check():
         import netCDF4
         if netCDF4.getlibversion() < '4.5':
             raise NotImplementedError
@@ -393,7 +395,7 @@ class BirdyMod:
     @staticmethod
     def delist(val):
         """Return list item if list contains only one element."""
-        if type(val) == list and len(val) == 1:
+        if isinstance(val, list) and len(val) == 1:
             return val[0]
         else:
             return val

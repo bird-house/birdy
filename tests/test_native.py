@@ -67,4 +67,4 @@ def test_jsonconverter():
 def test_config():
     c = native.Config()
     c.asobject = 1
-    assert c.asobject is True
+    assert isinstance(c.asobject, bool)
