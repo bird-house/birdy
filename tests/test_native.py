@@ -69,5 +69,6 @@ def test_jsonconverter():
 
 def test_config():
     c = native.Config()
-    with pytest.raises(AssertionError):
+    # Python 3: AssertionError, Python 2.7: exceptions.AssertionError
+    with pytest.raises(Exception):
         c.asobject = 1
