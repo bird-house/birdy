@@ -78,7 +78,7 @@ class Config:
                          'application/x-netcdf': Netcdf4Converter,
                          'application/json': JSONConverter,
                          'application/geojson': GeoJSONConverter,
-                         #'application/x-zipped-shp': ShpConverter,
+                         # 'application/x-zipped-shp': ShpConverter,
                          }
 
     @property
