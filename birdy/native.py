@@ -112,7 +112,6 @@ class TextConverter:
         self.obj = output
         self.check()
 
-
     @property
     def default(self):
         """Default conversion function."""
