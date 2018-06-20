@@ -146,9 +146,12 @@ class TextConverter(object):
         # Launch conversion
         return c(data)
 
-    @property
-    def str(self):
-        return str
+    def str(self, data):
+        if isinstance(data, bytes):
+            return data.decode('utf-8')
+        elif isinstance(data, str):
+            return data
+
 
 
 class JSONConverter(TextConverter):

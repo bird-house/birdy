@@ -14,15 +14,18 @@ def test_birdmod():
     assert m.binaryoperatorfornumbers(inputa=1, inputb=2, operator='add') == 3.0
     assert m.dummyprocess(10, 20) == ['11', '19']
 
-    txt, ref = m.multiple_outputs(2)
+    # As reference
+    out_r, ref_r = m.multiple_outputs(2)
+    assert out_r.startswith('http')
+    assert out_r.endswith('.txt')
+    assert ref_r.startswith('http')
+    assert ref_r.endswith('.json')
 
-    assert type(txt) == str
-    assert type(ref) == str
-
+    # As objects
     m._config.asobject = True
-    txt, ref = m.multiple_outputs(2)
-    assert type(txt) == str
-    assert type(ref) == dict
+    out_o, ref_o = m.multiple_outputs(2)
+    assert out_o == "my output file number 1"
+    assert type(ref_o) == dict
 
 
 @pytest.mark.online
