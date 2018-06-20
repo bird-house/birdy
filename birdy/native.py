@@ -153,7 +153,6 @@ class TextConverter(object):
             return data
 
 
-
 class JSONConverter(TextConverter):
     mimetype = 'application/json'
     _default = 'json'
