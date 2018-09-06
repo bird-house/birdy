@@ -1,6 +1,15 @@
 Change History
 **************
 
+0.4.0 (2018-09-06)
+==================
+
+Release for Dar Es Salaam.
+
+Changes:
+
+* Bugfixes: #41
+
 0.3.3 (2018-07-18)
 ==================
 
