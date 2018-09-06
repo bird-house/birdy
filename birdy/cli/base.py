@@ -63,7 +63,7 @@ class BirdyCLI(click.MultiCommand):
             for inp in pp.dataInputs:
                 cmd['options'].append(dict(
                     name=inp.identifier,
-                    default=BirdyCLI.get_param_default(inp),
+                    # default=BirdyCLI.get_param_default(inp),
                     help=inp.title or '',
                     type=BirdyCLI.get_param_type(inp),
                     multiple=inp.maxOccurs > 1))
