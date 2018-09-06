@@ -8,7 +8,8 @@ Release for Dar Es Salaam.
 
 Changes:
 
-* Bugfixes: #41
+* Conda support on RTD (#42).
+* Fix optional input (#41).
 
 0.3.3 (2018-07-18)
 ==================
