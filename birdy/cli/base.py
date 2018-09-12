@@ -87,7 +87,7 @@ class BirdyCLI(click.MultiCommand):
 
     @staticmethod
     def get_param_type(param):
-        if param.dataType == None:
+        if param.dataType is None:
             param_type = click.STRING
         elif 'boolean' in param.dataType:
             param_type = click.BOOL
