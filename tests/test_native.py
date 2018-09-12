@@ -24,7 +24,7 @@ def test_birdmod():
     # As objects
     m._config.asobject = True
     out_o, ref_o = m.multiple_outputs(2)
-    assert out_o == "my output file number 1"
+    assert out_o == "my output file number 0"
     assert type(ref_o) == dict
 
 
