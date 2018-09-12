@@ -41,7 +41,7 @@ Get a list of available processes on WPS with URL http://localhost:5000/wps:
 
 
 Use client certificate to access WPS service
-============================================
+--------------------------------------------
 
 If the WPS service is secured by x509 certificates you can add a certificate
 with the ``--cert`` option to a request.
@@ -56,3 +56,9 @@ with the ``--cert`` option to a request.
    $ birdy hello -h
    # run hello with certificate
    $ birdy --cert cert.pem hello --name tux
+
+
+Using the console
+=================
+
+.. automodule:: birdy.native
