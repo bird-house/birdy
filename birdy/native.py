@@ -1,7 +1,4 @@
 """
-Native Python client for WPS Processes
-======================================
-
 The :func:`native_client` function *imports* on the fly a python module whose
 functions call WPS processes. The module is generated at runtime based on the
 process description provided by the WPS server. Calling a function sends
