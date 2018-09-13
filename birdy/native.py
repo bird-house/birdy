@@ -19,8 +19,8 @@ Example
 -------
 If a WPS server with a simple `hello` process is running on the local host on port 5000::
 
-  >>> from birdy import native_client
-  >>> emu = native_client('http://localhost:5000/')
+  >>> from birdy import import_wps
+  >>> emu = import_wps('http://localhost:5000/')
   >>> emu.hello
   <function birdy.native.hello(name)>
   >>> print(emu.hello.__doc__)
@@ -56,6 +56,8 @@ import six
 
 
 # TODO: Add credentials and tokens
+# TODO: Log requests if not already done by owslib (then expose)
+# TODO: Support passing ComplexInput's data using POST.
 class Config(object):
     """Configuration class for the BirdMod class and the module it generates. It is designed to
     be used dynamically to modify the behavior of the module before or after its generation.
@@ -205,7 +207,7 @@ class ShpConverter(TextConverter):
 
 
 # TODO: Deal with authorizations
-def native_client(url, name=None, processes=None, **kwds):
+def import_wps(url, name=None, processes=None, **kwds):
     """Return a module with functions calling the WPS processes
      available at the given url.
 
@@ -231,7 +233,7 @@ def native_client(url, name=None, processes=None, **kwds):
 
     Example
     -------
-    >>> emu = native_client('<server url>')
+    >>> emu = import_wps('<server url>')
     >>> emu.hello('stranger')
     'Hello stranger'
 
@@ -370,9 +372,10 @@ class BirdyMod:
             inp = self.inputs[identifier][key]
 
             # Input type conversion
-            typ = BirdyCLI.get_param_type(inp)
-            if values is not None:
-                values = typ.convert(values, key, None)
+            if inp.dataType is not None:
+                typ = BirdyCLI.get_param_type(inp)
+                if values is not None:
+                    values = typ.convert(values, key, None)
 
             if isinstance(values, ComplexDataInput):
                 inputs.append(("{}".format(key), values))

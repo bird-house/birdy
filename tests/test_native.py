@@ -1,6 +1,6 @@
 import pytest
 import json
-from birdy import native_client
+from birdy import import_wps
 from birdy import native
 
 # This tests assumes Emu is running on the localhost
@@ -9,7 +9,7 @@ url = "http://localhost:5000/wps"
 
 @pytest.mark.online
 def test_birdmod():
-    m = native_client(url=url)
+    m = import_wps(url=url)
     assert m.hello('david') == 'Hello david'
     assert m.binaryoperatorfornumbers(inputa=1, inputb=2, operator='add') == 3.0
     assert m.dummyprocess(10, 20) == ['11', '19']
@@ -30,10 +30,10 @@ def test_birdmod():
 
 @pytest.mark.online
 def test_only_one():
-    m = native_client(url=url, processes=['nap'])
+    m = import_wps(url=url, processes=['nap'])
     assert count_mod_func(m) == 1
 
-    m = native_client(url=url, processes='nap')
+    m = import_wps(url=url, processes='nap')
     assert count_mod_func(m) == 1
 
 
@@ -42,7 +42,7 @@ def test_netcdf():
 
     import netCDF4 as nc
     if nc.getlibversion() > '4.5':
-        m = native_client(url=url, processes=['output_formats'], asobject=True)
+        m = import_wps(url=url, processes=['output_formats'], asobject=True)
         ncdata, jsondata = m.output_formats()
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
