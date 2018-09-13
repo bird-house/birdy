@@ -387,7 +387,7 @@ class BirdyMod:
         # Output type conversion
         out = []
         for o in resp.processOutputs:
-            out.append(self.process_output(o))
+            out.append(self.process_output(o, identifier=identifier))
 
         return self.delist(out)
 
@@ -399,12 +399,14 @@ class BirdyMod:
         else:
             return val
 
-    def process_output(self, out):
+    def process_output(self, out, identifier=None):
         """Process the output response, whether it is actual data or a URL to a file."""
 
         # Get the data for recognized types.
         if out.data:
-            typ = BirdyCLI.get_param_type(out)
+            # The dataType is an optional response output. So we better rely on the process description.
+            typ = BirdyCLI.get_param_type(self.outputs[identifier][out.identifier])
+
             data = [typ.convert(d, out.identifier, None) for d in out.data]
             return self.delist(data)
 

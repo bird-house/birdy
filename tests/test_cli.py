@@ -30,3 +30,13 @@ def test_hello():
     result = runner.invoke(cli, ['hello', '--help'])
     assert result.exit_code == 0
     assert '--name' in result.output
+
+    result = runner.invoke(cli, ['hello', '--name', 'stranger'])
+    assert result.exit_code == 0
+
+
+@pytest.mark.online
+def test_multiple_outputs():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['multiple_outputs', '--count 2', ])
+    assert result.exit_code == 0
