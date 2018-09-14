@@ -31,11 +31,17 @@ def test_hello():
     assert result.exit_code == 0
     assert '--name' in result.output
 
+
+@pytest.mark.online
+@pytest.mark.skip(reason="hidden traceback")
+def test_hello_stranger():
+    runner = CliRunner()
     result = runner.invoke(cli, ['hello', '--name', 'stranger'])
     assert result.exit_code == 0
 
 
 @pytest.mark.online
+@pytest.mark.skip(reason="hidden traceback")
 def test_multiple_outputs():
     runner = CliRunner()
     result = runner.invoke(cli, ['multiple_outputs', '--count 2', ])
