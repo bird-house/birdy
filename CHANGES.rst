@@ -6,6 +6,7 @@ Change History
 
 Changes:
 
+* Fixed test-suite (#49).
 * Import native client with `import_wps` (#47).
 * Fix: using string type when dataType is not provided (#46).
 * Updated docs for native client (#43).
