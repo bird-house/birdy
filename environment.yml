@@ -12,6 +12,8 @@ dependencies:
   - jinja2
   - wrapt
   - funcsigs
+# optional
+  - netcdf4
 # tests
   - pytest # Otherwise there is a risk of loosing a lot of time finding which test don't work...
 #  - flake8
