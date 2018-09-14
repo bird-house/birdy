@@ -1,6 +1,15 @@
 Change History
 **************
 
+0.4.1 (2018-09-14)
+==================
+
+Changes:
+
+* Import native client with `import_wps` (#47).
+* Fix: using string type when dataType is not provided (#46).
+* Updated docs for native client (#43).
+
 0.4.0 (2018-09-06)
 ==================
 
