@@ -1,6 +1,6 @@
 argcomplete
 lxml
-owslib>=0.16
+owslib>=0.17
 six
 wrapt
 funcsigs
