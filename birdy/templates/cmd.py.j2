@@ -28,6 +28,9 @@ def cli(ctx, **options):
     wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers)
     inputs = []
     for opt in options.keys():
+        if not options[opt]:
+            # skip unset parameters (probably optional)
+            continue
         if isinstance(options[opt], ComplexDataInput):
             inputs.append(("{}".format(opt), options[opt]))
         else:

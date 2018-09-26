@@ -66,10 +66,14 @@ class BirdyCLI(click.MultiCommand):
         if details:
             pp = self.wps.describeprocess(name)
             for inp in pp.dataInputs:
+                help = inp.title or ''
+                default = BirdyCLI.get_param_default(inp)
+                if default:
+                    help = "{}. Default: {}".format(help, default)
                 cmd['options'].append(dict(
                     name=inp.identifier,
                     # default=BirdyCLI.get_param_default(inp),
-                    help=inp.title or '',
+                    help=help,
                     type=BirdyCLI.get_param_type(inp),
                     multiple=inp.maxOccurs > 1))
         return cmd
