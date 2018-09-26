@@ -1,13 +1,21 @@
 Change History
 **************
 
+0.4.2 (2018-09-26)
+==================
+
+Changes:
+
+* Fixed WPS default parameter (#52).
+* Using ``WPS_SSL_VERIFY`` environment variable (#50).
+
 0.4.1 (2018-09-14)
 ==================
 
 Changes:
 
 * Fixed test-suite (#49).
-* Import native client with `import_wps` (#47).
+* Import native client with ``import_wps`` (#47).
 * Fix: using string type when dataType is not provided (#46).
 * Updated docs for native client (#43).
 
