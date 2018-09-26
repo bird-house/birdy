@@ -25,7 +25,6 @@ Get a list of available processes on WPS with URL http://localhost:5000/wps:
 
    Options:
      --version         Show the version and exit.
-     -k, --insecure    Don't validate the server's certificate.
      --cert TEXT       Client side certificate containing both certificate and
                        private key.
      -s, --sync        Execute process in sync mode. Default: async mode.
@@ -39,6 +38,19 @@ Get a list of available processes on WPS with URL http://localhost:5000/wps:
      bbox                      Bounding box in- and out: Give bounding box,...
      hello                     Say Hello: Just says a friendly Hello.Returns...
 
+Configure SSL verification for HTTPS
+------------------------------------
+
+In case you are a WPS serive using HTTPS with a self-signed certificate you need to configure
+the environment variable ``WPS_SSL_VERIFY``:
+
+.. code-block:: sh
+
+  $ export WPS_SSL_VERIFY=false  # deactivate SSL server validation for a self-signed certificate.
+
+You can also set the path of the service certificate.
+Read the `requests documentation <http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification>`_.
+
 
 Use client certificate to access WPS service
 --------------------------------------------
@@ -50,6 +62,7 @@ with the ``--cert`` option to a request.
 
    # set WPS service
    $ export WPS_SERVICE=https://localhost:5000/ows/proxy/emu
+   $ export WPS_SSL_VERIFY=false  # deactivate SSL server validation for a self-signed certificate.
    # available processes
    $ birdy -h
    # details of the "hello" process

@@ -18,7 +18,6 @@ Show the processes of a Web Processing Service:
 
     Options:
       --version         Show the version and exit.
-      -k, --insecure    Don't validate the server's certificate.
       --cert TEXT       Client side certificate containing both certificate and
                         private key.
       -s, --sync        Execute process in sync mode. Default: async mode.

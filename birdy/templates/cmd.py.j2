@@ -1,10 +1,12 @@
 import click
 from click import STRING, INT, FLOAT, BOOL
+from requests.exceptions import SSLError
 from owslib.wps import WebProcessingService
 from owslib.wps import ComplexDataInput
 from owslib.wps import SYNC, ASYNC
 from birdy.cli.types import COMPLEX
 from birdy.cli.misc import monitor
+from birdy.exceptions import ConnectionError
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
@@ -21,7 +23,7 @@ def cli(ctx, **options):
     headers = {}
     if 'token' in ctx.obj:
         headers = {'Access-Token': ctx.obj['token']}
-    verify = not ctx.obj.get('insecure', False)
+    verify = ctx.obj.get('verify', True)
     cert = ctx.obj.get('cert')
     wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers)
     inputs = []
@@ -34,5 +36,8 @@ def cli(ctx, **options):
         mode = SYNC
     else:
         mode = ASYNC
-    execution = wps.execute('{{ name }}', inputs=inputs, output='output', mode=mode)
-    monitor(execution)
+    try:
+        execution = wps.execute('{{ name }}', inputs=inputs, output='output', mode=mode)
+        monitor(execution)
+    except SSLError:
+        raise ConnectionError('SSL verification of server certificate failed.')
