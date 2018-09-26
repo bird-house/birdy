@@ -1,10 +1,12 @@
 import os
 import click
+from requests.exceptions import SSLError
 from jinja2 import Environment, PackageLoader
 from owslib.wps import WebProcessingService
 from collections import OrderedDict
 from birdy.exceptions import ConnectionError
 from birdy.cli.types import COMPLEX
+from birdy.cli.misc import get_ssl_verify
 
 
 template_env = Environment(
@@ -24,14 +26,17 @@ class BirdyCLI(click.MultiCommand):
     def __init__(self, name=None, url=None, xml=None, **attrs):
         click.MultiCommand.__init__(self, name, **attrs)
         self.url = os.environ.get('WPS_SERVICE') or url
+        self.verify = get_ssl_verify()
         self.xml = xml
-        self.wps = WebProcessingService(self.url, verify=True, skip_caps=True)
+        self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True)
         self.commands = OrderedDict()
 
     def _update_commands(self):
         if not self.commands:
             try:
                 self.wps.getcapabilities(xml=self.xml)
+            except SSLError:
+                raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
             except Exception:
                 raise ConnectionError("Web Processing Service not available.")
             for process in self.wps.processes:
