@@ -12,6 +12,8 @@ def monitor(execution):
         click.echo('Output:')
         for output in execution.processOutputs:
             click.echo('{}={}'.format(output.identifier, output.data or output.reference))
+    else:
+        click.echo('Process execution failed.')
 
 
 def get_ssl_verify():

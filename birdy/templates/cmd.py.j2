@@ -1,6 +1,8 @@
 import click
 from click import STRING, INT, FLOAT, BOOL
 from requests.exceptions import SSLError
+import OpenSSL
+from six.moves.urllib.parse import quote
 from owslib.wps import WebProcessingService
 from owslib.wps import ComplexDataInput
 from owslib.wps import SYNC, ASYNC
@@ -25,6 +27,10 @@ def cli(ctx, **options):
         headers = {'Access-Token': ctx.obj['token']}
     verify = ctx.obj.get('verify', True)
     cert = ctx.obj.get('cert')
+    send = ctx.obj.get('send', False)
+    if send and cert:
+        with open(cert, 'r') as fh:
+            headers = {'X-Ssl-Client-Cert': quote(fh.read())}
     wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers)
     inputs = []
     for opt in options.keys():
@@ -44,3 +50,7 @@ def cli(ctx, **options):
         monitor(execution)
     except SSLError:
         raise ConnectionError('SSL verification of server certificate failed.')
+    except OpenSSL.SSL.Error:
+        raise ConnectionError('SSL error occurred. Did you use an invalid client certificate?')
+    except Exception:
+        raise ConnectionError('Connection failed.')
