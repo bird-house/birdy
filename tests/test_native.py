@@ -36,10 +36,10 @@ def test_birdmod():
 @pytest.mark.online
 def test_only_one():
     m = import_wps(url=url, processes=["nap"])
-    assert count_mod_func(m) == 1
+    assert count_class_methods(m) == 1
 
     m = import_wps(url=url, processes="nap")
-    assert count_mod_func(m) == 1
+    assert count_class_methods(m) == 1
 
 
 @pytest.mark.online
@@ -55,13 +55,13 @@ def test_netcdf():
         assert isinstance(jsondata, dict)
 
 
-def count_mod_func(mod):
+def count_class_methods(class_):
     import types
 
     return len(
         [
             f
-            for f in mod.__dict__.values()
+            for f in class_.__dict__.values()
             if isinstance(f, types.MethodType) and not f.__name__.startswith("_")
         ]
     )
@@ -78,4 +78,3 @@ def test_jsonconverter():
 
     j = native.JSONConverter()
     assert j.convert_data(s) == d
-
