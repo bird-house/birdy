@@ -96,8 +96,6 @@ class BaseConverter(object):
         # Launch conversion
         return self.convert_data(data)
 
-    __call__ = convert
-
     def convert_data(self, data):
         """
         Args:
