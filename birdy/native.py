@@ -44,79 +44,26 @@ If a WPS server with a simple `hello` process is running on the local host on po
   'Hello stranger'
 
 """
-import os
-import types
-from textwrap import dedent
+from copy import copy
 
-import wrapt
-from funcsigs import signature  # Py2 Py3 would be from inspect import signature
+import click
+import six
+import types
+from importlib import import_module
 from collections import OrderedDict
 
-form
-boltons.funcutils
-import FunctionBuilder
-
 from owslib.util import ServiceException
-from owslib.wps import ComplexDataInput, WPS_DEFAULT_VERSION, SYNC
-from birdy.cli.base import BirdyCLI
+from owslib.wps import WPS_DEFAULT_VERSION, SYNC
 from owslib.wps import WebProcessingService
-import six
+from boltons.funcutils import FunctionBuilder
+
+from birdy.cli.base import BirdyCLI
+from birdy.utils import delist
 
 
-# TODO: Add credentials and tokens
-# TODO: Log requests if not already done by owslib (then expose)
-# TODO: Support passing ComplexInput's data using POST.
-class Config(object):
-    """Configuration class for the BirdMod class and the module it generates. It
-    is designed to be used dynamically to modify the behavior of the module
-    before or after its generation.
-
-    Args:
-        asobject (bool): Whether output responses should be dynamically
-            retrieved and converted to Python objects. If False the output for
-            ComplexOutput objects will be a link to the output file.
-        convert ({str, class}): A dictionary keyed by mimetype storing the
-            conversion class.
-    """
-
-    def __init__(self, asobject=False):
-        """
-        Args:
-            asobject:
-        """
-        self._asobject = asobject
-        self._convert = {
-            "text/plain": TextConverter,
-            "application/x-netcdf": Netcdf4Converter,
-            "application/json": JSONConverter,
-            "application/geojson": GeoJSONConverter,
-            # 'application/x-zipped-shp': ShpConverter,
-        }
-
-    @property
-    def asobject(self):
-        """Whether or not a file output will be returned as an object or a URL
-        string.
-        """
-        return self._asobject
-
-    @asobject.setter
-    def asobject(self, value):
-        """
-        Args:
-            value:
-        """
-        self._asobject = bool(value)
-
-    @property
-    def convert(self):
-        """Dictionary of conversion classes."""
-        return self._convert
-
-
-class TextConverter(object):
-    mimetype = "text/plain"
-    _default = "str"
+class BaseConverter(object):
+    mimetype = None
+    # _default = None
 
     def __init__(self, output=None):
         """Instantiate the conversion class.
@@ -124,196 +71,204 @@ class TextConverter(object):
         Args:
             output (owslib.wps.Output): Output object to be converted.
         """
-        self.obj = output
-        self.check()
+        self.output = output
+        self.check_dependencies()
 
-    @property
-    def default(self):
-        """Default conversion function."""
-        return self._default
+    def check_dependencies(self):
+        pass
 
-    @default.setter
-    def default(self, value):
+    def _check_import(self, name, package=None):
         """
         Args:
-            value:
+            name: module name to try to import
+            package: package of the module
         """
         try:
-            getattr(self, value)
-
-        except AttributeError:
-            raise Exception("This instance has no converter for {}.".format(value))
-
+            import_module(name, package)
         except ImportError as e:
-            print("{} converter has unmet dependencies: {}".format(value, e))
-            raise e
+            message = "Class {} has unmet dependencies: {}"
+            raise type(e)(message.format(self.__name__, name))
 
-        self._default = value
+    def convert(self):
+        """Do the conversion from text or bytes to python object."""
+        data = self.output.retrieveData()
 
-    @staticmethod
-    def check():
-        return None
+        # Launch conversion
+        return self.convert_data(data)
 
+    __call__ = convert
 
-def __call__(self, data=None):
-    """Do the conversion from text or bytes to python object.
-
-    Args:
-        data:
-    """
-    # Get default converter
-    c = getattr(self, self.default)
-
-    if data is None:
-        data = self.obj.retrieveData()
-
-    # Launch conversion
-    return c(data)
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
+        raise NotImplementedError
 
 
-def str(self, data):
-    """
-    Args:
-        data:
-    """
-    if isinstance(data, bytes):
-        return data.decode("utf-8")
-    elif isinstance(data, str):
-        return data
+class TextConverter(BaseConverter):
+    mimetype = "text/plain"
+
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
+        if isinstance(data, bytes):
+            return data.decode("utf-8")
+        elif isinstance(data, str):
+            return data
 
 
-class JSONConverter(TextConverter):
+class JSONConverter(BaseConverter):
     mimetype = "application/json"
-    _default = "json"
 
-    @property
-    def json(self):
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
         import json
 
-        return json.loads
+        return json.loads(data)
 
 
-class GeoJSONConverter(TextConverter):
+class GeoJSONConverter(BaseConverter):
     mimetype = "application/geojson"
-    _default = "geojson"
 
-    @property
-    def geojson(self):
+    def check_dependencies(self):
+        self._check_import("geojson")
+
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
         import geojson
 
-        return geojson.loads
+        return geojson.loads(data)
 
 
-class Netcdf4Converter(TextConverter):
+class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
-    _default = "netcdf4"
 
-    @staticmethod
-    def check():
+    def check_dependencies(self):
+        self._check_import("netCDF4")
+        from netCDF4 import getlibversion
+
+        if getlibversion() < "4.5":
+            raise ImportError("netCDF4 library must be at least version 4.5")
+
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
         import netCDF4
 
-        if netCDF4.getlibversion() < "4.5":
-            raise NotImplementedError
-
-    @property
-    def netcdf4(self):
-        import netCDF4
-
-        return lambda x: netCDF4.Dataset(self.obj.fileName, memory=x)
+        return netCDF4.Dataset(self.output.fileName, memory=data)
 
 
-class ShpConverter(TextConverter):
+class ShpFionaConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
-    _default = "fiona"
 
-    @property
-    def fiona(self):
+    def check_dependencies(self):
+        self._check_import("fiona")
+
+    def convert(self):
         raise NotImplementedError
         # import fiona
         # import io
         # return lambda x: fiona.open(io.BytesIO(x))
 
-    @property
-    def ogr(self):
+
+class ShpOgrConverter(BaseConverter):
+    mimetype = "application/x-zipped-shp"
+
+    def check_dependencies(self):
+        self._check_import("ogr", package="osgeo")
+
+    def convert(self):
         raise NotImplementedError
         # from osgeo import ogr
         # return ogr.Open
+
+
+default_converters = {
+    TextConverter.mimetype: TextConverter,
+    JSONConverter.mimetype: JSONConverter,
+    GeoJSONConverter.mimetype: GeoJSONConverter,
+    Netcdf4Converter.mimetype: Netcdf4Converter,
+    # 'application/x-zipped-shp': ShpConverter,
+}
 
 
 class UnauthorizedException(ServiceException):
     pass
 
 
-def import_wps(
+# TODO: Add credentials and tokens
+# TODO: Log requests if not already done by owslib (then expose)
+# TODO: Support passing ComplexInput's data using POST.
+class BirdyClient(object):
+    """Returns a class where every public method is a WPS process available at
+    the given url.
+
+    Example:
+        >>> emu = BirdyClient(url='<server url>')
+        >>> emu.hello('stranger')
+        'Hello stranger'
+    """
+
+    def __init__(
+        self,
         url,
-        config=None,
         processes=None,
-        version=WPS_DEFAULT_VERSION,
+        convert_objects=True,
+        converters=None,
         username=None,
         password=None,
-        verbose=False,
-        skip_caps=False,
         headers=None,
         verify=True,
         cert=None,
-        asobject=False,
-):
-    """Returns a class with methods calling the WPS processes
-        available at the given url.
-
-    Example:
-        >>> emu = import_wps('<server url>')
-        >>> emu.hello('stranger')
-        'Hello stranger'
-
-    Args:
-        url (str): Link to WPS provider.
-        config (Config): an instance of :class:`Config`. Falls back to the
-            default configuration if None.
-        processes (bool): Name or list of process names to fetch. By default,
-            all processes will be imported.
-        version (str): passed to :class:`owslib.wps.WebProcessingService`
-        username (str): passed to :class:`owslib.wps.WebProcessingService`
-        password (str): passed to :class:`owslib.wps.WebProcessingService`
-        verbose (str): passed to :class:`owslib.wps.WebProcessingService`
-        headers (str): passed to :class:`owslib.wps.WebProcessingService`
-        verify (bool): passed to :class:`owslib.wps.WebProcessingService`
-        cert (str): passed to :class:`owslib.wps.WebProcessingService`
-        asobject (bool): False If True, the client will download the output
-            reference url and try to convert it to a know python object. If the
-            mime type is unknown, bytes in a string will be returned.
-
-    Returns:
-        _WPSWrapper: A class containing WPS processes as methods.
-
-    Notes:
-        Use the `config` attribute to modify the behavior of the class after it
-        has been generated: >>> emu.config.asobject = True
-    """
-    if not isinstance(config, Config):
-        config = Config()
-
-    return _WPSWrapper(
-        url=url,
-        config=config,
-        version=version,
-        username=username,
-        password=password,
-        verbose=verbose,
-        headers=headers,
-        verify=verify,
-        cert=cert
-    )
-
-
-class _WPSWrapper(object):
-    def __init__(
-            self, url, config, version, username, password, verbose, headers, verify, cert
+        verbose=False,
+        version=WPS_DEFAULT_VERSION,
     ):
-        self.url = url
-        self.config = config
-        self.inputs = {}
-        self.outputs = {}
+        """
+        Args:
+            url (str): Link to WPS provider. config (Config): an instance
+            processes: Specify a subset of processes to bind. Defaults to all
+                processes.
+            convert_objects: If True, object_converters will be used.
+            converters (dict): Correspondence of {mimetype: class} to convert
+                this mimetype to a python object.
+            username (str): passed to :class:`owslib.wps.WebProcessingService`
+            password (str): passed to :class:`owslib.wps.WebProcessingService`
+            headers (str): passed to :class:`owslib.wps.WebProcessingService`
+            verify (bool): passed to :class:`owslib.wps.WebProcessingService`
+            cert (str): passed to :class:`owslib.wps.WebProcessingService`
+            verbose (str): passed to :class:`owslib.wps.WebProcessingService`
+            version (str): WPS version to use.
+
+        Returns:
+            _WPSWrapper: A class containing WPS processes as methods.
+
+        Notes:
+            Use the `config` attribute to modify the behavior of the class after
+            it has been generated: >>> emu.config.asobject = True
+        """
+
+        self._url = url
+        self._processes_filter = processes
+        self._convert_objects = convert_objects
+        self._converters = converters or copy(default_converters)
+        self._username = username
+        self._password = password
+        self._headers = headers
+        self._verify = verify
+        self._cert = cert
+        self._verbose = verbose
+        self._version = version
 
         self.wps = WebProcessingService(
             url,
@@ -332,84 +287,127 @@ class _WPSWrapper(object):
         except UnauthorizedException:
             raise
 
-        self.processes = OrderedDict((p.identifier, p) for p in self.wps.processes)
+        list_filter = (
+            self._processes_filter
+            if not isinstance(self._processes_filter, six.string_types)
+            else [self._processes_filter]
+        )
 
-        for p in self.processes:
-            # todo: slug identifier
-            pid = p.identifier
-            setattr(self, pid, self.method_factory(pid))
+        self._processes = OrderedDict(
+            (p.identifier, p)
+            for p in self.wps.processes
+            if list_filter is None or p.identifier in list_filter
+        )
 
-    def get_capabilities(self):
-        pass  # todo
+        self._inputs = {}
+        self._outputs = {}
 
-    # todo: make this private
-    def method_factory(self, pid):
+        for pid in self._processes:
+            setattr(self, pid, types.MethodType(self._method_factory(pid), self))
+
+    def _method_factory(self, pid):
         """Create a custom function signature with docstring, instantiate it and
         pass it to a wrapper which will actually call the process.
 
         Args:
-            pid: Idenfifier of the WPS process
+            pid: Identifier of the WPS process
         """
         try:
-            self.processes[pid] = self.wps.describeprocess(pid)
+            self._processes[pid] = self.wps.describeprocess(pid)
         except UnauthorizedException:
             raise
 
-        process = self.processes[pid]
+        process = self._processes[pid]
 
-        input_defaults = {i.identifier: BirdyCLI.get_param_default(i) for i in process.dataInputs}
-        input_names = list(input_defaults)
+        input_defaults = {
+            i.identifier: BirdyCLI.get_param_default(i) for i in process.dataInputs
+        }
 
-        # todo: implement describe()
-        func = FunctionBuilder(
+        cleaned_locals = "{k: v for k, v in locals().items() if k not in %s}"
+        cleaned_locals = cleaned_locals % str(["self"])
+
+        func_builder = FunctionBuilder(
             name=pid,
-            doc=process.abstract,  # todo: make better doc
-            args=["self"],
-            kwonlyargs=input_names,
-            kwonlydefaults=input_defaults,
-            body=["self.execute({pid}, locals())".format(pid=pid)],
+            doc=self.build_doc(process),
+            args=["self"] + list(input_defaults),
+            defaults=tuple(input_defaults.values()),
+            body="return self.execute('{}', **{})".format(pid, cleaned_locals),
             filename=__file__,
             module=self.__module__,
         )
 
-        self.inputs[pid] = OrderedDict((i.identifier, i) for i in process.dataInputs)
-        self.outputs[pid] = OrderedDict((o.identifier, o) for o in process.dataOutputs)
+        self._inputs[pid] = {}
+        if hasattr(process, "dataInputs"):
+            self._inputs[pid] = OrderedDict(
+                (p.identifier, p) for p in process.dataInputs
+            )
+
+        self._outputs[pid] = {}
+        if hasattr(process, "dataOutputs"):
+            self.outputs[pid] = OrderedDict(
+                (p.identifier, p) for p in process.dataOutputs
+            )
+
+        func = func_builder.get_func()
 
         return func
 
     def execute(self, pid, **kwargs):
-        execute_inputs = {k: v for k, v in kwargs if k in self.inputs[pid]}
+        """
+        Args:
+            pid:
+            **kwargs:
+        """
+        execute_inputs = {k: v for k, v in kwargs.items() if k in self._inputs[pid]}
 
-        def convert_func(input_):
-            return ComplexDataInput if "ComplexData" in input_.dataType else str
+        def is_complex_input(input_):
+            return "ComplexData" in input_.dataType
 
-        inputs = [(k: convert_func(k)(v)) for k, v in execute_inputs.items()]
-
-        outputs = [(k, v.dataType == "ComplexData") for k, v in self.outputs[pid].items()]
+        wps_inputs = [
+            (k, convert_input_param(self._inputs[pid][k], v))
+            for k, v in execute_inputs.items()
+        ]
+        wps_outputs = [(o.identifier, is_complex_input(o)) for o in self._outputs[pid]]
 
         # Execute request in synchronous mode
         try:
-            resp = self.wps.execute(identifier=pid, inputs=inputs, output=outputs, mode=SYNC)
+            resp = self.wps.execute(
+                pid, inputs=wps_inputs, output=wps_outputs, mode=SYNC
+            )
         except UnauthorizedException:
             raise
 
         # Output type conversion
-        out = [self.process_output(o, pid) for o in resp.processOutputs]
-        value = out[0] if len(out) == 1 else out
+        outputs = [self._process_output(o) for o in resp.processOutputs]
+        value = delist(outputs)
 
         return value
 
-    def process_output(self, out, identifier=None):
+    def _process_output(self, output):
         """Process the output response, whether it is actual data or a URL to a
         file.
 
         Args:
-            out:
-            identifier:
+            output (owslib.wps.Output):
         """
 
-        # todo
+        # Get the data for recognized types.
+        if output.data:
+            data = [convert_output_param(output, d) for d in output.data]
+            return delist(data)
 
+        if self._convert_objects:
+            # Try to convert the bytes to an object.
+            converter = self._converters[output.mimeType](output)
+
+            # Convert raw response to python object.
+            # The default converter can be modified by users modifying
+            # the `default` property of the converter class
+            # ex: ShpConverter().default = "fiona"
+            return converter.convert()
+
+        else:
+            return output.reference
 
     def build_doc(self, process):
         """Return function docstring built from WPS metadata.
@@ -418,9 +416,7 @@ class _WPSWrapper(object):
             process:
         """
 
-        doc = list([3 * '"'])
-        doc.append(process.abstract)
-        doc.append("")
+        doc = [process.abstract, ""]
 
         # Inputs
         if process.dataInputs:
@@ -441,8 +437,7 @@ class _WPSWrapper(object):
                 doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
                 doc.append("    {}".format(i.abstract or i.title))
 
-        doc.extend(["", ""])
-        doc.append(3 * '"')
+        doc.append("")
         return "\n".join(doc)
 
     @staticmethod
@@ -456,36 +451,64 @@ class _WPSWrapper(object):
 
         doc = ""
         try:
-            if getattr(obj, "allowedValues", None):
+            if hasattr(obj, "allowedValues"):
                 av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
-            if len(obj.allowedValues) > nmax:
-                av += ", ..."
-
+                if len(obj.allowedValues) > nmax:
+                    av += ", ..."
                 doc += "{" + av + "}"
 
-            elif getattr(obj, "dataType", None):
+            if hasattr(obj, "dataType"):
                 doc += obj.dataType
 
-            elif getattr(obj, "supportedValues", None):
+            if hasattr(obj, "supportedValues"):
                 doc += ", ".join(
-                    [":mimetype:`{}`".format(f.mimeType) for f in obj.supportedValues]
+                    [":mimetype:`{}`".format(f) for f in obj.supportedValues]
                 )
 
-            elif getattr(obj, "crss", None):
-                doc += "[" + ", ".join(obj.crss[:nmax])
-            if len(obj.crss) > nmax:
-                doc += ", ..."
-                doc += "]"
+            if hasattr(obj, "crss"):
+                crss = ", ".join(obj.crss[:nmax])
+                if len(obj.crss) > nmax:
+                    crss += ", ..."
+                doc += "[" + crss + "]"
 
-            if getattr(obj, "minOccurs", None) is not None:
-                if obj.minOccurs == 0:
-                    doc += ", optional"
-                    if getattr(obj, "default", None):
-                        doc += ", default:{0}".format(obj.defaultValue)
+            if hasattr(obj, "minOccurs") and obj.minOccurs == 0:
+                doc += ", optional"
 
-            if getattr(obj, "uoms", None):
+            if hasattr(obj, "default"):
+                doc += ", default:{0}".format(obj.defaultValue)
+
+            if hasattr(obj, "uoms"):
                 doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
 
         except Exception as e:
-            raise type(e)(e.message + " in {0} docstring".format(obj.identifier))
+            raise type(e)("{0} (in {1} docstring)".format(e, obj.identifier))
         return doc
+
+
+def convert_input_param(param, value):
+    """
+    Args:
+        param:
+        value:
+    """
+    type_ = BirdyCLI.get_param_type(param)
+    # owslib only accepts literaldata, complexdata and boundingboxdata
+    # todo: boundingbox
+    if type_ in [click.INT, click.BOOL, click.FLOAT]:
+        type_ = click.STRING
+        value = str(value)
+    return type_.convert(value, param=None, ctx=None)
+
+
+def convert_output_param(param, value):
+    """
+    Args:
+        param:
+        value:
+    """
+    type_ = BirdyCLI.get_param_type(param)
+    return type_.convert(value, param=None, ctx=None)
+
+
+# backward compatibility
+import_wps = BirdyClient

@@ -7,3 +7,8 @@ def is_url(url):
         return False
     else:
         return True
+
+
+def delist(data):
+    value = data[0] if len(data) == 1 else data
+    return value
