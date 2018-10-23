@@ -204,6 +204,7 @@ default_converters = {
 
 
 class UnauthorizedException(ServiceException):
+    # todo: identify when unauthorized
     pass
 
 
