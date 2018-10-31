@@ -9,7 +9,7 @@ from owslib import crs
 import birdy.native.converters
 from birdy import import_wps
 
-# This tests assumes Emu is running on the localhost
+# These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
 
 
