@@ -22,10 +22,7 @@ def test_birdmod():
     m = import_wps(url=url)
 
     assert m.hello("david") == "Hello david"
-    assert (
-        m.binaryoperatorfornumbers(inputa=str(1), inputb=str(2), operator="add")
-        == "3.0"
-    )
+    assert m.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add") == 3.0
     assert m.dummyprocess(10, 20) == ["11", "19"]
 
     # As reference
@@ -55,17 +52,17 @@ def test_only_one():
 @pytest.mark.online
 def test_inputs():
     m = import_wps(url=url, processes=["inout"])
-    time_ = datetime.datetime.now().time().isoformat()
-    date_ = datetime.datetime.now().date().isoformat()
-    datetime_ = datetime.datetime.now().isoformat(sep=" ")
+    time_ = datetime.datetime.now().time()
+    date_ = datetime.datetime.now().date()
+    datetime_ = datetime.datetime.now()
     result = m.inout(
         string="test string",
         int=3,
         float=3.5,
         boolean=True,
-        time=time_,
-        date=date_,
-        datetime=datetime_,
+        time=time_.isoformat(),
+        date=date_.isoformat(),
+        datetime=datetime_.isoformat(sep=" "),
         string_choice="rock",
         string_multiple_choice="sitting duck",
         text="some text",
@@ -73,9 +70,9 @@ def test_inputs():
     )
     expected = [
         "test string",
-        "3",
-        "3.5",
-        "True",
+        3,
+        3.5,
+        True,
         time_,
         date_,
         datetime_,

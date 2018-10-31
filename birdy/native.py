@@ -44,11 +44,11 @@ If a WPS server with a simple `hello` process is running on the local host on po
   'Hello stranger'
 
 """
+import dateutil.parser
 from distutils.version import StrictVersion
 import urllib
 from copy import copy
 
-import click
 import six
 import types
 from importlib import import_module
@@ -59,9 +59,7 @@ from owslib.wps import WPS_DEFAULT_VERSION, SYNC, ComplexDataInput
 from owslib.wps import WebProcessingService
 from boltons.funcutils import FunctionBuilder
 
-from birdy.cli.base import BirdyCLI
-from birdy.cli.types import COMPLEX
-from birdy.utils import delist, is_url
+from birdy.utils import delist
 
 
 class BaseConverter(object):
@@ -334,7 +332,7 @@ class BirdyClient(object):
         process = self._processes[pid]
 
         input_defaults = OrderedDict(
-            (i.identifier, BirdyCLI.get_param_default(i)) for i in process.dataInputs
+            (i.identifier, getattr(i, "defaultValue", None)) for i in process.dataInputs
         )
 
         cleaned_locals = "{k: v for k, v in locals().items() if k not in %s}"
@@ -353,13 +351,13 @@ class BirdyClient(object):
         self._inputs[pid] = {}
         if hasattr(process, "dataInputs"):
             self._inputs[pid] = OrderedDict(
-                (p.identifier, p) for p in process.dataInputs
+                (i.identifier, i) for i in process.dataInputs
             )
 
         self._outputs[pid] = {}
-        if hasattr(process, "dataOutputs"):
-            self.outputs[pid] = OrderedDict(
-                (p.identifier, p) for p in process.dataOutputs
+        if hasattr(process, "processOutputs"):
+            self._outputs[pid] = OrderedDict(
+                (o.identifier, o) for o in process.processOutputs
             )
 
         func = func_builder.get_func()
@@ -367,17 +365,17 @@ class BirdyClient(object):
         return func
 
     def _execute(self, pid, **kwargs):
-        execute_inputs = {k: v for k, v in kwargs.items() if k in self._inputs[pid]}
-
-        def is_complex_input(input_):
-            return "ComplexData" in input_.dataType
 
         wps_inputs = []
-        for k, v in execute_inputs.items():
-            if v is not None:
-                wps_inputs.append((k, convert_input_param(self._inputs[pid][k], v)))
+        for name, input_param in self._inputs[pid].items():
+            value = kwargs.get(name)
+            if value is not None:
+                wps_inputs.append((name, convert_input_param(input_param, value)))
 
-        wps_outputs = [(o.identifier, is_complex_input(o)) for o in self._outputs[pid]]
+        wps_outputs = [
+            (o.identifier, "ComplexData" in o.dataType)
+            for o in self._outputs[pid].values()
+        ]
 
         # Execute request in synchronous mode
         try:
@@ -391,12 +389,12 @@ class BirdyClient(object):
                 )
 
         # Output type conversion
-        outputs = [self._process_output(o) for o in resp.processOutputs]
+        outputs = [self._process_output(o, pid) for o in resp.processOutputs]
         value = delist(outputs)
 
         return value
 
-    def _process_output(self, output):
+    def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
         file.
 
@@ -405,7 +403,10 @@ class BirdyClient(object):
         """
         # Get the data for recognized types.
         if output.data:
-            data = [convert_output_param(output, d) for d in output.data]
+            data_type = output.dataType
+            if data_type is None:
+                data_type = self._outputs[pid][output.identifier].dataType
+            data = [convert_output_param(d, data_type) for d in output.data]
             return delist(data)
 
         if self._convert_objects:
@@ -486,23 +487,37 @@ def format_type(obj):
 
 
 def convert_input_param(param, value):
-    type_ = BirdyCLI.get_param_type(param)
     # owslib only accepts literaldata, complexdata and boundingboxdata
-    # todo: boundingbox
-    if type_ in [click.INT, click.BOOL, click.FLOAT]:
-        type_ = click.STRING
-        value = str(value)
-    if type_ == COMPLEX:
-        if not is_url(value):
-            for v in param.supportedValues:
-                if v.mimeType.startswith("text"):
-                    return ComplexDataInput(value, mimeType=v.mimeType)
-    return type_.convert(value, param=None, ctx=None)
+    if param.dataType:
+        if param.dataType == "ComplexData":
+            return ComplexDataInput(value)
+        if param.dataType == "BoundingBoxData":
+            # todo: boundingbox
+            return value
+    return str(value)
 
 
-def convert_output_param(param, value):
-    type_ = BirdyCLI.get_param_type(param)
-    return type_.convert(value, param=None, ctx=None)
+def convert_output_param(value, data_type):
+    if "string" in data_type:
+        pass
+    elif "integer" in data_type:
+        value = int(value)
+    elif "float" in data_type:
+        value = float(value)
+    elif "boolean" in data_type:
+        value = bool(value)
+    elif "dateTime" in data_type:
+        value = dateutil.parser.parse(value)
+    elif "time" in data_type:
+        value = dateutil.parser.parse(value).time()
+    elif "date" in data_type:
+        value = dateutil.parser.parse(value).date()
+    elif "ComplexData" in data_type:
+        value = ComplexDataInput(value)
+    elif "BoundingBoxData" in data_type:
+        # todo: boundingbox
+        pass
+    return value
 
 
 # backward compatibility
