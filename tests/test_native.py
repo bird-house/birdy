@@ -13,7 +13,7 @@ from birdy import import_wps
 url = "http://localhost:5000/wps"
 
 
-def test_data(*args):
+def data_path(*args):
     return os.path.join(os.path.dirname(__file__), "resources", *args)
 
 
@@ -66,7 +66,7 @@ def test_inputs():
         string_choice="rock",
         string_multiple_choice="sitting duck",
         text="some text",
-        dataset="file://" + test_data("dummy.nc"),
+        dataset="file://" + data_path("dummy.nc"),
     )
     expected = [
         "test string",
@@ -82,7 +82,7 @@ def test_inputs():
     ]
     assert expected == result[:-2]
 
-    expected_netcdf = netCDF4.Dataset(test_data("dummy.nc"))
+    expected_netcdf = netCDF4.Dataset(data_path("dummy.nc"))
     netcdf = result[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
