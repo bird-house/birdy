@@ -36,7 +36,7 @@ def format_type(obj):
 
     doc = ""
     try:
-        if hasattr(obj, "allowedValues"):
+        if hasattr(obj, "allowedValues") and len(obj.allowedValues):
             av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
             if len(obj.allowedValues) > nmax:
                 av += ", ..."
