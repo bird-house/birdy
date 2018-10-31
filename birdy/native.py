@@ -44,6 +44,8 @@ If a WPS server with a simple `hello` process is running on the local host on po
   'Hello stranger'
 
 """
+from distutils.version import StrictVersion
+import urllib
 from copy import copy
 
 import click
@@ -53,16 +55,18 @@ from importlib import import_module
 from collections import OrderedDict
 
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, SYNC
+from owslib.wps import WPS_DEFAULT_VERSION, SYNC, ComplexDataInput
 from owslib.wps import WebProcessingService
 from boltons.funcutils import FunctionBuilder
 
 from birdy.cli.base import BirdyCLI
-from birdy.utils import delist
+from birdy.cli.types import COMPLEX
+from birdy.utils import delist, is_url
 
 
 class BaseConverter(object):
     mimetype = None
+
     # _default = None
 
     def __init__(self, output=None):
@@ -154,7 +158,8 @@ class Netcdf4Converter(BaseConverter):
         self._check_import("netCDF4")
         from netCDF4 import getlibversion
 
-        if getlibversion() < "4.5":
+        version = StrictVersion(getlibversion().split(" ")[0])
+        if version < StrictVersion("4.5"):
             raise ImportError("netCDF4 library must be at least version 4.5")
 
     def convert_data(self, data):
@@ -164,7 +169,13 @@ class Netcdf4Converter(BaseConverter):
         """
         import netCDF4
 
-        return netCDF4.Dataset(self.output.fileName, memory=data)
+        try:
+            # try OpenDAP url
+            return netCDF4.Dataset(self.output.reference)
+        except IOError:
+            # download the file
+            temp_file, _ = urllib.urlretrieve(self.output.reference)
+            return netCDF4.Dataset(temp_file)
 
 
 class ShpFionaConverter(BaseConverter):
@@ -202,7 +213,6 @@ default_converters = {
 
 
 class UnauthorizedException(ServiceException):
-    # todo: identify when unauthorized
     pass
 
 
@@ -248,17 +258,8 @@ class BirdyClient(object):
             cert (str): passed to :class:`owslib.wps.WebProcessingService`
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
             version (str): WPS version to use.
-
-        Returns:
-            _WPSWrapper: A class containing WPS processes as methods.
-
-        Notes:
-            Use the `config` attribute to modify the behavior of the class after
-            it has been generated: >>> emu.config.asobject = True
         """
-
         self._url = url
-        self._processes_filter = processes
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
         self._username = username
@@ -269,7 +270,10 @@ class BirdyClient(object):
         self._verbose = verbose
         self._version = version
 
-        self.wps = WebProcessingService(
+        self._inputs = {}
+        self._outputs = {}
+
+        self._wps = WebProcessingService(
             url,
             version=version,
             username=username,
@@ -282,24 +286,32 @@ class BirdyClient(object):
         )
 
         try:
-            self.wps.getcapabilities()
-        except UnauthorizedException:
-            raise
+            self._wps.getcapabilities()
+        except ServiceException as e:
+            if "AccessForbidden" in str(e):
+                raise UnauthorizedException(
+                    "You are not authorized to do a request of type: GetCapabilities"
+                )
 
-        list_filter = (
-            self._processes_filter
-            if not isinstance(self._processes_filter, six.string_types)
-            else [self._processes_filter]
-        )
+        all_processes = set([p.identifier for p in self._wps.processes])
+        if processes is None:
+            processes = all_processes
+        elif isinstance(processes, six.string_types):
+            processes = [processes]
+
+        processes = set([p.lower() for p in processes])
 
         self._processes = OrderedDict(
             (p.identifier, p)
-            for p in self.wps.processes
-            if list_filter is None or p.identifier in list_filter
+            for p in self._wps.processes
+            if p.identifier.lower() in processes
         )
 
-        self._inputs = {}
-        self._outputs = {}
+        if processes - all_processes:
+            missing_processes = ", ".join(processes - all_processes)
+            raise ValueError(
+                "These processes aren't on the WPS: {}".format(missing_processes)
+            )
 
         for pid in self._processes:
             setattr(self, pid, types.MethodType(self._method_factory(pid), self))
@@ -312,25 +324,28 @@ class BirdyClient(object):
             pid: Identifier of the WPS process
         """
         try:
-            self._processes[pid] = self.wps.describeprocess(pid)
-        except UnauthorizedException:
-            raise
+            self._processes[pid] = self._wps.describeprocess(pid)
+        except ServiceException as e:
+            if "AccessForbidden" in str(e):
+                raise UnauthorizedException(
+                    "You are not authorized to do a request of type: DescribeProcess"
+                )
 
         process = self._processes[pid]
 
-        input_defaults = {
-            i.identifier: BirdyCLI.get_param_default(i) for i in process.dataInputs
-        }
+        input_defaults = OrderedDict(
+            (i.identifier, BirdyCLI.get_param_default(i)) for i in process.dataInputs
+        )
 
         cleaned_locals = "{k: v for k, v in locals().items() if k not in %s}"
         cleaned_locals = cleaned_locals % str(["self"])
 
         func_builder = FunctionBuilder(
             name=pid,
-            doc=self.build_doc(process),
+            doc=build_doc(process),
             args=["self"] + list(input_defaults),
             defaults=tuple(input_defaults.values()),
-            body="return self.execute('{}', **{})".format(pid, cleaned_locals),
+            body="return self._execute('{}', **{})".format(pid, cleaned_locals),
             filename=__file__,
             module=self.__module__,
         )
@@ -351,30 +366,28 @@ class BirdyClient(object):
 
         return func
 
-    def execute(self, pid, **kwargs):
-        """
-        Args:
-            pid:
-            **kwargs:
-        """
+    def _execute(self, pid, **kwargs):
         execute_inputs = {k: v for k, v in kwargs.items() if k in self._inputs[pid]}
 
         def is_complex_input(input_):
             return "ComplexData" in input_.dataType
 
-        wps_inputs = [
-            (k, convert_input_param(self._inputs[pid][k], v))
-            for k, v in execute_inputs.items()
-        ]
+        wps_inputs = []
+        for k, v in execute_inputs.items():
+            wps_inputs.append((k, convert_input_param(self._inputs[pid][k], v)))
+
         wps_outputs = [(o.identifier, is_complex_input(o)) for o in self._outputs[pid]]
 
         # Execute request in synchronous mode
         try:
-            resp = self.wps.execute(
+            resp = self._wps.execute(
                 pid, inputs=wps_inputs, output=wps_outputs, mode=SYNC
             )
-        except UnauthorizedException:
-            raise
+        except ServiceException as e:
+            if "AccessForbidden" in str(e):
+                raise UnauthorizedException(
+                    "You are not authorized to do a request of type: Execute"
+                )
 
         # Output type conversion
         outputs = [self._process_output(o) for o in resp.processOutputs]
@@ -389,7 +402,6 @@ class BirdyClient(object):
         Args:
             output (owslib.wps.Output):
         """
-
         # Get the data for recognized types.
         if output.data:
             data = [convert_output_param(output, d) for d in output.data]
@@ -408,103 +420,86 @@ class BirdyClient(object):
         else:
             return output.reference
 
-    def build_doc(self, process):
-        """Return function docstring built from WPS metadata.
 
-        Args:
-            process:
-        """
+def build_doc(process):
+    doc = [process.abstract, ""]
 
-        doc = [process.abstract, ""]
-
-        # Inputs
-        if process.dataInputs:
-            doc.append("Parameters")
-            doc.append("----------")
-            for i in process.dataInputs:
-                doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
-                doc.append("    {}".format(i.abstract or i.title))
-                # if i.metadata:
-                #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
-            doc.append("")
-
-        # Outputs
-        if process.processOutputs:
-            doc.append("Returns")
-            doc.append("-------")
-            for i in process.processOutputs:
-                doc.append("{} : {}".format(i.identifier, self.fmt_type(i)))
-                doc.append("    {}".format(i.abstract or i.title))
-
+    # Inputs
+    if process.dataInputs:
+        doc.append("Parameters")
+        doc.append("----------")
+        for i in process.dataInputs:
+            doc.append("{} : {}".format(i.identifier, format_type(i)))
+            doc.append("    {}".format(i.abstract or i.title))
+            # if i.metadata:
+            #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
         doc.append("")
-        return "\n".join(doc)
 
-    @staticmethod
-    def fmt_type(obj):
-        """Input and output type formatting (type, default and allowed values).
+    # Outputs
+    if process.processOutputs:
+        doc.append("Returns")
+        doc.append("-------")
+        for i in process.processOutputs:
+            doc.append("{} : {}".format(i.identifier, format_type(i)))
+            doc.append("    {}".format(i.abstract or i.title))
 
-        Args:
-            obj:
-        """
-        nmax = 10
+    doc.append("")
+    return "\n".join(doc)
 
-        doc = ""
-        try:
-            if hasattr(obj, "allowedValues"):
-                av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
-                if len(obj.allowedValues) > nmax:
-                    av += ", ..."
-                doc += "{" + av + "}"
 
-            if hasattr(obj, "dataType"):
-                doc += obj.dataType
+def format_type(obj):
+    nmax = 10
 
-            if hasattr(obj, "supportedValues"):
-                doc += ", ".join(
-                    [":mimetype:`{}`".format(f) for f in obj.supportedValues]
-                )
+    doc = ""
+    try:
+        if hasattr(obj, "allowedValues"):
+            av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
+            if len(obj.allowedValues) > nmax:
+                av += ", ..."
+            doc += "{" + av + "}"
 
-            if hasattr(obj, "crss"):
-                crss = ", ".join(obj.crss[:nmax])
-                if len(obj.crss) > nmax:
-                    crss += ", ..."
-                doc += "[" + crss + "]"
+        if hasattr(obj, "dataType"):
+            doc += obj.dataType
 
-            if hasattr(obj, "minOccurs") and obj.minOccurs == 0:
-                doc += ", optional"
+        if hasattr(obj, "supportedValues"):
+            doc += ", ".join([":mimetype:`{}`".format(f) for f in obj.supportedValues])
 
-            if hasattr(obj, "default"):
-                doc += ", default:{0}".format(obj.defaultValue)
+        if hasattr(obj, "crss"):
+            crss = ", ".join(obj.crss[:nmax])
+            if len(obj.crss) > nmax:
+                crss += ", ..."
+            doc += "[" + crss + "]"
 
-            if hasattr(obj, "uoms"):
-                doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
+        if hasattr(obj, "minOccurs") and obj.minOccurs == 0:
+            doc += ", optional"
 
-        except Exception as e:
-            raise type(e)("{0} (in {1} docstring)".format(e, obj.identifier))
-        return doc
+        if hasattr(obj, "default"):
+            doc += ", default:{0}".format(obj.defaultValue)
+
+        if hasattr(obj, "uoms"):
+            doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
+
+    except Exception as e:
+        raise type(e)("{0} (in {1} docstring)".format(e, obj.identifier))
+    return doc
 
 
 def convert_input_param(param, value):
-    """
-    Args:
-        param:
-        value:
-    """
     type_ = BirdyCLI.get_param_type(param)
     # owslib only accepts literaldata, complexdata and boundingboxdata
     # todo: boundingbox
     if type_ in [click.INT, click.BOOL, click.FLOAT]:
         type_ = click.STRING
         value = str(value)
+    if type_ == COMPLEX:
+        if not is_url(value):
+            for v in param.supportedValues:
+                if v.mimeType.startswith("text"):
+                    return ComplexDataInput(value, mimeType=v.mimeType)
     return type_.convert(value, param=None, ctx=None)
 
 
 def convert_output_param(param, value):
-    """
-    Args:
-        param:
-        value:
-    """
     type_ = BirdyCLI.get_param_type(param)
     return type_.convert(value, param=None, ctx=None)
 
