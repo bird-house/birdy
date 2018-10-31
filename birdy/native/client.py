@@ -55,16 +55,8 @@ class BirdyClient(object):
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
             version (str): WPS version to use.
         """
-        self._url = url
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
-        self._username = username
-        self._password = password
-        self._headers = headers
-        self._verify = verify
-        self._cert = cert
-        self._verbose = verbose
-        self._version = version
 
         self._inputs = {}
         self._outputs = {}
