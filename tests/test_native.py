@@ -6,7 +6,7 @@ import json
 import netCDF4
 from owslib import crs
 
-from birdy import native
+import birdy.native.converters
 from birdy import import_wps
 
 # This tests assumes Emu is running on the localhost
@@ -118,13 +118,13 @@ def count_class_methods(class_):
 
 
 def test_converter():
-    j = native.JSONConverter()
-    assert isinstance(j, native.default_converters["application/json"])
+    j = birdy.native.converters.JSONConverter()
+    assert isinstance(j, birdy.native.converters.default_converters["application/json"])
 
 
 def test_jsonconverter():
     d = {"a": 1}
     s = json.dumps(d)
 
-    j = native.JSONConverter()
+    j = birdy.native.converters.JSONConverter()
     assert j.convert_data(s) == d
