@@ -374,7 +374,8 @@ class BirdyClient(object):
 
         wps_inputs = []
         for k, v in execute_inputs.items():
-            wps_inputs.append((k, convert_input_param(self._inputs[pid][k], v)))
+            if v is not None:
+                wps_inputs.append((k, convert_input_param(self._inputs[pid][k], v)))
 
         wps_outputs = [(o.identifier, is_complex_input(o)) for o in self._outputs[pid]]
 
