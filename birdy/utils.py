@@ -1,3 +1,6 @@
+import collections
+
+import six
 from six.moves.urllib.parse import urlparse
 
 
@@ -12,5 +15,10 @@ def is_url(url):
 
 
 def delist(data):
-    value = data[0] if len(data) == 1 else data
-    return value
+    if (
+        isinstance(data, collections.Iterable)
+        and not isinstance(data, six.string_types)
+        and len(data) == 1
+    ):
+        return data[0]
+    return data
