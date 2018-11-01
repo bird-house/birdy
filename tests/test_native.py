@@ -3,7 +3,6 @@ import os
 import pytest
 import json
 
-import netCDF4
 from owslib import crs
 
 import birdy.native.converters
@@ -51,6 +50,7 @@ def test_only_one():
 
 @pytest.mark.online
 def test_inputs():
+    import netCDF4 as nc
     m = import_wps(url=url, processes=["inout"])
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
@@ -82,7 +82,7 @@ def test_inputs():
     ]
     assert expected == result[:-2]
 
-    expected_netcdf = netCDF4.Dataset(data_path("dummy.nc"))
+    expected_netcdf = nc.Dataset(data_path("dummy.nc"))
     netcdf = result[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
