@@ -1,6 +1,6 @@
 """
-The :func:`import_wps` function *imports* on the fly a python module whose
-functions call WPS processes. The module is generated at runtime based on the
+The :func:`import_wps` instantiates a class whose methods call
+WPS processes. The methods are generated at runtime based on the
 process description provided by the WPS server. Calling a function sends
 an `execute` request to the server, which returns a response.
 
