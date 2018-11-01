@@ -6,7 +6,7 @@ import json
 from owslib import crs
 
 import birdy.native.converters
-from birdy import import_wps
+from birdy import import_wps, BirdyClient
 
 # These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
@@ -40,12 +40,20 @@ def test_birdmod():
 
 
 @pytest.mark.online
-def test_only_one():
+def test_process_subset_only_one():
     m = import_wps(url=url, processes=["nap"])
     assert count_class_methods(m) == 1
 
     m = import_wps(url=url, processes="nap")
     assert count_class_methods(m) == 1
+
+
+@pytest.mark.online
+def test_process_subset_names():
+    with pytest.raises(ValueError, match="missing"):
+        BirdyClient(url=url, processes=["missing"])
+    with pytest.raises(ValueError, match="wrong, process, names"):
+        BirdyClient(url=url, processes=["wrong", "process", "names"])
 
 
 @pytest.mark.online
