@@ -36,31 +36,31 @@ def format_type(obj):
 
     doc = ""
     try:
-        if hasattr(obj, "allowedValues") and len(obj.allowedValues):
+        if getattr(obj, "allowedValues", None):
             av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
             if len(obj.allowedValues) > nmax:
                 av += ", ..."
             doc += "{" + av + "}"
 
-        if hasattr(obj, "dataType"):
+        if getattr(obj, "dataType", None):
             doc += obj.dataType
 
-        if hasattr(obj, "supportedValues"):
+        if getattr(obj, "supportedValues", None):
             doc += ", ".join([":mimetype:`{}`".format(f) for f in obj.supportedValues])
 
-        if hasattr(obj, "crss"):
+        if getattr(obj, "crss", None):
             crss = ", ".join(obj.crss[:nmax])
             if len(obj.crss) > nmax:
                 crss += ", ..."
             doc += "[" + crss + "]"
 
-        if hasattr(obj, "minOccurs") and obj.minOccurs == 0:
+        if getattr(obj, "minOccurs", None) and obj.minOccurs == 0:
             doc += ", optional"
 
-        if hasattr(obj, "default"):
+        if getattr(obj, "default", None):
             doc += ", default:{0}".format(obj.defaultValue)
 
-        if hasattr(obj, "uoms"):
+        if getattr(obj, "uoms", None):
             doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
 
     except Exception as e:
