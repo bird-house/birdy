@@ -29,7 +29,7 @@ class BirdyClient(object):
         self,
         url,
         processes=None,
-        convert_objects=True,
+        convert_objects=False,
         converters=None,
         username=None,
         password=None,
