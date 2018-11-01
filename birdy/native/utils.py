@@ -5,6 +5,20 @@ import six
 from owslib.wps import ComplexDataInput
 
 
+def filter_names_case_insensitive(names, complete_list):
+    contained = []
+    missing = []
+    complete_list_lower = set(map(str.lower, complete_list))
+
+    for name in names:
+        if name.lower() in complete_list_lower:
+            contained.append(name)
+        else:
+            missing.append(name)
+
+    return contained, missing
+
+
 def build_doc(process):
     doc = [process.abstract, ""]
 

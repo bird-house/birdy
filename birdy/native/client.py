@@ -8,7 +8,7 @@ from owslib.util import ServiceException
 from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC
 
 from birdy.exceptions import UnauthorizedException
-from birdy.native.utils import build_doc, convert_input_value, convert_output_value, delist
+from birdy.native import utils
 from birdy.native.converters import default_converters
 
 
@@ -81,25 +81,19 @@ class BirdyClient(object):
                     "You are not authorized to do a request of type: GetCapabilities"
                 )
 
-        all_processes = set([p.identifier for p in self._wps.processes])
+        all_processes_names = set(p.identifier for p in self._wps.processes)
+
         if processes is None:
-            processes = all_processes
+            processes = all_processes_names
         elif isinstance(processes, six.string_types):
             processes = [processes]
 
-        processes = set([p.lower() for p in processes])
+        process_names, missing = utils.filter_names_case_insensitive(processes, all_processes_names)
 
-        self._processes = OrderedDict(
-            (p.identifier, p)
-            for p in self._wps.processes
-            if p.identifier.lower() in processes
-        )
+        self._processes = OrderedDict((name, self._wps.processes[name]) for name in process_names)
 
-        if processes - all_processes:
-            missing_processes = ", ".join(processes - all_processes)
-            raise ValueError(
-                "These processes aren't on the WPS: {}".format(missing_processes)
-            )
+        if missing:
+            raise ValueError("These processes aren't on the WPS: {}".format(", ".join(missing)))
 
         for pid in self._processes:
             setattr(self, pid, types.MethodType(self._method_factory(pid), self))
@@ -130,7 +124,7 @@ class BirdyClient(object):
 
         func_builder = FunctionBuilder(
             name=pid,
-            doc=build_doc(process),
+            doc=utils.build_doc(process),
             args=["self"] + list(input_defaults),
             defaults=tuple(input_defaults.values()),
             body="return self._execute('{}', **{})".format(pid, cleaned_locals),
@@ -160,7 +154,7 @@ class BirdyClient(object):
         for name, input_param in self._inputs[pid].items():
             value = kwargs.get(name)
             if value is not None:
-                wps_inputs.append((name, convert_input_value(input_param, value)))
+                wps_inputs.append((name, utils.convert_input_value(input_param, value)))
 
         wps_outputs = [
             (o.identifier, "ComplexData" in o.dataType)
@@ -180,7 +174,7 @@ class BirdyClient(object):
 
         # Output type conversion
         outputs = [self._process_output(o, pid) for o in resp.processOutputs]
-        value = delist(outputs)
+        value = utils.delist(outputs)
 
         return value
 
@@ -196,8 +190,8 @@ class BirdyClient(object):
             data_type = output.dataType
             if data_type is None:
                 data_type = self._outputs[pid][output.identifier].dataType
-            data = [convert_output_value(d, data_type) for d in output.data]
-            return delist(data)
+            data = [utils.convert_output_value(d, data_type) for d in output.data]
+            return utils.delist(data)
 
         if self._convert_objects:
             # Try to convert the bytes to an object.
