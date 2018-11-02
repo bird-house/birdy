@@ -1,6 +1,7 @@
 import types
 from collections import OrderedDict
 from copy import copy
+from textwrap import dedent
 
 import six
 from boltons.funcutils import FunctionBuilder
@@ -126,15 +127,18 @@ class BirdyClient(object):
             (i.identifier, getattr(i, "defaultValue", None)) for i in process.dataInputs
         )
 
-        cleaned_locals = "{k: v for k, v in locals().items() if k not in %s}"
-        cleaned_locals = cleaned_locals % str(["self"])
+        body = dedent("""
+            inputs = locals()
+            inputs.pop('self')
+            return self._execute('{pid}', **inputs)
+        """).format(pid=pid)
 
         func_builder = FunctionBuilder(
             name=pid,
             doc=utils.build_doc(process),
             args=["self"] + list(input_defaults),
             defaults=tuple(input_defaults.values()),
-            body="return self._execute('{}', **{})".format(pid, cleaned_locals),
+            body=body,
             filename=__file__,
             module=self.__module__,
         )
