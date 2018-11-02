@@ -81,19 +81,24 @@ class BirdyClient(object):
                     "You are not authorized to do a request of type: GetCapabilities"
                 )
 
-        all_processes_names = set(p.identifier for p in self._wps.processes)
+        wps_processes = OrderedDict((p.identifier, p) for p in self._wps.processes)
 
         if processes is None:
-            processes = all_processes_names
+            processes = list(wps_processes)
         elif isinstance(processes, six.string_types):
             processes = [processes]
 
-        process_names, missing = utils.filter_names_case_insensitive(processes, all_processes_names)
-
-        self._processes = OrderedDict((name, self._wps.processes[name]) for name in process_names)
+        process_names, missing = utils.filter_case_insensitive(
+            processes, list(wps_processes)
+        )
 
         if missing:
-            raise ValueError("These processes aren't on the WPS: {}".format(", ".join(missing)))
+            message = "These process names are not on the WPS server: {}"
+            raise ValueError(message.format(", ".join(missing)))
+
+        self._processes = OrderedDict(
+            (name, wps_processes[name]) for name in process_names
+        )
 
         for pid in self._processes:
             setattr(self, pid, types.MethodType(self._method_factory(pid), self))
