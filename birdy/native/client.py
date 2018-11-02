@@ -6,7 +6,8 @@ from textwrap import dedent
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC
+from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
+from owslib.wps import monitorExecution
 
 from birdy.exceptions import UnauthorizedException
 from birdy.native import utils
@@ -38,6 +39,7 @@ class BirdyClient(object):
         verify=True,
         cert=None,
         verbose=False,
+        interactive=False,
         version=WPS_DEFAULT_VERSION,
     ):
         """
@@ -58,6 +60,8 @@ class BirdyClient(object):
         """
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
+        self._interactive = interactive
+        self._mode = ASYNC if interactive else SYNC
 
         self._inputs = {}
         self._outputs = {}
@@ -175,8 +179,12 @@ class BirdyClient(object):
         # Execute request in synchronous mode
         try:
             resp = self._wps.execute(
-                pid, inputs=wps_inputs, output=wps_outputs, mode=SYNC
+                pid, inputs=wps_inputs, output=wps_outputs, mode=self._mode
             )
+
+            if self._interactive:
+                self._interactive_monitor(resp, sleep=.3)
+
         except ServiceException as e:
             if "AccessForbidden" in str(e):
                 raise UnauthorizedException(
@@ -189,6 +197,38 @@ class BirdyClient(object):
         value = utils.delist(outputs)
 
         return value
+
+    def _interactive_monitor(self, execution, sleep=3):
+        """Monitor the execution of a process.
+
+        Parameters
+        ----------
+        execution : WPSExecution instance
+          The execute response to monitor.
+        sleep: float
+          Number of seconds to wait before each status check.
+        """
+        import ipywidgets as widgets
+        from IPython.display import display
+
+        progress = widgets.FloatProgress(
+            value=0,
+            min=0,
+            max=100.,
+            step=1,
+            description='Processing:',
+            bar_style='info',
+            orientation='horizontal'
+        )
+        display(progress)
+        while execution.isComplete() is False:
+            execution.checkStatus(sleepSecs=sleep)
+            progress.value = execution.percentCompleted
+
+        if execution.isSucceded():
+            progress.bar_style = 'success'
+        else:
+            progress.bar_style = 'warning'
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
