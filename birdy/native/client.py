@@ -80,6 +80,7 @@ class BirdyClient(object):
                 raise UnauthorizedException(
                     "You are not authorized to do a request of type: GetCapabilities"
                 )
+            raise
 
         wps_processes = OrderedDict((p.identifier, p) for p in self._wps.processes)
 
@@ -117,6 +118,7 @@ class BirdyClient(object):
                 raise UnauthorizedException(
                     "You are not authorized to do a request of type: DescribeProcess"
                 )
+            raise
 
         process = self._processes[pid]
 
@@ -176,6 +178,7 @@ class BirdyClient(object):
                 raise UnauthorizedException(
                     "You are not authorized to do a request of type: Execute"
                 )
+            raise
 
         # Output type conversion
         outputs = [self._process_output(o, pid) for o in resp.processOutputs]
