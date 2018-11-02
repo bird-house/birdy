@@ -6,6 +6,7 @@ from owslib.wps import ComplexDataInput
 
 
 def filter_case_insensitive(names, complete_list):
+    """Filter a sequence of process names into a `known` and `unknown` list."""
     contained = []
     missing = []
     complete_list_lower = set(map(str.lower, complete_list))
@@ -20,6 +21,7 @@ def filter_case_insensitive(names, complete_list):
 
 
 def build_doc(process):
+    """Create docstring from process metadata."""
     doc = [process.abstract, ""]
 
     # Inputs
@@ -46,6 +48,7 @@ def build_doc(process):
 
 
 def format_type(obj):
+    """Create docstring entry for input parameter from an OWSlib object."""
     nmax = 10
 
     doc = ""
@@ -83,6 +86,7 @@ def format_type(obj):
 
 
 def convert_input_value(param, value):
+    """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
     if param.dataType:
         if param.dataType == "ComplexData":
@@ -94,6 +98,7 @@ def convert_input_value(param, value):
 
 
 def convert_output_value(value, data_type):
+    """Convert a string into another data type."""
     if "string" in data_type:
         pass
     elif "integer" in data_type:
@@ -117,10 +122,9 @@ def convert_output_value(value, data_type):
 
 
 def delist(data):
+    """If data is a sequence with a single element, returns this element, otherwise return the sequence."""
     if (
-        isinstance(data, collections.Iterable)
-        and not isinstance(data, six.string_types)
-        and len(data) == 1
+        isinstance(data, collections.Iterable) and not isinstance(data, six.string_types) and len(data) == 1
     ):
         return data[0]
     return data
