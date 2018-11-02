@@ -14,8 +14,6 @@ from birdy.native import utils
 from birdy.native.converters import default_converters
 
 
-# TODO: Add credentials and tokens
-# TODO: Log requests if not already done by owslib (then expose)
 # TODO: Support passing ComplexInput's data using POST.
 class BirdyClient(object):
     """Returns a class where every public method is a WPS process available at

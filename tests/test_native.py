@@ -59,7 +59,7 @@ def test_process_subset_names():
 @pytest.mark.online
 def test_inputs():
     import netCDF4 as nc
-    m = import_wps(url=url, processes=["inout"])
+    m = import_wps(url=url, processes=["inout"], convert_objects=True)
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
     datetime_ = datetime.datetime.now()
