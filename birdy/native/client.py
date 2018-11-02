@@ -227,6 +227,7 @@ class BirdyClient(object):
         if execution.isSucceded():
             progress.value = 100
             progress.bar_style = 'success'
+            progress.description = 'Complete'
         else:
             progress.bar_style = 'danger'
 
