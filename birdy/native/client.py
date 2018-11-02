@@ -176,13 +176,13 @@ class BirdyClient(object):
             for o in self._outputs[pid].values()
         ]
 
-        # Execute request in synchronous mode
+        mode = self._mode if self._processes[pid].storeSupported else SYNC
         try:
             resp = self._wps.execute(
-                pid, inputs=wps_inputs, output=wps_outputs, mode=self._mode
+                pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
 
-            if self._interactive:
+            if self._interactive and self._processes[pid].statusSupported:
                 self._interactive_monitor(resp, sleep=.3)
 
         except ServiceException as e:
