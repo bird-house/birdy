@@ -1,6 +1,11 @@
-import urllib
 from distutils.version import StrictVersion
 from importlib import import_module
+import six
+
+if six.PY2:
+    from urllib import urlretrieve
+else:
+    from urllib.request import urlretrieve
 
 
 class BaseConverter(object):
@@ -113,7 +118,7 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.output.reference)
         except IOError:
             # download the file
-            temp_file, _ = urllib.urlretrieve(self.output.reference)
+            temp_file, _ = urlretrieve(self.output.reference)
             return netCDF4.Dataset(temp_file)
 
 
