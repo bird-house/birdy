@@ -181,7 +181,7 @@ class BirdyClient(object):
             )
 
             if self._interactive and self._processes[pid].statusSupported:
-                self._interactive_monitor(resp, sleep=.3)
+                self._interactive_monitor(resp, sleep=.2)
 
         except ServiceException as e:
             if "AccessForbidden" in str(e):
@@ -209,24 +209,26 @@ class BirdyClient(object):
         import ipywidgets as widgets
         from IPython.display import display
 
-        progress = widgets.FloatProgress(
+        progress = widgets.IntProgress(
             value=0,
             min=0,
-            max=100.,
+            max=100,
             step=1,
             description='Processing:',
             bar_style='info',
             orientation='horizontal'
         )
         display(progress)
+
         while execution.isComplete() is False:
             execution.checkStatus(sleepSecs=sleep)
             progress.value = execution.percentCompleted
 
         if execution.isSucceded():
+            progress.value = 100
             progress.bar_style = 'success'
         else:
-            progress.bar_style = 'warning'
+            progress.bar_style = 'danger'
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
