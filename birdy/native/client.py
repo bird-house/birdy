@@ -121,9 +121,14 @@ class BirdyClient(object):
 
         process = self._processes[pid]
 
+        # init defaults
         input_defaults = OrderedDict(
-            (i.identifier, getattr(i, "defaultValue", None)) for i in process.dataInputs
+            (i.identifier, None) for i in process.dataInputs
         )
+        # update with default values for literal data only
+        for i in process.dataInputs:
+            if i.dataType != 'ComplexData':
+                input_defaults[i.identifier] = getattr(i, "defaultValue", None)
 
         body = dedent("""
             inputs = locals()
