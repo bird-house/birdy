@@ -63,7 +63,7 @@ def format_type(obj):
             doc += obj.dataType
 
         if getattr(obj, "supportedValues", None):
-            doc += ", ".join([":mimetype:`{}`".format(f) for f in obj.supportedValues])
+            doc += ", ".join([":mimetype:`{}`".format(getattr(f, 'mimeType', f)) for f in obj.supportedValues])
 
         if getattr(obj, "crss", None):
             crss = ", ".join(obj.crss[:nmax])
