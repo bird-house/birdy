@@ -1,7 +1,24 @@
 .. _tutorial:
 
-Example Usage
-=============
+********
+Tutorial
+********
+
+.. contents::
+    :local:
+    :depth: 2
+
+.. warning::
+
+  To run the examples in this tutorial you will need a running WPS service.
+
+In our examples we use Emu_ installed on ``localhost`` with default settings.
+
+.. toctree::
+   :maxdepth: 1
+
+Command line Example
+====================
 
 Show the processes of a Web Processing Service:
 
@@ -64,9 +81,38 @@ Execute wordcounter with a remote text document:
 
 The result output is given as a reference document.
 
+Use a Twitcher access token
+---------------------------
+
 If the WPS service is secured by a Twitcher security proxy service then you can
 provide an access token with the ``--token`` option:
 
 .. code-block:: sh
 
     $ birdy --token abc123 wordcounter --text http://birdy.readthedocs.org/en/latest/tutorial.html
+
+Use client certificate to access WPS service
+--------------------------------------------
+
+If the WPS service is secured by x509 certificates you can add a certificate
+with the ``--cert`` option to a request.
+
+.. code-block:: sh
+
+   # set WPS service
+   $ export WPS_SERVICE=https://localhost:5000/ows/proxy/emu
+   $ export WPS_SSL_VERIFY=false  # deactivate SSL server validation for a self-signed certificate.
+   # available processes
+   $ birdy -h
+   # details of the "hello" process
+   $ birdy hello -h
+   # run hello with certificate
+   $ birdy --cert cert.pem hello --name tux
+
+Notebooks with Python Library
+=============================
+
+Check the Jupyter notebooks in the `notebooks/` folder
+or view `Birdy Notebooks`_ online.
+
+.. _Birdy Notebooks: https://nbviewer.jupyter.org/github/bird-house/birdy/tree/master/notebooks/

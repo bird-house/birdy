@@ -18,7 +18,6 @@ Check out code from the birdy GitHub repo and start the installation:
 
 Install additional dependencies::
 
-  $ conda install pytest flake8 sphinx bumpversion
   $ pip install -r requirements_dev.txt
 
 Build Sphinx documentation

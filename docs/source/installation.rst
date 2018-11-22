@@ -11,10 +11,6 @@ Install from Anaconda
    :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Ananconda Install
 
-.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/build.svg
-   :target: http://anaconda.org/birdhouse/birdhouse-birdy
-   :alt: Anaconda Build
-
 .. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/version.svg
    :target: http://anaconda.org/birdhouse/birdhouse-birdy
    :alt: Anaconda Version
@@ -25,7 +21,7 @@ Install from Anaconda
 
 .. code-block:: sh
 
-   $ conda install -c birdhouse birdhouse-birdy
+   $ conda install -c birdhouse -c conda-forge birdhouse-birdy
 
 Install from GitHub
 ===================
