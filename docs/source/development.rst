@@ -1,15 +1,13 @@
-.. _development:
+.. highlight:: shell
 
 ***********
 Development
 ***********
 
-Install sources
-===============
+Get Started!
+============
 
-Check out code from the birdy GitHub repo and start the installation:
-
-.. code-block:: sh
+Check out code from the birdy GitHub repo and start the installation::
 
    $ git clone https://github.com/bird-house/birdy.git
    $ cd birdy
@@ -20,12 +18,24 @@ Install additional dependencies::
 
   $ pip install -r requirements_dev.txt
 
-Build Sphinx documentation
-==========================
+When you're done making changes, check that your changes pass `flake8` and the tests::
 
-Use the Makefile::
+    $ flake8
+    $ pytest
 
-    $ make docs
+   Or use the Makefile::
+
+     $ make lint
+     $ make test
+     $ make test-all
+
+Write Documentation
+===================
+
+You can find the documentation in the `docs/source` folder. To generate the Sphinx
+documentation locally you can use the `Makefile`::
+
+  $ make docs
 
 Bump a new version
 ===================
