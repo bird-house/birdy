@@ -5,8 +5,8 @@ import json
 
 from owslib import crs
 
-import birdy.native.converters
-from birdy import import_wps, BirdyClient
+from birdy.client import converters
+from birdy import WPSClient
 
 # These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
@@ -17,49 +17,63 @@ def data_path(*args):
 
 
 @pytest.mark.online
-def test_birdmod():
-    m = import_wps(url=url)
+def test_wps_client_backward_compability():
+    from birdy import BirdyClient
+    BirdyClient(url=url)
+    from birdy import import_wps
+    import_wps(url=url)
+
+
+@pytest.mark.online
+def test_wps_client():
+    m = WPSClient(url=url)
 
     assert m.hello("david") == "Hello david"
     assert m.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add") == 3.0
     assert m.dummyprocess(10, 20) == ["11", "19"]
 
+
+@pytest.mark.online
+@pytest.mark.skip(reason="fix complex outputs")
+def test_wps_client_complex_output():
+    m = WPSClient(url=url)
     # As reference
     m._convert_objects = False
     out_r, ref_r = m.multiple_outputs(2)
     assert out_r.startswith("http")
     assert out_r.endswith(".txt")
-    assert ref_r.startswith("http")
-    assert ref_r.endswith(".json")
+    # TODO: fix ComplexDataInput
+    assert ref_r.value.startswith("http")
+    assert ref_r.value.endswith(".json")
 
     # As objects
     m._convert_objects = True
     out_o, ref_o = m.multiple_outputs(2)
     assert out_o == "my output file number 0"
-    assert type(ref_o) == dict
+    assert type(ref_o.value) == dict
 
 
 @pytest.mark.online
 def test_process_subset_only_one():
-    m = import_wps(url=url, processes=["nap"])
+    m = WPSClient(url=url, processes=["nap"])
     assert count_class_methods(m) == 1
 
-    m = import_wps(url=url, processes="nap")
+    m = WPSClient(url=url, processes="nap")
     assert count_class_methods(m) == 1
 
 
 @pytest.mark.online
 def test_process_subset_names():
     with pytest.raises(ValueError, match="missing"):
-        BirdyClient(url=url, processes=["missing"])
+        WPSClient(url=url, processes=["missing"])
     with pytest.raises(ValueError, match="wrong, process, names"):
-        BirdyClient(url=url, processes=["wrong", "process", "names"])
+        WPSClient(url=url, processes=["wrong", "process", "names"])
 
 
 @pytest.mark.online
 def test_inputs():
     import netCDF4 as nc
-    m = import_wps(url=url, processes=["inout"], convert_objects=True)
+    m = WPSClient(url=url, processes=["inout"], convert_objects=True)
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
     datetime_ = datetime.datetime.now()
@@ -106,7 +120,7 @@ def test_netcdf():
     import netCDF4 as nc
 
     if nc.getlibversion() > "4.5":
-        m = import_wps(url=url, processes=["output_formats"], convert_objects=True)
+        m = WPSClient(url=url, processes=["output_formats"], convert_objects=True)
         ncdata, jsondata = m.output_formats()
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
@@ -126,13 +140,13 @@ def count_class_methods(class_):
 
 
 def test_converter():
-    j = birdy.native.converters.JSONConverter()
-    assert isinstance(j, birdy.native.converters.default_converters["application/json"])
+    j = converters.JSONConverter()
+    assert isinstance(j, converters.default_converters["application/json"])
 
 
 def test_jsonconverter():
     d = {"a": 1}
     s = json.dumps(d)
 
-    j = birdy.native.converters.JSONConverter()
+    j = converters.JSONConverter()
     assert j.convert_data(s) == d

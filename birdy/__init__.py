@@ -1,3 +1,6 @@
 __version__ = '0.4.2'
 
-from .native import import_wps, BirdyClient
+from .client.base import WPSClient
+
+# backward compatiblitiy
+import_wps = BirdyClient = WPSClient

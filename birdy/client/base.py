@@ -9,17 +9,17 @@ from owslib.util import ServiceException
 from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC
 
 from birdy.exceptions import UnauthorizedException
-from birdy.native import utils
-from birdy.native.converters import default_converters
+from birdy.client import utils
+from birdy.client.converters import default_converters
 
 
 # TODO: Support passing ComplexInput's data using POST.
-class BirdyClient(object):
+class WPSClient(object):
     """Returns a class where every public method is a WPS process available at
     the given url.
 
     Example:
-        >>> emu = BirdyClient(url='<server url>')
+        >>> emu = WPSClient(url='<server url>')
         >>> emu.hello('stranger')
         'Hello stranger'
     """
@@ -220,7 +220,3 @@ class BirdyClient(object):
 
         else:
             return output.reference
-
-
-# backward compatibility
-import_wps = BirdyClient

@@ -1,5 +1,5 @@
 """
-The :class:`BirdyClient` instantiates a class whose methods call
+The :class:`WPSClient` instantiates a class whose methods call
 WPS processes. The methods are generated at runtime based on the
 process description provided by the WPS server. Calling a function sends
 an `execute` request to the server, which returns a response.
@@ -19,10 +19,10 @@ Example
 -------
 If a WPS server with a simple `hello` process is running on the local host on port 5000::
 
-  >>> from birdy import BirdyClient
-  >>> emu = BirdyClient('http://localhost:5000/')
+  >>> from birdy import WPSClient
+  >>> emu = WPSClient('http://localhost:5000/')
   >>> emu.hello
-  <bound method hello of <birdy.native.client.BirdyClient object>>
+  <bound method hello of <birdy.client.base.WPSClient object>>
   >>> print(emu.hello.__doc__)
   ""
   Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
@@ -45,4 +45,4 @@ If a WPS server with a simple `hello` process is running on the local host on po
 
 """
 
-from .client import BirdyClient, import_wps
+from .base import WPSClient
