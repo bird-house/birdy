@@ -16,4 +16,4 @@ Using the command line
 Using the Python library
 ========================
 
-.. automodule:: birdy.native
+.. automodule:: birdy.client
