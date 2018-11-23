@@ -1,4 +1,5 @@
 Authors
 *******
 
-* Carsten Ehbrecht ehbrecht at dkrz.de
+* David Huard <huard.david@ouranos.ca>
+* Carsten Ehbrecht <ehbrecht@dkrz.de>

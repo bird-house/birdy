@@ -15,6 +15,10 @@ dependencies:
   - boltons
   # optional
   - netcdf4
-# tests
-  - pytest # Otherwise there is a risk of loosing a lot of time finding which test don't work...
-#  - flake8
+  # tests
+  - pytest
+  - flake8
+  # sphinx for rtd
+  - sphinx
+  - pip:
+    - sphinx-autoapi
