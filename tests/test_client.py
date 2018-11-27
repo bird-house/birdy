@@ -34,7 +34,6 @@ def test_wps_client():
 
 
 @pytest.mark.online
-@pytest.mark.skip(reason="fix complex outputs")
 def test_wps_client_complex_output():
     m = WPSClient(url=url)
     # As reference
@@ -43,14 +42,14 @@ def test_wps_client_complex_output():
     assert out_r.startswith("http")
     assert out_r.endswith(".txt")
     # TODO: fix ComplexDataInput
-    assert ref_r.value.startswith("http")
-    assert ref_r.value.endswith(".json")
+    assert ref_r.startswith("http")
+    assert ref_r.endswith(".json")
 
     # As objects
     m._convert_objects = True
     out_o, ref_o = m.multiple_outputs(2)
     assert out_o == "my output file number 0"
-    assert type(ref_o.value) == dict
+    assert isinstance(ref_o, dict)
 
 
 @pytest.mark.online
