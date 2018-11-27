@@ -278,6 +278,7 @@ class WPSClient(object):
         thread = threading.Thread(target=check, args=(execution, progress, cancel))
 
         thread.start()
+        # thread.join()
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
@@ -296,7 +297,7 @@ class WPSClient(object):
             self.cancel()
         signal.signal(signal.SIGINT, sigint_handler)
 
-        while not execution.isComplete() and self._continue:
+        while not execution.isComplete():
             execution.checkStatus(sleepSecs=sleep)
             self.logger.info("{} [{}/100] - {} ".format(
                 execution.process.identifier,
@@ -313,7 +314,9 @@ class WPSClient(object):
         from ipywidgets import interact_manual
         func = getattr(self, pid)
         ws = {key: utils.input2widget(inpt) for key, inpt in self._inputs[pid].items()}
-        return interact_manual(func, **ws)
+        out = interact_manual(func, **ws)
+        out.widget.children[-2].description = 'Launch process'
+        return out
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a

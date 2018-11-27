@@ -39,6 +39,7 @@ def test_interactive(capsys):
     assert m.hello("david") == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))
+    assert m.binaryoperatorfornumbers() == 5
 
 
 @pytest.mark.online
