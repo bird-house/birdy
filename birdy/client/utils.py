@@ -132,7 +132,11 @@ def delist(data):
 
 def is_notebook():
     """Return whether or not this function is executed in a notebook environment."""
-    from IPython import get_ipython
+    try:
+        from IPython import get_ipython
+    except ImportError:
+        return False
+
     try:
         shell = get_ipython().__class__.__name__
         if shell == 'ZMQInteractiveShell':
