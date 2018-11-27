@@ -308,6 +308,13 @@ class WPSClient(object):
         else:
             self.logger.info("{} failed.".format(execution.process.identifier))
 
+    def interact(self, pid):
+        """Return a Notebook form to enter input values and launch process."""
+        from ipywidgets import interact_manual
+        func = getattr(self, pid)
+        ws = {key: utils.input2widget(inpt) for key, inpt in self._inputs[pid].items()}
+        return interact_manual(func, **ws)
+
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
         file.

@@ -2,7 +2,7 @@ import collections
 
 import dateutil.parser
 import six
-from owslib.wps import ComplexDataInput
+from owslib.wps import ComplexDataInput, Input
 
 
 def filter_case_insensitive(names, complete_list):
@@ -147,3 +147,49 @@ def is_notebook():
             return False  # Other type (?)
     except NameError:
         return False      # Probably standard Python interpreter
+
+
+def input2widget(inpt):
+    """Return a Notebook widget to enter values for the input."""
+    import ipywidgets as ipyw
+
+    if not isinstance(inpt, Input):
+        raise ValueError
+
+    typ = inpt.dataType
+    opt = inpt.allowedValues
+    kwds = dict(value=inpt.defaultValue, description=inpt.title)
+    if opt:
+        if inpt.maxOccurs == 1:
+            if len(opt) < 3:
+                out = ipyw.RadioButtons(options=opt, **kwds)
+            else:
+                out = ipyw.Dropdown(options=opt, **kwds)
+        else:
+            out = ipyw.SelectMultiple(options=opt, value=[inpt.defaultValue], description=inpt.title)
+    elif typ.endswith('float'):
+        out = ipyw.FloatText(**kwds)
+    elif typ.endswith('boolean'):
+        out = ipyw.Checkbox(**kwds)
+    elif typ.endswith('integer'):
+        out = ipyw.IntText(**kwds)
+    elif typ.endswith('positiveInteger'):
+        out = ipyw.BoundedIntText(min=1E-16, **kwds)
+    elif typ.endswith('nonNegativeInteger'):
+        out = ipyw.BoundedIntText(min=0, **kwds)
+    elif typ.endswith('string'):
+        out = ipyw.Text(placeholder=inpt.description, **kwds)
+    elif typ.endswith('anyURI'):
+        out = ipyw.Text(placeholder=inpt.description, **kwds)
+    elif typ.endswith('time'):
+        out = ipyw.Text(placeholder='YYYY-MM-DD', **kwds)
+    elif typ.endswith('date'):
+        out = ipyw.Text(placeholder='hh-mm-ss', **kwds)
+    elif typ.endswith('dateTime'):
+        out = ipyw.Text(placeholder='YYYY-MM-DDThh-mm-ss', **kwds)
+    elif typ.endswith('angle'):
+        out = ipyw.BoundedFloatText(min=0, max=360, **kwds)
+    else:
+        raise AttributeError("Data type not recognized {}".format(typ))
+
+    return out
