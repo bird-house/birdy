@@ -7,6 +7,7 @@ import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
 from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
+from owslib.wps import monitorExecution
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
@@ -60,7 +61,9 @@ class WPSClient(object):
         """
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
-
+        self._interactive = interactive
+        self._mode = ASYNC if interactive else SYNC
+        self._notebook = utils.is_notebook()
         self._inputs = {}
         self._outputs = {}
 
@@ -190,14 +193,19 @@ class WPSClient(object):
             for o in self._outputs[pid].values()
         ]
 
-        mode = ASYNC if self._processes[pid].storeSupported else SYNC
+        mode = self._mode if self._processes[pid].storeSupported else SYNC
+
         try:
             resp = self._wps.execute(
                 pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
 
-            if mode is ASYNC:
-                self._monitor(resp)
+            if self._interactive and self._processes[pid].statusSupported:
+                if self._notebook:
+                    self._notebook_monitor(resp, sleep=.2)
+                else:
+                    self._console_monitor(resp)
+
         except ServiceException as e:
             if "AccessForbidden" in str(e):
                 raise UnauthorizedException(
@@ -209,7 +217,43 @@ class WPSClient(object):
         output = namedtuple(pid, [o.identifier for o in resp.processOutputs])
         return output(**{o.identifier: self._process_output(o, pid) for o in resp.processOutputs})
 
-    def _monitor(self, execution, sleep=3):
+    def _notebook_monitor(self, execution, sleep=3):
+        """Monitor the execution of a process using a notebook progress bar widget.
+
+        Parameters
+        ----------
+        execution : WPSExecution instance
+          The execute response to monitor.
+        sleep: float
+          Number of seconds to wait before each status check.
+        """
+
+        import ipywidgets as widgets
+        from IPython.display import display
+
+        progress = widgets.IntProgress(
+            value=0,
+            min=0,
+            max=100,
+            step=1,
+            description='Processing:',
+            bar_style='info',
+            orientation='horizontal'
+        )
+        display(progress)
+
+        while execution.isComplete() is False:
+            execution.checkStatus(sleepSecs=sleep)
+            progress.value = execution.percentCompleted
+
+        if execution.isSucceded():
+            progress.value = 100
+            progress.bar_style = 'success'
+            progress.description = 'Complete'
+        else:
+            progress.bar_style = 'danger'
+
+    def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
 
         Parameters

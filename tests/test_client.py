@@ -49,6 +49,14 @@ def test_wps_client_multiple_output(wps):
 
 
 @pytest.mark.online
+def test_interactive(capsys):
+    m = WPSClient(url=url, interactive=True)
+    assert m.hello("david") == "Hello david"
+    captured = capsys.readouterr()
+    assert captured.out.startswith(str(datetime.date.today()))
+
+
+@pytest.mark.online
 def test_wps_client_complex_output(wps):
     # As reference
     wps._convert_objects = False
