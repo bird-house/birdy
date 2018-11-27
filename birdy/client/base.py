@@ -2,6 +2,7 @@ import types
 from collections import OrderedDict
 from copy import copy
 from textwrap import dedent
+import threading
 
 import six
 from boltons.funcutils import FunctionBuilder
@@ -248,31 +249,35 @@ class WPSClient(object):
             disabled=False,
             tooltip='Send `dismiss` request to WPS server.')
 
-        cancel.value = False
-
         def cancel_handler(b):
             b.value = True
             b.disabled = True
+            progress.description = 'Interrupted'
+            # TODO: Send dismiss signal to server
 
+        cancel.value = False
         cancel.on_click(cancel_handler)
 
         box = widgets.HBox([progress, cancel], layout=widgets.Layout(justify_content='space-between'))
         display(box)
 
-        while not execution.isComplete() and not cancel.value:
-            execution.checkStatus(sleepSecs=sleep)
-            progress.value = execution.percentCompleted
+        def check(execution, progress, cancel):
+            while not execution.isComplete() and not cancel.value:
+                execution.checkStatus(sleepSecs=sleep)
+                progress.value = execution.percentCompleted
 
-        if cancel.value:
-            progress.bar_style = 'warning'
-            progress.description = 'Interrupted'
+            if execution.isSucceded():
+                progress.value = 100
+                cancel.disabled = True
+                progress.bar_style = 'success'
+                progress.description = 'Complete'
 
-        if execution.isSucceded():
-            progress.value = 100
-            progress.bar_style = 'success'
-            progress.description = 'Complete'
-        else:
-            progress.bar_style = 'danger'
+            else:
+                progress.bar_style = 'danger'
+
+        thread = threading.Thread(target=check, args=(execution, progress, cancel))
+
+        thread.start()
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
