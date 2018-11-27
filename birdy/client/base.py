@@ -219,7 +219,6 @@ class WPSClient(object):
 
         return value
 
-
     def _notebook_monitor(self, execution, sleep=3):
         """Monitor the execution of a process using a notebook progress bar widget.
 
