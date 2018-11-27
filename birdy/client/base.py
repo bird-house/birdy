@@ -10,17 +10,19 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 from owslib.wps import monitorExecution
 
 from birdy.exceptions import UnauthorizedException
-from birdy.native import utils
-from birdy.native.converters import default_converters
+from birdy.client import utils
+from birdy.client.converters import default_converters
+
+import logging
 
 
 # TODO: Support passing ComplexInput's data using POST.
-class BirdyClient(object):
+class WPSClient(object):
     """Returns a class where every public method is a WPS process available at
     the given url.
 
     Example:
-        >>> emu = BirdyClient(url='<server url>')
+        >>> emu = WPSClient(url='<server url>')
         >>> emu.hello('stranger')
         'Hello stranger'
     """
@@ -54,13 +56,14 @@ class BirdyClient(object):
             verify (bool): passed to :class:`owslib.wps.WebProcessingService`
             cert (str): passed to :class:`owslib.wps.WebProcessingService`
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
+            interactive (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
         """
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
         self._interactive = interactive
         self._mode = ASYNC if interactive else SYNC
-
+        self._notebook = utils.is_notebook()
         self._inputs = {}
         self._outputs = {}
 
@@ -107,6 +110,17 @@ class BirdyClient(object):
         for pid in self._processes:
             setattr(self, pid, types.MethodType(self._method_factory(pid), self))
 
+        self.logger = logging.getLogger('WPSClient')
+        if interactive:
+            self._setup_logging()
+
+    def _setup_logging(self):
+        self.logger.setLevel(logging.INFO)
+        import sys
+        fh = logging.StreamHandler(sys.stdout)
+        fh.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+        self.logger.addHandler(fh)
+
     def _method_factory(self, pid):
         """Create a custom function signature with docstring, instantiate it and
         pass it to a wrapper which will actually call the process.
@@ -125,9 +139,14 @@ class BirdyClient(object):
 
         process = self._processes[pid]
 
+        # init defaults
         input_defaults = OrderedDict(
-            (i.identifier, getattr(i, "defaultValue", None)) for i in process.dataInputs
+            (i.identifier, None) for i in process.dataInputs
         )
+        # update with default values for literal data only
+        for i in process.dataInputs:
+            if i.dataType != 'ComplexData':
+                input_defaults[i.identifier] = getattr(i, "defaultValue", None)
 
         body = dedent("""
             inputs = locals()
@@ -175,13 +194,17 @@ class BirdyClient(object):
         ]
 
         mode = self._mode if self._processes[pid].storeSupported else SYNC
+
         try:
             resp = self._wps.execute(
                 pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
 
             if self._interactive and self._processes[pid].statusSupported:
-                self._interactive_monitor(resp, sleep=.2)
+                if self._notebook:
+                    self._notebook_monitor(resp, sleep=.2)
+                else:
+                    self._console_monitor(resp)
 
         except ServiceException as e:
             if "AccessForbidden" in str(e):
@@ -196,8 +219,9 @@ class BirdyClient(object):
 
         return value
 
-    def _interactive_monitor(self, execution, sleep=3):
-        """Monitor the execution of a process.
+
+    def _notebook_monitor(self, execution, sleep=3):
+        """Monitor the execution of a process using a notebook progress bar widget.
 
         Parameters
         ----------
@@ -206,6 +230,7 @@ class BirdyClient(object):
         sleep: float
           Number of seconds to wait before each status check.
         """
+
         import ipywidgets as widgets
         from IPython.display import display
 
@@ -230,6 +255,28 @@ class BirdyClient(object):
             progress.description = 'Complete'
         else:
             progress.bar_style = 'danger'
+
+    def _console_monitor(self, execution, sleep=3):
+        """Monitor the execution of a process.
+
+        Parameters
+        ----------
+        execution : WPSExecution instance
+          The execute response to monitor.
+        sleep: float
+          Number of seconds to wait before each status check.
+        """
+        while not execution.isComplete():
+            execution.checkStatus(sleepSecs=sleep)
+            self.logger.info("{} [{}/100] - {} ".format(
+                execution.process.identifier,
+                execution.percentCompleted,
+                execution.statusMessage[:50],))
+
+        if execution.isSucceded():
+            self.logger.info("{} done.".format(execution.process.identifier))
+        else:
+            self.logger.info("{} failed.".format(execution.process.identifier))
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
@@ -258,7 +305,3 @@ class BirdyClient(object):
 
         else:
             return output.reference
-
-
-# backward compatibility
-import_wps = BirdyClient

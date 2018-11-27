@@ -23,14 +23,13 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.7'
+needs_sphinx = '1.8'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    # 'autoapi.extension',
-    'sphinx.ext.intersphinx',
+    'autoapi.extension',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.autodoc',
@@ -113,6 +112,9 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+# -- Options for auto-api -------------------------------------------
+autoapi_type = 'python'
+autoapi_dirs = ['../../birdy', ]
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -306,24 +308,9 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-
-# Example configuration for intersphinx: refer to the Python standard library.
-#intersphinx_mapping = {'https://docs.python.org/': None}
-intersphinx_mapping = {'python': ('http://docs.python.org/', None),
-                       'birdhouse': ('http://birdhouse.readthedocs.io/en/latest/', None),
-                       'phoenix': ('http://pyramid-phoenix.readthedocs.io/en/latest/', None),
-                       'malleefowl': ('http://malleefowl.readthedocs.io/en/latest/', None),
-                       'twitcher': ('http://twitcher.readthedocs.io/en/latest/', None),
-                       'flyingpigeon': ('http://flyingpigeon.readthedocs.io/en/latest/', None),
-                       'hummingbird': ('http://birdhouse-hummingbird.readthedocs.io/en/latest/', None),
-                       'emu': ('http://emu.readthedocs.io/en/latest/', None),
-                       'birdy': ('http://birdy.readthedocs.io/en/latest/', None),
-                       'bootstrap': ('http://birdhousebuilderbootstrap.readthedocs.io/en/latest/', None),
-                        }
-
 # linkcheck options
 # http://www.sphinx-doc.org/en/stable/config.html?highlight=linkchecker#options-for-the-linkcheck-builder
-linkcheck_ignore = [r'http[s]*://localhost.*/', 'https://mouflon.dkrz.de/', 'https://esgf-data.dkrz.de/']
+linkcheck_ignore = [r'http[s]*://localhost.*/', ]
 linkcheck_timeout = 5
 
 # Link references always present on RST page.
@@ -332,5 +319,5 @@ rst_epilog = """
 .. _reStructuredText: http://sphinx-doc.org/rest.html
 .. _Read the Docs: https://readthedocs.org
 .. _Anaconda: https://www.continuum.io/
-.. _Buildout: http://www.buildout.org/en/latest/
+.. _Emu: http://emu.readthedocs.io/en/latest/
 """
