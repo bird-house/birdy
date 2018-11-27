@@ -6,11 +6,13 @@ from textwrap import dedent
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC
+from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
+
+import logging
 
 
 # TODO: Support passing ComplexInput's data using POST.
@@ -36,6 +38,7 @@ class WPSClient(object):
         verify=True,
         cert=None,
         verbose=False,
+        interactive=False,
         version=WPS_DEFAULT_VERSION,
     ):
         """
@@ -52,6 +55,7 @@ class WPSClient(object):
             verify (bool): passed to :class:`owslib.wps.WebProcessingService`
             cert (str): passed to :class:`owslib.wps.WebProcessingService`
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
+            interactive (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
         """
         self._convert_objects = convert_objects
@@ -102,6 +106,17 @@ class WPSClient(object):
 
         for pid in self._processes:
             setattr(self, pid, types.MethodType(self._method_factory(pid), self))
+
+        self.logger = logging.getLogger('WPSClient')
+        if interactive:
+            self._setup_logging()
+
+    def _setup_logging(self):
+        self.logger.setLevel(logging.INFO)
+        import sys
+        fh = logging.StreamHandler(sys.stdout)
+        fh.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+        self.logger.addHandler(fh)
 
     def _method_factory(self, pid):
         """Create a custom function signature with docstring, instantiate it and
@@ -175,11 +190,14 @@ class WPSClient(object):
             for o in self._outputs[pid].values()
         ]
 
-        # Execute request in synchronous mode
+        mode = ASYNC if self._processes[pid].storeSupported else SYNC
         try:
             resp = self._wps.execute(
-                pid, inputs=wps_inputs, output=wps_outputs, mode=SYNC
+                pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
+
+            if mode is ASYNC:
+                self._monitor(resp)
         except ServiceException as e:
             if "AccessForbidden" in str(e):
                 raise UnauthorizedException(
@@ -192,6 +210,28 @@ class WPSClient(object):
         value = utils.delist(outputs)
 
         return value
+
+    def _monitor(self, execution, sleep=3):
+        """Monitor the execution of a process.
+
+        Parameters
+        ----------
+        execution : WPSExecution instance
+          The execute response to monitor.
+        sleep: float
+          Number of seconds to wait before each status check.
+        """
+        while not execution.isComplete():
+            execution.checkStatus(sleepSecs=sleep)
+            self.logger.info("{} [{}/100] - {} ".format(
+                execution.process.identifier,
+                execution.percentCompleted,
+                execution.statusMessage[:50],))
+
+        if execution.isSucceded():
+            self.logger.info("{} done.".format(execution.process.identifier))
+        else:
+            self.logger.info("{} failed.".format(execution.process.identifier))
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
