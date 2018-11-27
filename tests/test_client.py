@@ -31,8 +31,10 @@ def test_wps_client_backward_compability():
 
 @pytest.mark.online
 def test_wps_client_single_output(wps):
-    assert wps.hello("david") == "Hello david"
-    assert wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add") == 3.0
+    msg, = wps.hello("david")
+    assert msg == "Hello david"
+    ans, = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
+    assert ans == 3.0
 
 
 @pytest.mark.online

@@ -207,8 +207,7 @@ class WPSClient(object):
 
         # Output type conversion
         output = namedtuple(pid, [o.identifier for o in resp.processOutputs])
-        out = output(**{o.identifier: self._process_output(o, pid) for o in resp.processOutputs})
-        return utils.delist(out)
+        return output(**{o.identifier: self._process_output(o, pid) for o in resp.processOutputs})
 
     def _monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
