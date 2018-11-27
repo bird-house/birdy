@@ -11,7 +11,7 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
-
+from collections import namedtuple, Iterable
 import logging
 
 
@@ -206,10 +206,9 @@ class WPSClient(object):
             raise
 
         # Output type conversion
-        outputs = [self._process_output(o, pid) for o in resp.processOutputs]
-        value = utils.delist(outputs)
-
-        return value
+        output = namedtuple(pid, [o.identifier for o in resp.processOutputs])
+        out = output(**{o.identifier: self._process_output(o, pid) for o in resp.processOutputs})
+        return utils.delist(out)
 
     def _monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
