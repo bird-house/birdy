@@ -122,16 +122,6 @@ def from_owslib(value, data_type):
     return value
 
 
-def delist(data):
-    """If data is a sequence with a single element, returns this element, otherwise return a namedtuple."""
-    from collections import Iterable
-
-    if (isinstance(data, Iterable) and not isinstance(data, six.string_types) and len(data) == 1):
-        return data[0]
-
-    return data
-
-
 def is_notebook():
     """Return whether or not this function is executed in a notebook environment."""
     try:

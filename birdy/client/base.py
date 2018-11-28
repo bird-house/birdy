@@ -1,5 +1,6 @@
 import types
 from collections import OrderedDict
+from collections import namedtuple
 from copy import copy
 from textwrap import dedent
 import threading
@@ -12,7 +13,8 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
-from collections import namedtuple
+from birdy.utils import sanitize, delist
+
 import logging
 
 
@@ -214,8 +216,8 @@ class WPSClient(object):
             raise
 
         # Output type conversion
-        output = namedtuple(pid, [o.identifier for o in resp.processOutputs])
-        return output(**{o.identifier: self._process_output(o, pid) for o in resp.processOutputs})
+        Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
+        return Output(*[self._process_output(o, pid) for o in resp.processOutputs])
 
     def _notebook_monitor(self, execution, sleep=3):
         """Monitor the execution of a process using a notebook progress bar widget.
@@ -329,7 +331,7 @@ class WPSClient(object):
             if data_type is None:
                 data_type = self._outputs[pid][output.identifier].dataType
             data = [utils.from_owslib(d, data_type) for d in output.data]
-            return utils.delist(data)
+            return delist(data)
 
         if self._convert_objects:
             # Try to convert the bytes to an object.
