@@ -2,12 +2,12 @@ import types
 from collections import OrderedDict
 from copy import copy
 from textwrap import dedent
+import threading
 
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
 from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
-from owslib.wps import monitorExecution
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
@@ -240,18 +240,42 @@ class WPSClient(object):
             bar_style='info',
             orientation='horizontal'
         )
-        display(progress)
 
-        while execution.isComplete() is False:
-            execution.checkStatus(sleepSecs=sleep)
-            progress.value = execution.percentCompleted
+        cancel = widgets.Button(
+            description="Cancel",
+            button_style='danger',
+            disabled=False,
+            tooltip='Send `dismiss` request to WPS server.')
 
-        if execution.isSucceded():
-            progress.value = 100
-            progress.bar_style = 'success'
-            progress.description = 'Complete'
-        else:
-            progress.bar_style = 'danger'
+        def cancel_handler(b):
+            b.value = True
+            b.disabled = True
+            progress.description = 'Interrupted'
+            # TODO: Send dismiss signal to server
+
+        cancel.value = False
+        cancel.on_click(cancel_handler)
+
+        box = widgets.HBox([progress, cancel], layout=widgets.Layout(justify_content='space-between'))
+        display(box)
+
+        def check(execution, progress, cancel):
+            while not execution.isComplete() and not cancel.value:
+                execution.checkStatus(sleepSecs=sleep)
+                progress.value = execution.percentCompleted
+
+            if execution.isSucceded():
+                progress.value = 100
+                cancel.disabled = True
+                progress.bar_style = 'success'
+                progress.description = 'Complete'
+
+            else:
+                progress.bar_style = 'danger'
+
+        thread = threading.Thread(target=check, args=(execution, progress, cancel))
+
+        thread.start()
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
@@ -263,7 +287,14 @@ class WPSClient(object):
         sleep: float
           Number of seconds to wait before each status check.
         """
-        while not execution.isComplete():
+        import signal
+
+        # Intercept CTRL-C
+        def sigint_handler(signum, frame):
+            self.cancel()
+        signal.signal(signal.SIGINT, sigint_handler)
+
+        while not execution.isComplete() and self._continue:
             execution.checkStatus(sleepSecs=sleep)
             self.logger.info("{} [{}/100] - {} ".format(
                 execution.process.identifier,
