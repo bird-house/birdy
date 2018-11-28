@@ -39,9 +39,9 @@ If a WPS server with a simple `hello` process is running on the local host on po
 
   ""
 
-  # Call the function
+  # Call the function. The output is a namedtuple
   >>> emu.hello('stranger')
-  'Hello stranger'
+  hello(output='Hello stranger')
 
 """
 
