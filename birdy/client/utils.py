@@ -83,19 +83,20 @@ def format_type(obj):
     return doc
 
 
-def convert_input_value(param, value):
+def to_owslib(value, data_type):
     """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
-    if param.dataType:
-        if param.dataType == "ComplexData":
-            return ComplexDataInput(value)
-        if param.dataType == "BoundingBoxData":
-            # todo: boundingbox
-            return value
-    return str(value)
+
+    if data_type == "ComplexData":
+        return ComplexDataInput(value)
+    if data_type == "BoundingBoxData":
+        # todo: boundingbox
+        return value
+    else:
+        return str(value)
 
 
-def convert_output_value(value, data_type):
+def from_owslib(value, data_type):
     """Convert a string into another data type."""
     if "string" in data_type:
         pass
@@ -177,9 +178,9 @@ def input2widget(inpt):
     elif typ.endswith('nonNegativeInteger'):
         out = ipyw.BoundedIntText(min=0, **kwds)
     elif typ.endswith('string'):
-        out = ipyw.Text(placeholder=inpt.description, **kwds)
+        out = ipyw.Text(placeholder=inpt.abstract, **kwds)
     elif typ.endswith('anyURI'):
-        out = ipyw.Text(placeholder=inpt.description, **kwds)
+        out = ipyw.Text(placeholder=inpt.abstract, **kwds)
     elif typ.endswith('time'):
         out = ipyw.Text(placeholder='YYYY-MM-DD', **kwds)
     elif typ.endswith('date'):
@@ -188,7 +189,10 @@ def input2widget(inpt):
         out = ipyw.Text(placeholder='YYYY-MM-DDThh-mm-ss', **kwds)
     elif typ.endswith('angle'):
         out = ipyw.BoundedFloatText(min=0, max=360, **kwds)
+    elif typ.endswith('ComplexData'):
+        out = ipyw.Text(description=inpt.title)
     else:
+
         raise AttributeError("Data type not recognized {}".format(typ))
 
     return out

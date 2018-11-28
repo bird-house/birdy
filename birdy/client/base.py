@@ -146,7 +146,7 @@ class WPSClient(object):
         # update with default values for literal data only
         for i in process.dataInputs:
             if i.dataType != 'ComplexData':
-                input_defaults[i.identifier] = getattr(i, "defaultValue", None)
+                input_defaults[i.identifier] = utils.from_owslib(getattr(i, "defaultValue", None), i.dataType)
 
         body = dedent("""
             inputs = locals()
@@ -186,7 +186,7 @@ class WPSClient(object):
         for name, input_param in self._inputs[pid].items():
             value = kwargs.get(name)
             if value is not None:
-                wps_inputs.append((name, utils.convert_input_value(input_param, value)))
+                wps_inputs.append((name, utils.to_owslib(value, input_param.dataType, )))
 
         wps_outputs = [
             (o.identifier, "ComplexData" in o.dataType)
@@ -328,7 +328,7 @@ class WPSClient(object):
             data_type = output.dataType
             if data_type is None:
                 data_type = self._outputs[pid][output.identifier].dataType
-            data = [utils.convert_output_value(d, data_type) for d in output.data]
+            data = [utils.from_owslib(d, data_type) for d in output.data]
             return utils.delist(data)
 
         if self._convert_objects:
