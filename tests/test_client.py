@@ -37,6 +37,15 @@ def test_wps_client_single_output(wps):
 
 
 @pytest.mark.online
+def test_wps_interact(wps):
+    for pid in wps._processes.keys():
+        if pid in ['bbox', ]:  # Unsupported
+            continue
+        print(pid)
+        wps.interact(pid)
+
+
+@pytest.mark.online
 def test_wps_client_multiple_output(wps):
     # For multiple outputs, the output is a namedtuple
     out = wps.dummyprocess(10, 20)

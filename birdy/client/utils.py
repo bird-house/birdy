@@ -83,19 +83,20 @@ def format_type(obj):
     return doc
 
 
-def convert_input_value(param, value):
+def to_owslib(value, data_type):
     """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
-    if param.dataType:
-        if param.dataType == "ComplexData":
-            return ComplexDataInput(value)
-        if param.dataType == "BoundingBoxData":
-            # todo: boundingbox
-            return value
-    return str(value)
+
+    if data_type == "ComplexData":
+        return ComplexDataInput(value)
+    if data_type == "BoundingBoxData":
+        # todo: boundingbox
+        return value
+    else:
+        return str(value)
 
 
-def convert_output_value(value, data_type):
+def from_owslib(value, data_type):
     """Convert a string into another data type."""
     if "string" in data_type:
         pass
@@ -111,74 +112,11 @@ def convert_output_value(value, data_type):
         value = dateutil.parser.parse(value).time()
     elif "date" in data_type:
         value = dateutil.parser.parse(value).date()
+    elif "angle" in data_type:
+        value = float(value)
     elif "ComplexData" in data_type:
         value = ComplexDataInput(value)
     elif "BoundingBoxData" in data_type:
         # todo: boundingbox
         pass
     return value
-
-
-def is_notebook():
-    """Return whether or not this function is executed in a notebook environment."""
-    try:
-        from IPython import get_ipython
-    except ImportError:
-        return False
-
-    try:
-        shell = get_ipython().__class__.__name__
-        if shell == 'ZMQInteractiveShell':
-            return True   # Jupyter notebook or qtconsole
-        elif shell == 'TerminalInteractiveShell':
-            return False  # Terminal running IPython
-        else:
-            return False  # Other type (?)
-    except NameError:
-        return False      # Probably standard Python interpreter
-
-
-def input2widget(inpt):
-    """Return a Notebook widget to enter values for the input."""
-    import ipywidgets as ipyw
-
-    if not isinstance(inpt, Input):
-        raise ValueError
-
-    typ = inpt.dataType
-    opt = inpt.allowedValues
-    kwds = dict(value=inpt.defaultValue, description=inpt.title)
-    if opt:
-        if inpt.maxOccurs == 1:
-            if len(opt) < 3:
-                out = ipyw.RadioButtons(options=opt, **kwds)
-            else:
-                out = ipyw.Dropdown(options=opt, **kwds)
-        else:
-            out = ipyw.SelectMultiple(options=opt, value=[inpt.defaultValue], description=inpt.title)
-    elif typ.endswith('float'):
-        out = ipyw.FloatText(**kwds)
-    elif typ.endswith('boolean'):
-        out = ipyw.Checkbox(**kwds)
-    elif typ.endswith('integer'):
-        out = ipyw.IntText(**kwds)
-    elif typ.endswith('positiveInteger'):
-        out = ipyw.BoundedIntText(min=1E-16, **kwds)
-    elif typ.endswith('nonNegativeInteger'):
-        out = ipyw.BoundedIntText(min=0, **kwds)
-    elif typ.endswith('string'):
-        out = ipyw.Text(placeholder=inpt.description, **kwds)
-    elif typ.endswith('anyURI'):
-        out = ipyw.Text(placeholder=inpt.description, **kwds)
-    elif typ.endswith('time'):
-        out = ipyw.Text(placeholder='YYYY-MM-DD', **kwds)
-    elif typ.endswith('date'):
-        out = ipyw.Text(placeholder='hh-mm-ss', **kwds)
-    elif typ.endswith('dateTime'):
-        out = ipyw.Text(placeholder='YYYY-MM-DDThh-mm-ss', **kwds)
-    elif typ.endswith('angle'):
-        out = ipyw.BoundedFloatText(min=0, max=360, **kwds)
-    else:
-        raise AttributeError("Data type not recognized {}".format(typ))
-
-    return out

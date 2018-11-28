@@ -8,3 +8,7 @@ class ConnectionError(click.ClickException):
 
 class UnauthorizedException(ServiceException):
     pass
+
+
+class IPythonWarning(UserWarning):
+    pass
