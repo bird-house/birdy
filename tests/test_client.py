@@ -35,13 +35,15 @@ def test_wps_client_single_output(wps):
     ans, = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
     assert ans == 3.0
 
+
 @pytest.mark.online
 def test_wps_interact(wps):
     for pid in wps._processes.keys():
-        if pid in ['bbox',]:  # Unsupported
+        if pid in ['bbox', ]:  # Unsupported
             continue
         print(pid)
         wps.interact(pid)
+
 
 @pytest.mark.online
 def test_wps_client_multiple_output(wps):
