@@ -12,7 +12,7 @@ from owslib.wps import monitorExecution
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
-from collections import namedtuple, Iterable
+from collections import namedtuple
 import logging
 
 
