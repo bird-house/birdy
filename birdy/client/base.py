@@ -3,7 +3,6 @@ from collections import OrderedDict
 from collections import namedtuple
 from copy import copy
 from textwrap import dedent
-import threading
 
 import six
 from boltons.funcutils import FunctionBuilder
@@ -14,6 +13,7 @@ from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
 from birdy.utils import sanitize, delist
+from birdy.client import notebook
 
 import logging
 
@@ -65,7 +65,7 @@ class WPSClient(object):
         self._converters = converters or copy(default_converters)
         self._interactive = interactive
         self._mode = ASYNC if interactive else SYNC
-        self._notebook = utils.is_notebook()
+        self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
 
@@ -204,7 +204,7 @@ class WPSClient(object):
 
             if self._interactive and self._processes[pid].statusSupported:
                 if self._notebook:
-                    self._notebook_monitor(resp, sleep=.2)
+                    notebook.monitor(resp, sleep=.2)
                 else:
                     self._console_monitor(resp)
 
@@ -218,67 +218,6 @@ class WPSClient(object):
         # Output type conversion
         Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
         return Output(*[self._process_output(o, pid) for o in resp.processOutputs])
-
-    def _notebook_monitor(self, execution, sleep=3):
-        """Monitor the execution of a process using a notebook progress bar widget.
-
-        Parameters
-        ----------
-        execution : WPSExecution instance
-          The execute response to monitor.
-        sleep: float
-          Number of seconds to wait before each status check.
-        """
-
-        import ipywidgets as widgets
-        from IPython.display import display
-
-        progress = widgets.IntProgress(
-            value=0,
-            min=0,
-            max=100,
-            step=1,
-            description='Processing:',
-            bar_style='info',
-            orientation='horizontal'
-        )
-
-        cancel = widgets.Button(
-            description="Cancel",
-            button_style='danger',
-            disabled=False,
-            tooltip='Send `dismiss` request to WPS server.')
-
-        def cancel_handler(b):
-            b.value = True
-            b.disabled = True
-            progress.description = 'Interrupted'
-            # TODO: Send dismiss signal to server
-
-        cancel.value = False
-        cancel.on_click(cancel_handler)
-
-        box = widgets.HBox([progress, cancel], layout=widgets.Layout(justify_content='space-between'))
-        display(box)
-
-        def check(execution, progress, cancel):
-            while not execution.isComplete() and not cancel.value:
-                execution.checkStatus(sleepSecs=sleep)
-                progress.value = execution.percentCompleted
-
-            if execution.isSucceded():
-                progress.value = 100
-                cancel.disabled = True
-                progress.bar_style = 'success'
-                progress.description = 'Complete'
-
-            else:
-                progress.bar_style = 'danger'
-
-        thread = threading.Thread(target=check, args=(execution, progress, cancel))
-
-        thread.start()
-        # thread.join()
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
@@ -311,12 +250,12 @@ class WPSClient(object):
 
     def interact(self, pid):
         """Return a Notebook form to enter input values and launch process."""
-        from ipywidgets import interact_manual
-        func = getattr(self, pid)
-        ws = {key: utils.input2widget(inpt) for key, inpt in self._inputs[pid].items()}
-        out = interact_manual(func, **ws)
-        out.widget.children[-2].description = 'Launch process'
-        return out
+        if self._notebook:
+            return notebook.interact(
+                func=getattr(self, pid),
+                inputs=self._inputs[pid].items())
+        else:
+            return None
 
     def _process_output(self, output, pid):
         """Process the output response, whether it is actual data or a URL to a
