@@ -112,6 +112,8 @@ def from_owslib(value, data_type):
         value = dateutil.parser.parse(value).time()
     elif "date" in data_type:
         value = dateutil.parser.parse(value).date()
+    elif "angle" in data_type:
+        value = float(value)
     elif "ComplexData" in data_type:
         value = ComplexDataInput(value)
     elif "BoundingBoxData" in data_type:
@@ -158,41 +160,48 @@ def input2widget(inpt):
 
     typ = inpt.dataType
     opt = inpt.allowedValues
-    kwds = dict(value=inpt.defaultValue, description=inpt.title)
+
+    # String default
+    default = inpt.defaultValue
+
+    # Object default
+    odefault = from_owslib(inpt.defaultValue, inpt.dataType)
+
+    kwds = dict(description=inpt.title)
     if opt:
+        vopt = [from_owslib(o, typ) for o in opt]
         if inpt.maxOccurs == 1:
             if len(opt) < 3:
-                out = ipyw.RadioButtons(options=opt, **kwds)
+                out = ipyw.RadioButtons(options=vopt, **kwds)
             else:
-                out = ipyw.Dropdown(options=opt, **kwds)
+                out = ipyw.Dropdown(options=vopt, **kwds)
         else:
-            out = ipyw.SelectMultiple(options=opt, value=[inpt.defaultValue], description=inpt.title)
+            out = ipyw.SelectMultiple(options=vopt, value=[inpt.defaultValue], description=inpt.title)
     elif typ.endswith('float'):
-        out = ipyw.FloatText(**kwds)
+        out = ipyw.FloatText(value=odefault, **kwds)
     elif typ.endswith('boolean'):
-        out = ipyw.Checkbox(**kwds)
+        out = ipyw.Checkbox(value=odefault, **kwds)
     elif typ.endswith('integer'):
-        out = ipyw.IntText(**kwds)
+        out = ipyw.IntText(value=odefault, **kwds)
     elif typ.endswith('positiveInteger'):
-        out = ipyw.BoundedIntText(min=1E-16, **kwds)
+        out = ipyw.BoundedIntText(value=odefault, min=1E-16, **kwds)
     elif typ.endswith('nonNegativeInteger'):
-        out = ipyw.BoundedIntText(min=0, **kwds)
+        out = ipyw.BoundedIntText(value=odefault, min=0, **kwds)
     elif typ.endswith('string'):
-        out = ipyw.Text(placeholder=inpt.abstract, **kwds)
+        out = ipyw.Text(value=odefault, placeholder=inpt.abstract, **kwds)
     elif typ.endswith('anyURI'):
-        out = ipyw.Text(placeholder=inpt.abstract, **kwds)
+        out = ipyw.Text(value=odefault, placeholder=inpt.abstract, **kwds)
     elif typ.endswith('time'):
-        out = ipyw.Text(placeholder='YYYY-MM-DD', **kwds)
+        out = ipyw.Text(value=default, placeholder='YYYY-MM-DD', **kwds)
     elif typ.endswith('date'):
-        out = ipyw.Text(placeholder='hh-mm-ss', **kwds)
+        out = ipyw.Text(value=default, placeholder='hh-mm-ss', **kwds)
     elif typ.endswith('dateTime'):
-        out = ipyw.Text(placeholder='YYYY-MM-DDThh-mm-ss', **kwds)
+        out = ipyw.Text(value=default, placeholder='YYYY-MM-DDThh-mm-ss', **kwds)
     elif typ.endswith('angle'):
         out = ipyw.BoundedFloatText(min=0, max=360, **kwds)
     elif typ.endswith('ComplexData'):
         out = ipyw.Text(description=inpt.title)
     else:
-
         raise AttributeError("Data type not recognized {}".format(typ))
 
     return out
