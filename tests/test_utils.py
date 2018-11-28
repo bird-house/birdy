@@ -7,9 +7,9 @@ def test_is_url():
     assert not utils.is_url("myfile.txt")
 
 
-def test_make_identifier():
-    assert utils.make_identifier('output') == 'output'
-    assert utils.make_identifier('My Output 1') == 'my_output_1'
+def test_sanitize():
+    assert utils.sanitize('output') == 'output'
+    assert utils.sanitize('My Output 1') == 'my_output_1'
 
 
 def test_delist():

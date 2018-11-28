@@ -13,7 +13,7 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
 from birdy.client.converters import default_converters
-from birdy.utils import make_identifier, delist
+from birdy.utils import sanitize, delist
 
 import logging
 
@@ -216,7 +216,7 @@ class WPSClient(object):
             raise
 
         # Output type conversion
-        Output = namedtuple('Output', [make_identifier(o.identifier) for o in resp.processOutputs])
+        Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
         return Output._make([self._process_output(o, pid) for o in resp.processOutputs])
 
     def _notebook_monitor(self, execution, sleep=3):

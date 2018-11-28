@@ -15,7 +15,7 @@ def is_url(url):
         return True
 
 
-def make_identifier(name):
+def sanitize(name):
     """Lower-case name and replace all non-ascii chars by `_`."""
     return re.sub(r'\W|^(?=\d)', '_', name.lower())
 
