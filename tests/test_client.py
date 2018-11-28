@@ -53,6 +53,7 @@ def test_interactive(capsys):
     assert m.hello("david").output == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))
+    assert m.binaryoperatorfornumbers() == 5
 
 
 @pytest.mark.skip(reason="Complex Output is not working.")
