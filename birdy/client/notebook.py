@@ -1,5 +1,7 @@
 import threading
+from owslib.wps import Input
 
+from . import utils
 from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
 
@@ -98,11 +100,11 @@ def input2widget(inpt):
     default = inpt.defaultValue
 
     # Object default
-    odefault = from_owslib(inpt.defaultValue, inpt.dataType)
+    odefault = utils.from_owslib(inpt.defaultValue, inpt.dataType)
 
     kwds = dict(description=inpt.title)
     if opt:
-        vopt = [from_owslib(o, typ) for o in opt]
+        vopt = [utils.from_owslib(o, typ) for o in opt]
         if inpt.maxOccurs == 1:
             if len(opt) < 3:
                 out = widgets.RadioButtons(options=vopt, **kwds)

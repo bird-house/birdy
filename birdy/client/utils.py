@@ -1,6 +1,6 @@
 import dateutil.parser
 import six
-from owslib.wps import ComplexDataInput, Input
+from owslib.wps import ComplexDataInput
 
 
 def filter_case_insensitive(names, complete_list):
