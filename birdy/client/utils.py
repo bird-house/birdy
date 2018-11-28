@@ -1,5 +1,3 @@
-import collections
-
 import dateutil.parser
 import six
 from owslib.wps import ComplexDataInput
@@ -122,11 +120,12 @@ def convert_output_value(value, data_type):
 
 
 def delist(data):
-    """If data is a sequence with a single element, returns this element, otherwise return the sequence."""
-    if (
-        isinstance(data, collections.Iterable) and not isinstance(data, six.string_types) and len(data) == 1
-    ):
+    """If data is a sequence with a single element, returns this element, otherwise return a namedtuple."""
+    from collections import Iterable
+
+    if (isinstance(data, Iterable) and not isinstance(data, six.string_types) and len(data) == 1):
         return data[0]
+
     return data
 
 
