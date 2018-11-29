@@ -39,8 +39,9 @@ def build_wps_client_doc(wps, processes):
            ""]
 
     for process_name, process in processes.items():
+        sanitized_name = sanitize(process_name)
         description = "{name}\n    {abstract}".format(
-            name=process_name,
+            name=sanitized_name,
             abstract=process.abstract or "(No description)"
         )
         doc.append(description)
