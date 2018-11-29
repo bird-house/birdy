@@ -19,7 +19,43 @@ def filter_case_insensitive(names, complete_list):
     return contained, missing
 
 
-def build_doc(process):
+def build_wps_client_doc(wps, processes):
+    """Create WPSClient docstring.
+
+    Parameters
+    ----------
+    wps : owslib.wps.WebProcessingService
+    processes : Dict[str, owslib.wps.Process]
+
+    Returns
+    -------
+    str
+        The formatted docstring for this WPSClient
+    """
+    doc = [wps.identification.abstract,
+           "",
+           "Processes",
+           "---------",
+           ""]
+
+    for process_name, process in processes.items():
+        sanitized_name = sanitize(process_name)
+        description = "{name}\n    {abstract}".format(
+            name=sanitized_name,
+            abstract=process.abstract or "(No description)"
+        )
+        doc.append(description)
+        doc.append("")
+
+    if not processes:
+        doc.append("There aren't any available processes.")
+
+    doc.append("\n")
+
+    return "\n".join(doc)
+
+
+def build_process_doc(process):
     """Create docstring from process metadata."""
     doc = [process.abstract or "", ""]
 

@@ -37,6 +37,11 @@ def test_wps_client_backward_compability():
 
 
 @pytest.mark.online
+def test_wps_docs(wps):
+    assert "Processes" in wps.__doc__
+
+
+@pytest.mark.online
 def test_wps_client_single_output(wps):
     msg, = wps.hello("david")
     assert msg == "Hello david"
