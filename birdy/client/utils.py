@@ -54,7 +54,7 @@ def pretty_repr(obj, linebreaks=True):
             value=value
         ))
 
-    attribute_joiner = "\n" if linebreaks else ", "
+    attribute_joiner = ",\n" if linebreaks else ", "
     attributes = attribute_joiner.join(attributes)
 
     joiner = "\n" if linebreaks else ""
