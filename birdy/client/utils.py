@@ -1,7 +1,8 @@
 import dateutil.parser
 import six
-from owslib.wps import ComplexDataInput
+from owslib.wps import ComplexDataInput, BoundingBoxDataInput
 from .. utils import sanitize
+
 
 def filter_case_insensitive(names, complete_list):
     """Filter a sequence of process names into a `known` and `unknown` list."""
@@ -92,7 +93,7 @@ def to_owslib(value, data_type):
     if data_type == "BoundingBoxData":
         # todo: boundingbox
         return value
-    else:
+    else:  # LiteralData
         return str(value)
 
 
@@ -120,6 +121,6 @@ def from_owslib(value, data_type):
     elif "ComplexData" in data_type:
         value = ComplexDataInput(value)
     elif "BoundingBoxData" in data_type:
-        # todo: boundingbox
         pass
+        # value = BoundingBoxDataInput(value)
     return value

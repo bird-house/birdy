@@ -141,7 +141,6 @@ class WPSClient(object):
 
         process = self._processes[pid]
 
-        # init defaults
         input_defaults = OrderedDict()
         for inpt in process.dataInputs:
             iid = sanitize(inpt.identifier)
