@@ -19,6 +19,48 @@ def filter_case_insensitive(names, complete_list):
     return contained, missing
 
 
+def pretty_repr(obj, linebreaks=True):
+    """Pretty repr for an Output
+
+    Parameters
+    ----------
+    obj : any type
+    linebreaks : bool
+        If True, split attributes with linebreaks
+    """
+    class_name = obj.__class__.__name__
+
+    try:
+        obj = obj._asdict()  # convert namedtuple to dict
+    except AttributeError:
+        pass
+
+    try:
+        items = obj.items()
+    except AttributeError:
+        try:
+            items = obj.__dict__.items()
+        except AttributeError:
+            return repr(obj)
+
+    attributes = []
+    indent = "    " if linebreaks else ""
+
+    for key, value in items:
+        value = pretty_repr(value, linebreaks=False)
+        attributes.append("{indent}{key}={value}".format(
+            indent=indent,
+            key=key,
+            value=value
+        ))
+
+    attribute_joiner = ",\n" if linebreaks else ", "
+    attributes = attribute_joiner.join(attributes)
+
+    joiner = "\n" if linebreaks else ""
+    return joiner.join([class_name + "(", attributes, ")"])
+
+
 def build_wps_client_doc(wps, processes):
     """Create WPSClient docstring.
 

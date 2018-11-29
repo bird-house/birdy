@@ -216,6 +216,7 @@ class WPSClient(object):
 
         # Output type conversion
         Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
+        Output.__repr__ = utils.pretty_repr
         return Output(*[self._process_output(o, pid) for o in resp.processOutputs])
 
     def _console_monitor(self, execution, sleep=3):
