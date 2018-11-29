@@ -10,6 +10,8 @@ def test_is_url():
 def test_sanitize():
     assert utils.sanitize('output') == 'output'
     assert utils.sanitize('My Output 1') == 'my_output_1'
+    assert utils.sanitize('a.b') == 'a_b'
+    assert utils.sanitize('a-b') == 'a_b'
 
 
 def test_delist():

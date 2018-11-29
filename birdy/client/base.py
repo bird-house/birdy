@@ -110,7 +110,7 @@ class WPSClient(object):
         )
 
         for pid in self._processes:
-            setattr(self, pid, types.MethodType(self._method_factory(pid), self))
+            setattr(self, sanitize(pid), types.MethodType(self._method_factory(pid), self))
 
         self.logger = logging.getLogger('WPSClient')
         if interactive:
@@ -141,14 +141,11 @@ class WPSClient(object):
 
         process = self._processes[pid]
 
-        # init defaults
-        input_defaults = OrderedDict(
-            (i.identifier, None) for i in process.dataInputs
-        )
-        # update with default values for literal data only
-        for i in process.dataInputs:
-            if i.dataType != 'ComplexData':
-                input_defaults[i.identifier] = utils.from_owslib(getattr(i, "defaultValue", None), i.dataType)
+        input_defaults = OrderedDict()
+        for inpt in process.dataInputs:
+            iid = sanitize(inpt.identifier)
+            default = getattr(inpt, "defaultValue", None) if inpt.dataType != 'ComplexData' else None
+            input_defaults[iid] = utils.from_owslib(default, inpt.dataType)
 
         body = dedent("""
             inputs = locals()
@@ -157,7 +154,7 @@ class WPSClient(object):
         """).format(pid=pid)
 
         func_builder = FunctionBuilder(
-            name=pid,
+            name=sanitize(pid),
             doc=utils.build_doc(process),
             args=["self"] + list(input_defaults),
             defaults=tuple(input_defaults.values()),
@@ -272,7 +269,7 @@ class WPSClient(object):
             data = [utils.from_owslib(d, data_type) for d in output.data]
             return delist(data)
 
-        if self._convert_objects:
+        if self._convert_objects and output.mimeType:
             # Try to convert the bytes to an object.
             converter = self._converters[output.mimeType](output)
 
