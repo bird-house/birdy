@@ -116,6 +116,8 @@ class WPSClient(object):
         if interactive:
             self._setup_logging()
 
+        self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
+
     def _setup_logging(self):
         self.logger.setLevel(logging.INFO)
         import sys
@@ -155,7 +157,7 @@ class WPSClient(object):
 
         func_builder = FunctionBuilder(
             name=sanitize(pid),
-            doc=utils.build_doc(process),
+            doc=utils.build_process_doc(process),
             args=["self"] + list(input_defaults),
             defaults=tuple(input_defaults.values()),
             body=body,
