@@ -21,6 +21,14 @@ def wps():
 
 
 @pytest.mark.online
+def test_52north():
+    """This WPS server has process and input ids with dots and dashes."""
+    url = "http://geoprocessing.demo.52north.org:8080/wps"
+    url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
+    WPSClient(url)
+
+
+@pytest.mark.online
 def test_wps_client_backward_compability():
     from birdy import BirdyClient
     BirdyClient(url=url)

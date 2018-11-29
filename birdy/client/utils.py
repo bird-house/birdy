@@ -1,7 +1,7 @@
 import dateutil.parser
 import six
 from owslib.wps import ComplexDataInput
-
+from .. utils import sanitize
 
 def filter_case_insensitive(names, complete_list):
     """Filter a sequence of process names into a `known` and `unknown` list."""
@@ -20,14 +20,14 @@ def filter_case_insensitive(names, complete_list):
 
 def build_doc(process):
     """Create docstring from process metadata."""
-    doc = [process.abstract, ""]
+    doc = [process.abstract or "", ""]
 
     # Inputs
     if process.dataInputs:
         doc.append("Parameters")
         doc.append("----------")
         for i in process.dataInputs:
-            doc.append("{} : {}".format(i.identifier, format_type(i)))
+            doc.append("{} : {}".format(sanitize(i.identifier), format_type(i)))
             doc.append("    {}".format(i.abstract or i.title))
             # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
@@ -38,7 +38,7 @@ def build_doc(process):
         doc.append("Returns")
         doc.append("-------")
         for i in process.processOutputs:
-            doc.append("{} : {}".format(i.identifier, format_type(i)))
+            doc.append("{} : {}".format(sanitize(i.identifier), format_type(i)))
             doc.append("    {}".format(i.abstract or i.title))
 
     doc.append("")
@@ -98,6 +98,9 @@ def to_owslib(value, data_type):
 
 def from_owslib(value, data_type):
     """Convert a string into another data type."""
+    if value is None:
+        return None
+
     if "string" in data_type:
         pass
     elif "integer" in data_type:
