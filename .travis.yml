@@ -23,6 +23,7 @@ install:
   - source activate birdy
   # Packages for testing
   - conda install pytest flake8
+  - conda install -c birdhouse emu
   # Install Emu WPS
   - python setup.py install
 script:
