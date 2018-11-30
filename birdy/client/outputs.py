@@ -5,37 +5,36 @@ from birdy.utils import sanitize, delist
 from birdy.client import utils
 from birdy.client.converters import default_converters
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
+from owslib.wps import WPSExecution
 
 
-class WPSResult(object):
-    def __init__(self, wps_response, wps_outputs, converters=None):
+class WPSResult(WPSExecution):
+
+    def attach(self, wps_outputs, converters=None):
         """
         Args:
             converters (dict): Correspondence of {mimetype: class} to convert
                 this mimetype to a python object.
         """
-        self._wps_response = wps_response
         self._wps_outputs = wps_outputs
         self._converters = converters or copy(default_converters)
 
-    def get_output(self, convert_objects=False):
+    def get(self, asobj=False):
         """
         Args:
-            convert_objects: If True, object_converters will be used.
+            asobj: If True, object_converters will be used.
         """
-        if not self._wps_response:
-            raise ValueError("WPS response is not defined.")
-        if not self._wps_response.isComplete():
+        if not self.isComplete():
             raise ProcessIsNotComplete("Please wait ...")
-        if not self._wps_response.isSucceded():
+        if not self.isSucceded():
             # TODO: add reason for failure
             raise ProcessFailed("Sorry, process failed.")
-        return self._make_output(convert_objects)
+        return self._make_output(asobj)
 
     def _make_output(self, convert_objects=False):
-        Output = namedtuple('Output', [sanitize(o.identifier) for o in self._wps_response.processOutputs])
+        Output = namedtuple(self.process.identifier + 'Response', [sanitize(o.identifier) for o in self.processOutputs])
         Output.__repr__ = utils.pretty_repr
-        return Output(*[self._process_output(o, convert_objects) for o in self._wps_response.processOutputs])
+        return Output(*[self._process_output(o, convert_objects) for o in self.processOutputs])
 
     def _process_output(self, output, convert_objects=False):
         """Process the output response, whether it is actual data or a URL to a

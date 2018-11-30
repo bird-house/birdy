@@ -1,5 +1,5 @@
 import types
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from textwrap import dedent
 import six
 from boltons.funcutils import FunctionBuilder
@@ -37,7 +37,7 @@ class WPSClient(object):
         verify=True,
         cert=None,
         verbose=False,
-        interactive=False,
+        progress=False,
         version=WPS_DEFAULT_VERSION,
     ):
         """
@@ -53,12 +53,12 @@ class WPSClient(object):
             verify (bool): passed to :class:`owslib.wps.WebProcessingService`
             cert (str): passed to :class:`owslib.wps.WebProcessingService`
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
-            interactive (bool): If True, enable interactive user mode.
+            progress (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
         """
         self._converters = converters
-        self._interactive = interactive
-        self._mode = ASYNC if interactive else SYNC
+        self._interactive = progress
+        self._mode = ASYNC if progress else SYNC
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
@@ -107,7 +107,7 @@ class WPSClient(object):
             setattr(self, sanitize(pid), types.MethodType(self._method_factory(pid), self))
 
         self.logger = logging.getLogger('WPSClient')
-        if interactive:
+        if progress:
             self._setup_logging()
 
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
@@ -206,11 +206,11 @@ class WPSClient(object):
                     "You are not authorized to do a request of type: Execute"
                 )
             raise
-        # Output WPS result
-        return WPSResult(
-            wps_response=wps_response,
-            wps_outputs=self._outputs[pid],
-            converters=self._converters)
+
+        # Add the convenience methods of WPSResult to the WPSExecution class. This adds a `get` method.
+        utils.extend_instance(wps_response, WPSResult)
+        wps_response.attach(wps_outputs=self._outputs[pid], converters=self._converters)
+        return wps_response
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.

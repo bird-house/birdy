@@ -21,10 +21,9 @@ def wps():
 
 
 @pytest.mark.online
-@pytest.mark.skip("52north wps is down.")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
-    url = "http://geoprocessing.demo.52north.org:8080/wps" \
+    url = "http://geoprocessing.demo.52north.org:8080/wps/" \
           "WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
     WPSClient(url)
 
@@ -45,9 +44,9 @@ def test_wps_docs(wps):
 @pytest.mark.online
 def test_wps_client_single_output(wps):
     result = wps.hello("david")
-    assert result.get_output()[0] == "Hello david"
+    assert result.get()[0] == "Hello david"
     result = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
-    assert result.get_output()[0] == 3.0
+    assert result.get()[0] == 3.0
 
 
 @pytest.mark.online
@@ -63,7 +62,7 @@ def test_wps_interact(wps):
 def test_wps_client_multiple_output(wps):
     # For multiple outputs, the output is a namedtuple
     result = wps.dummyprocess(10, 20)
-    output = result.get_output()
+    output = result.get()
     assert output[0] == "11"
     assert output[1] == "19"
     assert output.output1 == "11"
@@ -72,11 +71,11 @@ def test_wps_client_multiple_output(wps):
 
 @pytest.mark.online
 def test_interactive(capsys):
-    m = WPSClient(url=url, interactive=True)
-    assert m.hello("david").get_output()[0] == "Hello david"
+    m = WPSClient(url=url, progress=True)
+    assert m.hello("david").get()[0] == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))
-    assert m.binaryoperatorfornumbers().get_output()[0] == 5
+    assert m.binaryoperatorfornumbers().get()[0] == 5
 
 
 @pytest.mark.skip(reason="Complex Output is not working.")
@@ -149,10 +148,10 @@ def test_inputs(wps):
         "sitting duck",
         "some text",
     )
-    assert expected == result.get_output(convert_objects=True)[:-2]
+    assert expected == result.get(asobj=True)[:-2]
 
     expected_netcdf = nc.Dataset(data_path("dummy.nc"))
-    netcdf = result.get_output(convert_objects=True)[-2]
+    netcdf = result.get(asobj=True)[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
     assert expected_netcdf.title == netcdf.title
@@ -168,7 +167,7 @@ def test_netcdf(wps):
 
     if nc.getlibversion() > "4.5":
         m = WPSClient(url=url, processes=["output_formats"])
-        ncdata, jsondata = m.output_formats().get_output(convert_objects=True)
+        ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
         assert isinstance(jsondata, dict)

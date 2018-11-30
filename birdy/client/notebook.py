@@ -85,7 +85,6 @@ def monitor(execution, sleep=3):
 
     thread = threading.Thread(target=check, args=(execution, progress, cancel))
     thread.start()
-    # thread.join()
 
 
 def input2widget(inpt):
