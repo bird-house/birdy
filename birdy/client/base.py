@@ -1,9 +1,6 @@
 import types
 from collections import OrderedDict
-from collections import namedtuple
-from copy import copy
 from textwrap import dedent
-
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
@@ -11,9 +8,9 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
-from birdy.client.converters import default_converters
-from birdy.utils import sanitize, delist
+from birdy.utils import sanitize
 from birdy.client import notebook
+from birdy.client.outputs import WPSResult
 
 import logging
 
@@ -33,7 +30,6 @@ class WPSClient(object):
         self,
         url,
         processes=None,
-        convert_objects=False,
         converters=None,
         username=None,
         password=None,
@@ -49,7 +45,6 @@ class WPSClient(object):
             url (str): Link to WPS provider. config (Config): an instance
             processes: Specify a subset of processes to bind. Defaults to all
                 processes.
-            convert_objects: If True, object_converters will be used.
             converters (dict): Correspondence of {mimetype: class} to convert
                 this mimetype to a python object.
             username (str): passed to :class:`owslib.wps.WebProcessingService`
@@ -61,8 +56,7 @@ class WPSClient(object):
             interactive (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
         """
-        self._convert_objects = convert_objects
-        self._converters = converters or copy(default_converters)
+        self._converters = converters
         self._interactive = interactive
         self._mode = ASYNC if interactive else SYNC
         self._notebook = notebook.is_notebook()
@@ -182,7 +176,6 @@ class WPSClient(object):
         return func
 
     def _execute(self, pid, **kwargs):
-
         wps_inputs = []
         for name, input_param in self._inputs[pid].items():
             value = kwargs.get(name)
@@ -197,15 +190,15 @@ class WPSClient(object):
         mode = self._mode if self._processes[pid].storeSupported else SYNC
 
         try:
-            resp = self._wps.execute(
+            wps_response = self._wps.execute(
                 pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
 
             if self._interactive and self._processes[pid].statusSupported:
                 if self._notebook:
-                    notebook.monitor(resp, sleep=.2)
+                    notebook.monitor(wps_response, sleep=.2)
                 else:
-                    self._console_monitor(resp)
+                    self._console_monitor(wps_response)
 
         except ServiceException as e:
             if "AccessForbidden" in str(e):
@@ -213,11 +206,11 @@ class WPSClient(object):
                     "You are not authorized to do a request of type: Execute"
                 )
             raise
-
-        # Output type conversion
-        Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
-        Output.__repr__ = utils.pretty_repr
-        return Output(*[self._process_output(o, pid) for o in resp.processOutputs])
+        # Output WPS result
+        return WPSResult(
+            wps_response=wps_response,
+            wps_outputs=self._outputs[pid],
+            converters=self._converters)
 
     def _console_monitor(self, execution, sleep=3):
         """Monitor the execution of a process.
@@ -256,31 +249,3 @@ class WPSClient(object):
                 inputs=self._inputs[pid].items())
         else:
             return None
-
-    def _process_output(self, output, pid):
-        """Process the output response, whether it is actual data or a URL to a
-        file.
-
-        Args:
-            output (owslib.wps.Output):
-        """
-        # Get the data for recognized types.
-        if output.data:
-            data_type = output.dataType
-            if data_type is None:
-                data_type = self._outputs[pid][output.identifier].dataType
-            data = [utils.from_owslib(d, data_type) for d in output.data]
-            return delist(data)
-
-        if self._convert_objects and output.mimeType:
-            # Try to convert the bytes to an object.
-            converter = self._converters[output.mimeType](output)
-
-            # Convert raw response to python object.
-            # The default converter can be modified by users modifying
-            # the `default` property of the converter class
-            # ex: ShpConverter().default = "fiona"
-            return converter.convert()
-
-        else:
-            return output.reference
