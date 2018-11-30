@@ -23,7 +23,7 @@ def wps():
 @pytest.mark.online
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
-    url = "http://geoprocessing.demo.52north.org:8080/wps" \
+    url = "http://geoprocessing.demo.52north.org:8080/wps/"\
           "WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
     WPSClient(url)
 
@@ -70,8 +70,8 @@ def test_wps_client_multiple_output(wps):
 
 
 @pytest.mark.online
-def test_interactive(capsys):
-    m = WPSClient(url=url, interactive=True)
+def test_progress(capsys):
+    m = WPSClient(url=url, progress=True)
     assert m.hello("david").output == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))

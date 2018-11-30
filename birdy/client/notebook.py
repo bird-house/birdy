@@ -66,7 +66,7 @@ def monitor(execution, sleep=3):
     cancel.value = False
     cancel.on_click(cancel_handler)
 
-    box = widgets.HBox([progress, cancel], layout=widgets.Layout(justify_content='space-between'))
+    box = widgets.HBox([progress, ], layout=widgets.Layout(justify_content='space-between'))
     IPython.display.display(box)
 
     def check(execution, progress, cancel):
@@ -85,7 +85,6 @@ def monitor(execution, sleep=3):
 
     thread = threading.Thread(target=check, args=(execution, progress, cancel))
     thread.start()
-    # thread.join()
 
 
 def input2widget(inpt):

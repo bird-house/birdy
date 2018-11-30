@@ -41,7 +41,8 @@ class WPSClient(object):
         verify=True,
         cert=None,
         verbose=False,
-        interactive=False,
+        progress=False,
+        async=False,
         version=WPS_DEFAULT_VERSION,
     ):
         """
@@ -63,8 +64,11 @@ class WPSClient(object):
         """
         self._convert_objects = convert_objects
         self._converters = converters or copy(default_converters)
-        self._interactive = interactive
-        self._mode = ASYNC if interactive else SYNC
+        self._progress = progress
+        if async is True:
+            raise NotImplementedError
+        self._async = async
+        self._mode = ASYNC if async else SYNC
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
@@ -113,7 +117,7 @@ class WPSClient(object):
             setattr(self, sanitize(pid), types.MethodType(self._method_factory(pid), self))
 
         self.logger = logging.getLogger('WPSClient')
-        if interactive:
+        if progress:
             self._setup_logging()
 
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
@@ -194,14 +198,14 @@ class WPSClient(object):
             for o in self._outputs[pid].values()
         ]
 
-        mode = self._mode if self._processes[pid].storeSupported else SYNC
+        mode = ASYNC if (self._progress and self._processes[pid].storeSupported) else SYNC
 
         try:
             resp = self._wps.execute(
                 pid, inputs=wps_inputs, output=wps_outputs, mode=mode
             )
 
-            if self._interactive and self._processes[pid].statusSupported:
+            if self._progress and self._processes[pid].statusSupported:
                 if self._notebook:
                     notebook.monitor(resp, sleep=.2)
                 else:
@@ -214,7 +218,13 @@ class WPSClient(object):
                 )
             raise
 
-        # Output type conversion
+        if self._async:
+            return resp
+        else:
+            return self._get(resp)
+
+    def _get(self, resp):
+        pid = resp.process.identifier
         Output = namedtuple('Output', [sanitize(o.identifier) for o in resp.processOutputs])
         Output.__repr__ = utils.pretty_repr
         return Output(*[self._process_output(o, pid) for o in resp.processOutputs])
@@ -284,3 +294,4 @@ class WPSClient(object):
 
         else:
             return output.reference
+
