@@ -1,3 +1,4 @@
+import datetime as dt
 import dateutil.parser
 import six
 from owslib.wps import ComplexDataInput, BoundingBoxDataInput
@@ -202,3 +203,36 @@ def from_owslib(value, data_type):
         pass
         # value = BoundingBoxDataInput(value)
     return value
+
+
+def py_type(data_type):
+    """Return the python data type matching the WPS dataType."""
+    if data_type is None:
+        return None
+    if "string" in data_type:
+        return str
+    elif "integer" in data_type:
+        return int
+    elif "float" in data_type:
+        return float
+    elif "boolean" in data_type:
+        return bool
+    elif "dateTime" in data_type:
+        return dt.datetime
+    elif "time" in data_type:
+        return dt.time
+    elif "date" in data_type:
+        return dt.date
+    elif "angle" in data_type:
+        return float
+    elif "ComplexData" in data_type:
+        return str
+    elif "BoundingBoxData" in data_type:
+        return str
+
+
+def extend_instance(obj, cls):
+    """Apply mixins to a class instance after creation."""
+    base_cls = obj.__class__
+    base_cls_name = obj.__class__.__name__
+    obj.__class__ = type(base_cls_name, (cls, base_cls), {})
