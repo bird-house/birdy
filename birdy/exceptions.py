@@ -12,3 +12,15 @@ class UnauthorizedException(ServiceException):
 
 class IPythonWarning(UserWarning):
     pass
+
+
+class ProcessIsNotComplete(Exception):
+    pass
+
+
+class ProcessFailed(Exception):
+    pass
+
+
+class ProcessCanceled(Exception):
+    pass

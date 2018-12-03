@@ -34,9 +34,10 @@ def wps(start_emu):
 
 @pytest.mark.skip
 @pytest.mark.online
+# @pytest.mark.skip("52north wps is down.")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
-    url = "http://geoprocessing.demo.52north.org:8080/wps" \
+    url = "http://geoprocessing.demo.52north.org:8080/wps/" \
           "WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
     WPSClient(url)
 
@@ -53,10 +54,10 @@ def test_wps_docs(wps):
 
 
 def test_wps_client_single_output(wps):
-    msg, = wps.hello("david")
-    assert msg == "Hello david"
-    ans, = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
-    assert ans == 3.0
+    result = wps.hello("david")
+    assert result.get()[0] == "Hello david"
+    result = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
+    assert result.get()[0] == 3.0
 
 
 def test_wps_interact(wps):
@@ -69,21 +70,21 @@ def test_wps_interact(wps):
 
 def test_wps_client_multiple_output(wps):
     # For multiple outputs, the output is a namedtuple
-    out = wps.dummyprocess(10, 20)
-    x1, x2 = out
-    assert x1 == "11"
-    assert x2 == "19"
-    assert out.output1 == "11"
-    assert out.output2 == "19"
+    result = wps.dummyprocess(10, 20)
+    output = result.get()
+    assert output[0] == "11"
+    assert output[1] == "19"
+    assert output.output1 == "11"
+    assert output.output2 == "19"
 
 
 @pytest.mark.online
-def test_interactive(capsys, start_emu):
-    m = WPSClient(url=url, interactive=True)
-    assert m.hello("david").output == "Hello david"
+def test_interactive(capsys):
+    m = WPSClient(url=url, progress=True)
+    assert m.hello("david").get()[0] == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))
-    assert m.binaryoperatorfornumbers()[0] == 5
+    assert m.binaryoperatorfornumbers().get()[0] == 5
 
 
 @pytest.mark.skip(reason="Complex Output is not working.")
@@ -122,7 +123,6 @@ def test_process_subset_names(start_emu):
 
 def test_inputs(wps):
     import netCDF4 as nc
-    wps._convert_objects = True
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
     datetime_ = datetime.datetime.now()
@@ -153,10 +153,10 @@ def test_inputs(wps):
         "sitting duck",
         "some text",
     )
-    assert expected == result[:-2]
+    assert expected == result.get(asobj=True)[:-2]
 
     expected_netcdf = nc.Dataset(data_path("dummy.nc"))
-    netcdf = result[-2]
+    netcdf = result.get(asobj=True)[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
     assert expected_netcdf.title == netcdf.title
@@ -164,21 +164,18 @@ def test_inputs(wps):
     # bbox = result[-1]
     # assert bbox.crs == crs.Crs("epsg:4326")
     # assert bbox.dimensions == 2
-    wps._convert_objects = False
 
 
 @pytest.mark.online
 def test_netcdf(wps):
     import netCDF4 as nc
 
-    wps._convert_objects = True
     if nc.getlibversion() > "4.5":
-        m = WPSClient(url=url, processes=["output_formats"], convert_objects=True)
-        ncdata, jsondata = m.output_formats()
+        m = WPSClient(url=url, processes=["output_formats"])
+        ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
         assert isinstance(jsondata, dict)
-    wps._convert_objects = False
 
 
 def count_class_methods(class_):
