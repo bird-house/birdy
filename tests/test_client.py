@@ -11,20 +11,32 @@ from birdy import WPSClient
 url = "http://127.0.0.1:5000/wps"
 
 
-def data_path(*args):
-    return os.path.join(os.path.dirname(__file__), "resources", *args)
+def test_path(*args):
+    return os.path.join(os.path.dirname(__file__), *args)
 
 
 @pytest.fixture(scope="module")
 def start_emu(request):
     """Starts a single instance of the emu WPS for the duration of the tests"""
+    log_file = test_path("pywps.log")
+    try:
+        os.remove(log_file)
+    except IOError:
+        pass
+
     def run():
         from emu.cli import cli
-        sys.argv = [sys.executable, 'start', '-b', '0.0.0.0']
+        sys.argv = [sys.executable, 'start', '--log-file', log_file]
         cli()
     p = Process(target=run)
     p.start()
-    request.addfinalizer(p.terminate)
+
+    def finalizer():
+        p.terminate()
+        print("--------\nEmu Logs\n--------")
+        print(open(log_file).read())
+
+    request.addfinalizer(finalizer)
 
 
 @pytest.fixture(scope="module")
@@ -138,7 +150,7 @@ def test_inputs(wps):
         string_choice="rock",
         string_multiple_choice="sitting duck",
         text="some text",
-        dataset="file://" + data_path("dummy.nc"),
+        dataset="file://" + test_path("resources", "dummy.nc"),
     )
     expected = (
         "test string",
@@ -155,7 +167,7 @@ def test_inputs(wps):
     )
     assert expected == result.get(asobj=True)[:-2]
 
-    expected_netcdf = nc.Dataset(data_path("dummy.nc"))
+    expected_netcdf = nc.Dataset(test_path("resources", "dummy.nc"))
     netcdf = result.get(asobj=True)[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
