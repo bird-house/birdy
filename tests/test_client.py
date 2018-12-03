@@ -8,7 +8,7 @@ from multiprocessing import Process
 from birdy.client import converters
 from birdy import WPSClient
 
-url = "http://0.0.0.0:5000/wps"
+url = "http://127.0.0.1:5000/wps"
 
 
 def data_path(*args):
