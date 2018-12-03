@@ -1,6 +1,20 @@
 Change History
 **************
 
+0.5.0 (2018-12-03)
+==================
+
+Changes:
+
+* Renamed pythonic WPS client (#63):
+``birdy.client.base.WPSClient`` and ``from birdy import WPSClient``.
+* Added `WPSResult` for WPS outputs as `namedtuple` (#84, #64).
+* Support for Jupter Notebooks (#40):
+  * cancel button (work in progress).
+  * progress bar.
+  * input widget.
+* Updated notebooks with examples for `WPSClient`.
+
 0.4.2 (2018-09-26)
 ==================
 
