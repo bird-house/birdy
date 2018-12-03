@@ -27,6 +27,7 @@ install:
   - conda install -c birdhouse emu
   # Install birdy
   - python setup.py install
+  - conda list
 script:
   - pytest -m 'not online'
   - flake8
