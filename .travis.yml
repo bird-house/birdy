@@ -23,7 +23,7 @@ install:
   - source activate birdy
   # Packages for testing
   - conda install pytest flake8
-  - pip install -r requirements_dev.txt
+  - conda install -c birdhouse emu
   # Install birdy
   - python setup.py install
   - conda list

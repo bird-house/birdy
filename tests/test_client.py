@@ -28,16 +28,15 @@ def start_emu(request):
         from emu.cli import cli
         sys.argv = [sys.executable, 'start', '--log-file', log_file]
         cli()
-    # p = Process(target=run)
-    # p.start()
+    p = Process(target=run)
+    p.start()
 
-    # def finalizer():
-    #     p.terminate()
-    #     print("--------\nEmu Logs\n--------")
-    #     print(open(log_file).read())
+    def finalizer():
+        p.terminate()
+        print("--------\nEmu Logs\n--------")
+        print(open(log_file).read())
 
-    # request.addfinalizer(finalizer)
-    run()
+    request.addfinalizer(finalizer)
 
 
 @pytest.fixture(scope="module")
