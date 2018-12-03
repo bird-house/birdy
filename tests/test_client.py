@@ -21,6 +21,7 @@ def wps():
 
 
 @pytest.mark.online
+# @pytest.mark.skip("52north wps is down.")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
