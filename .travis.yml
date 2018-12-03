@@ -23,7 +23,7 @@ install:
   - source activate birdy
   # Packages for testing
   - conda install pytest flake8
-  - conda install -c birdhouse emu
+  - conda install -c birdhouse emu pywps>=4.1.22
   # Install birdy
   - python setup.py install
   - conda list
