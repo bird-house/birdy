@@ -77,7 +77,7 @@ def test_wps_client_multiple_output(wps):
     assert out.output2 == "19"
 
 
-@pytest.mark.skip
+@pytest.mark.online
 def test_interactive(capsys, start_emu):
     m = WPSClient(url=url, interactive=True)
     assert m.hello("david").output == "Hello david"
