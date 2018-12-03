@@ -23,11 +23,11 @@ install:
   - source activate birdy
   # Packages for testing
   - conda install pytest flake8
-  # Install Emu WPS for testing
-  - conda install -c birdhouse emu
+  - pip install -r requirements_dev.txt
   # Install birdy
   - python setup.py install
   - conda list
+  - pip list
 script:
   - pytest -m 'not online'
   - flake8
