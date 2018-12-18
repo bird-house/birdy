@@ -1,6 +1,13 @@
 Change History
 **************
 
+0.5.1 (2018-12-18)
+==================
+
+Changes:
+
+* Added support to launch Jupyter notebooks with birdy examples on binder (#94, #95).
+
 0.5.0 (2018-12-03)
 ==================
 
