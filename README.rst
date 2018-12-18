@@ -26,8 +26,14 @@ Birdy
 Birdy (the bird)
    *Birdy is not a bird but likes to play with them.*
 
-Birdy is a Python command-line tool to work with Web Processing Services (WPS).
-It is using OWSLib from the GeoPython project.
+Birdy is a Python library to work with Web Processing Services (WPS).
+It is using `OWSLib` from the `GeoPython` project.
+
+You can try Birdy online using Binder.
+
+.. image:: https://mybinder.org/badge_logo.svg
+  :target: https://mybinder.org/v2/gh/bird-house/birdy.git/master?filepath=notebooks
+  :alt: Binder Launcher
 
 Birdy is part of the `Birdhouse`_ project.
 
