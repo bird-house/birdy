@@ -8,6 +8,7 @@ dependencies:
   - six
   - lxml
   - owslib>=0.17
+  - pathlib
   - click
   - jinja2
   - wrapt
