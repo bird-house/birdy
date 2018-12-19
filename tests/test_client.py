@@ -3,8 +3,9 @@ import os
 import pytest
 import json
 from owslib import crs
-
+from pathlib import Path
 from birdy.client import converters
+from birdy.client.utils import as_raw
 from birdy import WPSClient
 
 # These tests assume Emu is running on the localhost
@@ -21,7 +22,7 @@ def wps():
 
 
 @pytest.mark.online
-# @pytest.mark.skip("52north wps is down.")
+@pytest.mark.skip("slow")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
@@ -71,6 +72,15 @@ def test_wps_client_multiple_output(wps):
 
 
 @pytest.mark.online
+def test_wps_wordcounter(wps):
+    fn = '/tmp/text.txt'
+    with open(fn, 'w') as f:
+        f.write('Just an example')
+    out = wps.wordcounter(text=fn).get(asobj=True)
+    assert len(out.output) == 3
+
+
+@pytest.mark.online
 def test_interactive(capsys):
     m = WPSClient(url=url, progress=True)
     assert m.hello("david").get()[0] == "Hello david"
@@ -79,24 +89,19 @@ def test_interactive(capsys):
     assert m.binaryoperatorfornumbers().get()[0] == 5
 
 
-@pytest.mark.skip(reason="Complex Output is not working.")
 @pytest.mark.online
 def test_wps_client_complex_output(wps):
+    resp = wps.multiple_outputs(2)
+
     # As reference
-    wps._convert_objects = False
-    out_r, ref_r = wps.multiple_outputs(2)
+    out_r, ref_r = resp.get()
     assert out_r.startswith("http")
     assert out_r.endswith(".txt")
-    # TODO: fix ComplexDataInput
-    assert ref_r.value.startswith("http")
-    assert ref_r.value.endswith(".json")
 
     # As objects
-    wps._convert_objects = True
-    out_o, ref_o = wps.multiple_outputs(2)
+    out_o, ref_o = resp.get(asobj=True)
     assert out_o == "my output file number 0"
     assert isinstance(ref_o, dict)
-    wps._convert_objects = False
 
 
 @pytest.mark.online
@@ -114,6 +119,22 @@ def test_process_subset_names():
         WPSClient(url=url, processes=["missing"])
     with pytest.raises(ValueError, match="wrong, process, names"):
         WPSClient(url=url, processes=["wrong", "process", "names"])
+
+
+@pytest.mark.online
+def test_raw_complexinput(wps):
+    resp = wps.ncmeta(dataset=data_path("dummy.nc"))
+    out = resp.get(asobj=True)
+    assert 'URL' in out.output
+
+    resp = wps.ncmeta(dataset='file://' + data_path("dummy.nc"))
+    out = resp.get(asobj=True)
+    assert 'URL' in out.output
+
+    with open(data_path("dummy.nc"), 'rb') as fp:
+        resp = wps.ncmeta(dataset=fp)
+        out = resp.get(asobj=True)
+        assert 'URL' in out.output
 
 
 @pytest.mark.online
@@ -192,8 +213,49 @@ def test_converter():
 
 
 def test_jsonconverter():
+    j = converters.JSONConverter()
+
     d = {"a": 1}
     s = json.dumps(d)
-
-    j = converters.JSONConverter()
     assert j.convert_data(s) == d
+
+    s = b'{"a": 1}'
+    assert j.convert_data(s) == d
+
+
+class TestAsRaw():
+    remote = 'http://remote.org'
+    local = 'http://localhost:5000'
+    fn = data_path('dummy.nc')
+    path = Path(data_path('dummy.nc'))
+    uri = 'file://' + fn
+    url = 'http://some.random.site/test.txt'
+
+    def test_string(self):
+        assert as_raw(self.remote, 'just a string')
+        assert as_raw(self.local, 'just a string')
+
+    def test_file_like(self):
+        import io
+        f = io.StringIO()
+        f.write("just a string")
+        f.seek(0)
+
+        assert as_raw(self.remote, f)
+        assert as_raw(self.local, f)
+
+    def test_local_fn(self):
+        assert as_raw(self.remote, self.fn)
+        assert not as_raw(self.local, self.fn)
+
+    def test_local_path(self):
+        assert as_raw(self.remote, self.path)
+        assert not as_raw(self.local, self.path)
+
+    def test_local_uri(self):
+        assert as_raw(self.remote, self.uri)
+        assert not as_raw(self.local, self.uri)
+
+    def test_url(self):
+        assert not as_raw(self.remote, self.url)
+        assert not as_raw(self.local, self.url)

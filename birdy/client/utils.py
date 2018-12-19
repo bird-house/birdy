@@ -1,8 +1,10 @@
 import datetime as dt
 import dateutil.parser
 import six
-from owslib.wps import ComplexDataInput, BoundingBoxDataInput
-from .. utils import sanitize
+from owslib.wps import ComplexDataInput, BoundingBoxDataInput, is_reference
+from .. utils import sanitize, encode
+from six.moves.urllib.parse import urlparse
+from pathlib import Path
 
 
 def filter_case_insensitive(names, complete_list):
@@ -163,14 +165,53 @@ def format_type(obj):
     return doc
 
 
-def to_owslib(value, data_type):
+def as_raw(url, value):
+    """Whether or not to encode the value as raw data content.
+
+    Returns True if
+      - value is a file:/// URI or a local path
+      - value is a File-like instance
+      - url is not localhost
+      - value is a File object
+      - value is already the string content
+    """
+    import io
+
+    if isinstance(value, io.IOBase):  # File-like
+        return True
+
+    u = urlparse(url)
+
+    if isinstance(value, Path):  # pathlib.Path
+        p = value
+        scheme = 'file'
+    else:  # String-like
+        v = urlparse(value)
+        p = Path(v.path)
+        scheme = v.scheme
+
+    if scheme == 'http':  # Valid URL
+        return False
+    elif scheme == 'file':  # Explicit link to file
+        if p.is_file():
+            return 'localhost' not in u.netloc
+        else:
+            raise IOError("{} should be a local file but was not found on disk.".format(value))
+    else:  # Could be a local path or just a string
+        if p.is_file():
+            return 'localhost' not in u.netloc
+        else:
+            return True
+
+
+def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
     """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
-
+    import base64
     if data_type == "ComplexData":
-        return ComplexDataInput(value)
+        return ComplexDataInput(value, encoding=encoding, mimeType=mimetype, schema=schema)
     if data_type == "BoundingBoxData":
-        # todo: boundingbox
+        # TODO: return BoundingBoxDataInput(data=value, crs=crs, dimensions=2)
         return value
     else:  # LiteralData
         return str(value)
