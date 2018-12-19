@@ -238,7 +238,7 @@ class TestAsRaw():
     def test_file_like(self):
         import io
         f = io.StringIO()
-        f.write("just a string")
+        f.write(u"just a string")
         f.seek(0)
 
         assert as_raw(self.remote, f)

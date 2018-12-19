@@ -46,14 +46,13 @@ def encode(value, mimetype=None):
 
     :return: encoded content string
     """
-    import io
 
-    if isinstance(value, io.IOBase):
+    if hasattr(value, 'read'):  # File-like
         content = value.read()
 
     else:
         if isinstance(value, Path):
-            path = value
+            path = str(value)
 
         else:
             u = urlparse(value)

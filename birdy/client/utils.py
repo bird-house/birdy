@@ -1,6 +1,5 @@
 import datetime as dt
 import dateutil.parser
-import six
 from owslib.wps import ComplexDataInput, BoundingBoxDataInput, is_reference
 from .. utils import sanitize, encode
 from six.moves.urllib.parse import urlparse
@@ -175,9 +174,7 @@ def as_raw(url, value):
       - value is a File object
       - value is already the string content
     """
-    import io
-
-    if isinstance(value, io.IOBase):  # File-like
+    if hasattr(value, 'read'):  # File-like
         return True
 
     u = urlparse(url)
