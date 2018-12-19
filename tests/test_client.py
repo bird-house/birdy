@@ -2,24 +2,49 @@ import datetime
 import os
 import pytest
 import json
-from owslib import crs
+import sys
+from multiprocessing import Process
 
 from birdy.client import converters
 from birdy import WPSClient
 
-# These tests assume Emu is running on the localhost
-url = "http://localhost:5000/wps"
+url = "http://127.0.0.1:5000/wps"
 
 
-def data_path(*args):
-    return os.path.join(os.path.dirname(__file__), "resources", *args)
+def test_path(*args):
+    return os.path.join(os.path.dirname(__file__), *args)
 
 
 @pytest.fixture(scope="module")
-def wps():
+def start_emu(request):
+    """Starts a single instance of the emu WPS for the duration of the tests"""
+    log_file = test_path("pywps.log")
+    try:
+        os.remove(log_file)
+    except IOError:
+        pass
+
+    def run():
+        from emu.cli import cli
+        sys.argv = [sys.executable, 'start', '--log-file', log_file]
+        cli()
+    p = Process(target=run)
+    p.start()
+
+    def finalizer():
+        p.terminate()
+        print("--------\nEmu Logs\n--------")
+        print(open(log_file).read())
+
+    request.addfinalizer(finalizer)
+
+
+@pytest.fixture(scope="module")
+def wps(start_emu):
     return WPSClient(url=url)
 
 
+@pytest.mark.skip
 @pytest.mark.online
 # @pytest.mark.skip("52north wps is down.")
 def test_52north():
@@ -29,20 +54,17 @@ def test_52north():
     WPSClient(url)
 
 
-@pytest.mark.online
-def test_wps_client_backward_compability():
+def test_wps_client_backward_compability(start_emu):
     from birdy import BirdyClient
     BirdyClient(url=url)
     from birdy import import_wps
     import_wps(url=url)
 
 
-@pytest.mark.online
 def test_wps_docs(wps):
     assert "Processes" in wps.__doc__
 
 
-@pytest.mark.online
 def test_wps_client_single_output(wps):
     result = wps.hello("david")
     assert result.get()[0] == "Hello david"
@@ -50,7 +72,6 @@ def test_wps_client_single_output(wps):
     assert result.get()[0] == 3.0
 
 
-@pytest.mark.online
 def test_wps_interact(wps):
     for pid in wps._processes.keys():
         if pid in ['bbox', ]:  # Unsupported
@@ -59,7 +80,6 @@ def test_wps_interact(wps):
         wps.interact(pid)
 
 
-@pytest.mark.online
 def test_wps_client_multiple_output(wps):
     # For multiple outputs, the output is a namedtuple
     result = wps.dummyprocess(10, 20)
@@ -80,7 +100,6 @@ def test_interactive(capsys):
 
 
 @pytest.mark.skip(reason="Complex Output is not working.")
-@pytest.mark.online
 def test_wps_client_complex_output(wps):
     # As reference
     wps._convert_objects = False
@@ -99,8 +118,7 @@ def test_wps_client_complex_output(wps):
     wps._convert_objects = False
 
 
-@pytest.mark.online
-def test_process_subset_only_one():
+def test_process_subset_only_one(start_emu):
     m = WPSClient(url=url, processes=["nap"])
     assert count_class_methods(m) == 1
 
@@ -108,15 +126,13 @@ def test_process_subset_only_one():
     assert count_class_methods(m) == 1
 
 
-@pytest.mark.online
-def test_process_subset_names():
+def test_process_subset_names(start_emu):
     with pytest.raises(ValueError, match="missing"):
         WPSClient(url=url, processes=["missing"])
     with pytest.raises(ValueError, match="wrong, process, names"):
         WPSClient(url=url, processes=["wrong", "process", "names"])
 
 
-@pytest.mark.online
 def test_inputs(wps):
     import netCDF4 as nc
     time_ = datetime.datetime.now().time()
@@ -134,7 +150,7 @@ def test_inputs(wps):
         string_choice="rock",
         string_multiple_choice="sitting duck",
         text="some text",
-        dataset="file://" + data_path("dummy.nc"),
+        dataset="file://" + test_path("resources", "dummy.nc"),
     )
     expected = (
         "test string",
@@ -151,7 +167,7 @@ def test_inputs(wps):
     )
     assert expected == result.get(asobj=True)[:-2]
 
-    expected_netcdf = nc.Dataset(data_path("dummy.nc"))
+    expected_netcdf = nc.Dataset(test_path("resources", "dummy.nc"))
     netcdf = result.get(asobj=True)[-2]
     assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)

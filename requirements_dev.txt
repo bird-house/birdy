@@ -10,4 +10,7 @@ sphinx-autoapi
 twine
 
 pytest
+git+git://github.com/bird-house/emu@master#egg=emu
+git+git://github.com/bird-house/eggshell@master#egg=eggshell
+git+git://github.com/bird-house/pywps@master#egg=pywps
 #pytest-runner==4.2
