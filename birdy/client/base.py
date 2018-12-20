@@ -8,7 +8,7 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, C
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
-from birdy.utils import sanitize, fix_url
+from birdy.utils import sanitize, fix_url, encode
 from birdy.client import notebook
 from birdy.client.outputs import WPSResult
 
@@ -184,8 +184,8 @@ class WPSClient(object):
                     encoding = input_param.defaultValue.encoding
                     mimetype = input_param.defaultValue.mimeType
 
-                    if utils.as_raw(self._wps.url, value):
-                        value = utils.encode(value, mimetype)
+                    if utils.is_embedded_in_request(self._wps.url, value):
+                        value = encode(value, mimetype)
                     else:
                         value = fix_url(value)
                     inp = utils.to_owslib(value, data_type=input_param.dataType, encoding=encoding, mimetype=mimetype)

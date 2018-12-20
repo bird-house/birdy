@@ -1,7 +1,7 @@
 import datetime as dt
 import dateutil.parser
 from owslib.wps import ComplexDataInput, BoundingBoxDataInput, is_reference
-from .. utils import sanitize, encode
+from .. utils import sanitize
 from six.moves.urllib.parse import urlparse
 from pathlib import Path
 
@@ -164,7 +164,7 @@ def format_type(obj):
     return doc
 
 
-def as_raw(url, value):
+def is_embedded_in_request(url, value):
     """Whether or not to encode the value as raw data content.
 
     Returns True if
@@ -187,24 +187,24 @@ def as_raw(url, value):
         p = Path(v.path)
         scheme = v.scheme
 
-    if scheme == 'http':  # Valid URL
-        return False
-    elif scheme == 'file':  # Explicit link to file
+    if scheme == 'file':  # Explicit link to file
         if p.is_file():
             return 'localhost' not in u.netloc
         else:
             raise IOError("{} should be a local file but was not found on disk.".format(value))
-    else:  # Could be a local path or just a string
+    elif scheme == '':  # Could be a local path or just a string
         if p.is_file():
             return 'localhost' not in u.netloc
         else:
             return True
+    else:  # Other URL (http, https, ftp, ...)
+        return False
 
 
 def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
     """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
-    import base64
+
     if data_type == "ComplexData":
         return ComplexDataInput(value, encoding=encoding, mimeType=mimetype, schema=schema)
     if data_type == "BoundingBoxData":

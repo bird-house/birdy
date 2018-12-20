@@ -5,7 +5,7 @@ import json
 from owslib import crs
 from pathlib import Path
 from birdy.client import converters
-from birdy.client.utils import as_raw
+from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
 
 # These tests assume Emu is running on the localhost
@@ -232,8 +232,8 @@ class TestAsRaw():
     url = 'http://some.random.site/test.txt'
 
     def test_string(self):
-        assert as_raw(self.remote, 'just a string')
-        assert as_raw(self.local, 'just a string')
+        assert is_embedded_in_request(self.remote, 'just a string')
+        assert is_embedded_in_request(self.local, 'just a string')
 
     def test_file_like(self):
         import io
@@ -241,21 +241,21 @@ class TestAsRaw():
         f.write(u"just a string")
         f.seek(0)
 
-        assert as_raw(self.remote, f)
-        assert as_raw(self.local, f)
+        assert is_embedded_in_request(self.remote, f)
+        assert is_embedded_in_request(self.local, f)
 
     def test_local_fn(self):
-        assert as_raw(self.remote, self.fn)
-        assert not as_raw(self.local, self.fn)
+        assert is_embedded_in_request(self.remote, self.fn)
+        assert not is_embedded_in_request(self.local, self.fn)
 
     def test_local_path(self):
-        assert as_raw(self.remote, self.path)
-        assert not as_raw(self.local, self.path)
+        assert is_embedded_in_request(self.remote, self.path)
+        assert not is_embedded_in_request(self.local, self.path)
 
     def test_local_uri(self):
-        assert as_raw(self.remote, self.uri)
-        assert not as_raw(self.local, self.uri)
+        assert is_embedded_in_request(self.remote, self.uri)
+        assert not is_embedded_in_request(self.local, self.uri)
 
     def test_url(self):
-        assert not as_raw(self.remote, self.url)
-        assert not as_raw(self.local, self.url)
+        assert not is_embedded_in_request(self.remote, self.url)
+        assert not is_embedded_in_request(self.local, self.url)
