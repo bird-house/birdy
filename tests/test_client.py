@@ -30,6 +30,13 @@ def test_52north():
 
 
 @pytest.mark.online
+@pytest.mark.skip("slow")
+def test_flyingpigeon():
+    url = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
+    fp = WPSClient(url)
+
+
+@pytest.mark.online
 def test_wps_client_backward_compability():
     from birdy import BirdyClient
     BirdyClient(url=url)
@@ -55,7 +62,6 @@ def test_wps_interact(wps):
     for pid in wps._processes.keys():
         if pid in ['bbox', ]:  # Unsupported
             continue
-        print(pid)
         wps.interact(pid)
 
 
@@ -101,8 +107,8 @@ def test_wps_client_complex_output(wps):
 
 @pytest.mark.online
 def test_process_subset_only_one():
-    m = WPSClient(url=url, processes=["nap"])
-    assert count_class_methods(m) == 1
+    m = WPSClient(url=url, processes=["nap", "sleep"])
+    assert count_class_methods(m) == 2
 
     m = WPSClient(url=url, processes="nap")
     assert count_class_methods(m) == 1
