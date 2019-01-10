@@ -21,7 +21,7 @@ def wps():
 
 
 @pytest.mark.online
-# @pytest.mark.skip("52north wps is down.")
+@pytest.mark.skip("slow")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
@@ -33,7 +33,7 @@ def test_52north():
 @pytest.mark.skip("slow")
 def test_flyingpigeon():
     url = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
-    fp = WPSClient(url)
+    WPSClient(url)
 
 
 @pytest.mark.online
