@@ -122,7 +122,7 @@ def test_process_subset_names():
 
 
 @pytest.mark.online
-def test_raw_complexinput(wps):
+def test_asobj(wps):
     resp = wps.ncmeta(dataset=data_path("dummy.nc"))
     out = resp.get(asobj=True)
     assert 'URL' in out.output
@@ -154,7 +154,7 @@ def test_inputs(wps):
         datetime=datetime_.isoformat(sep=" "),
         string_choice="rock",
         string_multiple_choice="sitting duck",
-        text="some text",
+        text="some unsafe text &<",
         dataset="file://" + data_path("dummy.nc"),
     )
     expected = (
@@ -168,7 +168,7 @@ def test_inputs(wps):
         datetime_,
         "rock",
         "sitting duck",
-        "some text",
+        "some unsafe text &<",
     )
     assert expected == result.get(asobj=True)[:-2]
 
@@ -223,7 +223,7 @@ def test_jsonconverter():
     assert j.convert_data(s) == d
 
 
-class TestAsRaw():
+class TestIsEmbedded():
     remote = 'http://remote.org'
     local = 'http://localhost:5000'
     fn = data_path('dummy.nc')

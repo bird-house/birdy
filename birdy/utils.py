@@ -7,8 +7,23 @@ from pathlib import Path
 
 
 # These mimetypes will be encoded in base64 when embedded in requests.
-BINARY_MIMETYPES = ["application/vnd.geo+json", "application/x-zipped-shp", "application/vnd.google-earth.kmz",
-                    "image/tiff; subtype=geotiff", "application/x-netcdf", "application/octet-stream"]
+# I'm sure there is a more elegant solution than this... https://pypi.org/project/binaryornot/ ?
+BINARY_MIMETYPES = ["application/vnd.geo+json",
+                    "application/x-zipped-shp",
+                    "application/vnd.google-earth.kmz",
+                    "image/tiff; subtype=geotiff",
+                    "application/x-netcdf",
+                    "application/octet-stream",
+                    "application/zip",
+                    "application/octet-stream",
+                    "application/x-gzip",
+                    "application/x-gtar",
+                    "application/x-tgz",
+                    ]
+
+XML_MIMETYPES = ["application/xml", "application/gml+xml", "text/xml"]
+
+DEFAULT_ENCODING = 'utf-8'
 
 
 def fix_url(url):
@@ -41,13 +56,13 @@ def delist(data):
     return data
 
 
-def encode(value, mimetype=None):
+def embed(value, mimetype=None, encoding=None):
     """Return the content of the file, either as a string or base64 bytes.
 
-    :return: encoded content string
+    :return: encoded content string and actual encoding
     """
 
-    if hasattr(value, 'read'):  # File-like
+    if hasattr(value, 'read'):  # File-like, we don't know if it's open in bytes or string.
         content = value.read()
 
     else:
@@ -65,12 +80,22 @@ def encode(value, mimetype=None):
         else:
             content = value
 
-    return _encode(content, mimetype)
+    return _encode(content, mimetype, encoding)
 
 
-def _encode(content, mimetype):
+def _encode(content, mimetype, encoding):
     """Encode in base64 if mimetype is a binary type."""
-    if mimetype not in BINARY_MIMETYPES:
-        return str(content)
+
+    if mimetype in BINARY_MIMETYPES:
+        return base64.b64encode(content), 'base64'
+
     else:
-        return base64.b64encode(content)
+        if encoding is None:
+            encoding = DEFAULT_ENCODING
+
+        if isinstance(content, bytes):
+            return content.decode(encoding), encoding
+        else:
+            return content, encoding
+        # Do we need to escape content that is not HTML safe ?
+        # return u'<![CDATA[{}]]>'.format(content)
