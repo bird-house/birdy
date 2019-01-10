@@ -4,7 +4,8 @@ from textwrap import dedent
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
+import owslib
+from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, Process
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
@@ -111,22 +112,27 @@ class WPSClient(object):
         OrderedDict
           A dictionary keyed by the process identifier of process descriptions.
         """
+        all_wps_processes = [p.identifier for p in self._wps.processes]
+
         if processes is None:
-            # Get the description for all processes in one request.
-            ps = self._wps.describeprocess('all')
+            if owslib.__version__ > '0.17.0':
+                # Get the description for all processes in one request.
+                ps = self._wps.describeprocess('all')
+                return OrderedDict((p.identifier, p) for p in ps)
+            else:
+                processes = all_wps_processes
 
-        else:
-            # Check for invalid process names, i.e. not matching the getCapabilities response.
-            all_wps_processes = [p.identifier for p in self._wps.processes]
-            process_names, missing = utils.filter_case_insensitive(
-                processes, all_wps_processes)
+        # Check for invalid process names, i.e. not matching the getCapabilities response.
 
-            if missing:
-                message = "These process names were not found on the WPS server: {}"
-                raise ValueError(message.format(", ".join(missing)))
+        process_names, missing = utils.filter_case_insensitive(
+            processes, all_wps_processes)
 
-            # Get the description for each process.
-            ps = [self._wps.describeprocess(pid) for pid in process_names]
+        if missing:
+            message = "These process names were not found on the WPS server: {}"
+            raise ValueError(message.format(", ".join(missing)))
+
+        # Get the description for each process.
+        ps = [self._wps.describeprocess(pid) for pid in process_names]
 
         return OrderedDict((p.identifier, p) for p in ps)
 
