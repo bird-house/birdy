@@ -29,26 +29,28 @@ class TestEncode:
 
     def test_str(self):
         s = 'just a string'
-        assert utils.encode(s) == s
+        assert utils.embed(s) == (s, 'utf-8')
 
     def test_local_fn(self):
-        nc = utils.encode(self.nc, 'application/x-netcdf')
-        xml = utils.encode(self.xml, 'text/xml')
-
+        nc, enc = utils.embed(self.nc, 'application/x-netcdf')
         assert isinstance(nc, six.binary_type)
+        assert enc == 'base64'
+
+        xml, enc = utils.embed(self.xml, 'text/xml')
         assert isinstance(xml, six.string_types)
+        assert enc == 'utf-8'
 
     def test_local_uri(self):
-        xml = utils.encode('file://' + self.xml, 'text/xml')
+        xml, enc = utils.embed('file://' + self.xml, 'text/xml')
         assert isinstance(xml, six.string_types)
 
     def test_path(self):
         p = Path(self.nc)
 
-        nc = utils.encode(p, 'application/x-netcdf')
+        nc, enc = utils.embed(p, 'application/x-netcdf')
         assert isinstance(nc, six.binary_type)
 
     def test_file(self):
         with open(self.nc, 'rb') as fp:
-            nc = utils.encode(fp, 'application/x-netcdf')
+            nc, enc = utils.embed(fp, 'application/x-netcdf')
             assert isinstance(nc, six.binary_type)
