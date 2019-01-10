@@ -125,7 +125,7 @@ def test_process_subset_names():
 def test_asobj(wps):
     resp = wps.ncmeta(dataset=data_path("dummy.nc"))
     out = resp.get(asobj=True)
-    assert 'URL' in out.output
+    assert 'URL' in out.output  # Part of expected text file content.
 
     resp = wps.ncmeta(dataset='file://' + data_path("dummy.nc"))
     out = resp.get(asobj=True)
@@ -135,6 +135,12 @@ def test_asobj(wps):
         resp = wps.ncmeta(dataset=fp)
         out = resp.get(asobj=True)
         assert 'URL' in out.output
+
+    # If the converter is missing, we should still get the reference.
+    with pytest.warns(UserWarning):
+        resp._converters.pop("text/plain")
+        out = resp.get(asobj=True)
+        assert out.output.startswith('http://')
 
 
 @pytest.mark.online

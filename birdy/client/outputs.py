@@ -6,6 +6,7 @@ from birdy.client import utils
 from birdy.client.converters import default_converters
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
+import warnings
 
 
 class WPSResult(WPSExecution):
@@ -54,13 +55,14 @@ class WPSResult(WPSExecution):
 
         if convert_objects and output.mimeType:
             # Try to convert the bytes to an object.
-            converter = self._converters[output.mimeType](output)
-
-            # Convert raw response to python object.
             # The default converter can be modified by users modifying
             # the `default` property of the converter class
             # ex: ShpConverter().default = "fiona"
-            return converter.convert()
-
+            if output.mimeType in self._converters:
+                converter = self._converters[output.mimeType](output)
+                return converter.convert()
+            else:
+                warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
+                return output.reference
         else:
             return output.reference
