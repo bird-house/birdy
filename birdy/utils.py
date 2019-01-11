@@ -2,7 +2,7 @@ import re
 import collections
 import base64
 import six
-from six.moves.urllib.parse import urlparse, urljoin
+from six.moves.urllib.parse import urlparse
 from pathlib import Path
 
 
