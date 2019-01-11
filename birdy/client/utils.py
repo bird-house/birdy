@@ -1,9 +1,10 @@
+from pathlib import Path
 import datetime as dt
 import dateutil.parser
-from owslib.wps import ComplexDataInput, BoundingBoxDataInput, is_reference
+from owslib.wps import ComplexDataInput
 from .. utils import sanitize
+import six
 from six.moves.urllib.parse import urlparse
-from pathlib import Path
 
 
 def filter_case_insensitive(names, complete_list):
@@ -11,6 +12,9 @@ def filter_case_insensitive(names, complete_list):
     contained = []
     missing = []
     complete_list_lower = set(map(str.lower, complete_list))
+
+    if isinstance(names, six.string_types):
+        names = [names, ]
 
     for name in names:
         if name.lower() in complete_list_lower:
