@@ -7,7 +7,6 @@ import six
 from six.moves.urllib.parse import urlparse
 
 
-
 def filter_case_insensitive(names, complete_list):
     """Filter a sequence of process names into a `known` and `unknown` list."""
     contained = []
