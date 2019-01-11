@@ -1,11 +1,11 @@
 import types
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 from textwrap import dedent
-import six
+
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
 import owslib
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, Process
+from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils

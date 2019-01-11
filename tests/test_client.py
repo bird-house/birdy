@@ -2,7 +2,7 @@ import datetime
 import os
 import pytest
 import json
-from owslib import crs
+# from owslib import crs
 
 from birdy.client import converters
 from birdy import WPSClient
