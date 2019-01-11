@@ -1,14 +1,14 @@
 import types
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 from textwrap import dedent
 import six
 from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC
+from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, ComplexData
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
-from birdy.utils import sanitize
+from birdy.utils import sanitize, fix_url, embed
 from birdy.client import notebook
 from birdy.client.outputs import WPSResult
 
@@ -180,7 +180,20 @@ class WPSClient(object):
         for name, input_param in self._inputs[pid].items():
             value = kwargs.get(name)
             if value is not None:
-                wps_inputs.append((name, utils.to_owslib(value, input_param.dataType, )))
+                if isinstance(input_param.defaultValue, ComplexData):
+                    encoding = input_param.defaultValue.encoding
+                    mimetype = input_param.defaultValue.mimeType
+
+                    if utils.is_embedded_in_request(self._wps.url, value):
+                        # If encoding is None, this will return the actual encoding used (utf-8 or base64).
+                        value, encoding = embed(value, mimetype, encoding=encoding)
+                    else:
+                        value = fix_url(value)
+                    inp = utils.to_owslib(value, data_type=input_param.dataType, encoding=encoding, mimetype=mimetype)
+
+                else:
+                    inp = utils.to_owslib(value, data_type=input_param.dataType)
+                wps_inputs.append((name, inp))
 
         wps_outputs = [
             (o.identifier, "ComplexData" in o.dataType)

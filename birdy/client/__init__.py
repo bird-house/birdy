@@ -1,19 +1,28 @@
 """
-The :class:`WPSClient` instantiates a class whose methods call
-WPS processes. The methods are generated at runtime based on the
-process description provided by the WPS server. Calling a function sends
-an `execute` request to the server, which returns a response.
+The :class:`WPSClient` class aims to make working with WPS servers easy,
+even without any prior knowledge of WPS.
 
-The response is parsed to convert the outputs in native Python whenever possible.
+Calling the :class:`WPSClient` class creates an instance whose methods call
+WPS processes. These methods are generated at runtime based on the
+process description provided by the WPS server. Calling a function sends
+an `execute` request to the server. The server response is parsed and
+returned as a :class:`WPSExecution` instance, which includes information
+about the job status, the progress percentage, the starting time, etc. The
+actual output from the process are obtained by calling the `get` method.
+
+The output is parsed to convert the outputs in native Python whenever possible.
 `LiteralOutput` objects (string, float, integer, boolean) are automatically
 converted to their native format. For `ComplexOutput`, the module can either
-return a link to the output files stored on the server (default), or try to
-convert the outputs to a Python object based on their mime type. So for example,
-if the mime type is 'application/json', the module would read the remote output
-file and `json.loads` it to return a `dict`.
+return a link to the output files stored on the server, or try to
+convert the outputs to a Python object based on their mime type. This conversion
+will occur with `get(asobj=True)`. So for example, if the mime type is
+'application/json', the output would be a `dict`.
 
-The behavior of the module can be configured using the :class:`config`, see its
-docstring for more information.
+Inputs to processes can be native Python types (string, float, int, date, datetime),
+http links or local files. Local files can be transferred to a remote server by
+including their content into the WPS request. Simply set the input to a valid path
+or file object and the client will take care of reading and converting the file.
+
 
 Example
 -------

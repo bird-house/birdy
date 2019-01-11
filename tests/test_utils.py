@@ -1,4 +1,7 @@
 from birdy import utils
+from .common import resource_file
+import six
+from pathlib import Path
 
 
 def test_is_url():
@@ -18,3 +21,36 @@ def test_delist():
     assert utils.delist(['one', 'two']) == ['one', 'two']
     assert utils.delist(['one', ]) == 'one'
     assert utils.delist('one') == 'one'
+
+
+class TestEncode:
+    nc = resource_file('dummy.nc')
+    xml = resource_file('wps_emu_caps.xml')
+
+    def test_str(self):
+        s = 'just a string'
+        assert utils.embed(s) == (s, 'utf-8')
+
+    def test_local_fn(self):
+        nc, enc = utils.embed(self.nc, 'application/x-netcdf')
+        assert isinstance(nc, six.binary_type)
+        assert enc == 'base64'
+
+        xml, enc = utils.embed(self.xml, 'text/xml')
+        assert isinstance(xml, six.string_types)
+        assert enc == 'utf-8'
+
+    def test_local_uri(self):
+        xml, enc = utils.embed('file://' + self.xml, 'text/xml')
+        assert isinstance(xml, six.string_types)
+
+    def test_path(self):
+        p = Path(self.nc)
+
+        nc, enc = utils.embed(p, 'application/x-netcdf')
+        assert isinstance(nc, six.binary_type)
+
+    def test_file(self):
+        with open(self.nc, 'rb') as fp:
+            nc, enc = utils.embed(fp, 'application/x-netcdf')
+            assert isinstance(nc, six.binary_type)
