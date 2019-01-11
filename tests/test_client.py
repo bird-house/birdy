@@ -2,7 +2,8 @@ import datetime
 import os
 import pytest
 import json
-from owslib import crs
+# from owslib import crs
+
 from pathlib import Path
 from birdy.client import converters
 from birdy.client.utils import is_embedded_in_request
@@ -27,6 +28,13 @@ def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
           "WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
+    WPSClient(url)
+
+
+@pytest.mark.online
+@pytest.mark.skip("slow")
+def test_flyingpigeon():
+    url = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
     WPSClient(url)
 
 
@@ -56,7 +64,6 @@ def test_wps_interact(wps):
     for pid in wps._processes.keys():
         if pid in ['bbox', ]:  # Unsupported
             continue
-        print(pid)
         wps.interact(pid)
 
 
@@ -106,8 +113,8 @@ def test_wps_client_complex_output(wps):
 
 @pytest.mark.online
 def test_process_subset_only_one():
-    m = WPSClient(url=url, processes=["nap"])
-    assert count_class_methods(m) == 1
+    m = WPSClient(url=url, processes=["nap", "sleep"])
+    assert count_class_methods(m) == 2
 
     m = WPSClient(url=url, processes="nap")
     assert count_class_methods(m) == 1
