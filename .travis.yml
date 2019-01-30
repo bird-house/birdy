@@ -3,7 +3,7 @@ branches:
   only:
     - master
 python:
-  - "2.7"
+  # - "2.7"
   - "3.6"
 sudo: false
 install:
