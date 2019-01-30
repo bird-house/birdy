@@ -6,7 +6,7 @@ channels:
   - defaults
 dependencies:
   - six
-  - openssl
+  #- openssl
   - lxml
   - owslib>=0.17
   - pathlib
