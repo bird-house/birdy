@@ -42,6 +42,20 @@ def is_url(url):
         return True
 
 
+def is_file(path):
+    if not path:
+        ok = False
+    elif isinstance(path, Path):
+        p = path
+    else:
+        p = Path(path[:255])
+    try:
+        ok = p.is_file()
+    except Exception:
+        ok = False
+    return ok
+
+
 def sanitize(name):
     """Lower-case name and replace all non-ascii chars by `_`."""
     return re.sub(r'\W|^(?=\d)', '_', name.lower())
@@ -73,7 +87,7 @@ def embed(value, mimetype=None, encoding=None):
             u = urlparse(value)
             path = u.path
 
-        if Path(path).is_file():
+        if is_file(path):
             mode = 'rb' if mimetype in BINARY_MIMETYPES else 'r'
             with open(path, mode) as fp:
                 content = fp.read()

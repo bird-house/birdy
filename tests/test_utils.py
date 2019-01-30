@@ -10,6 +10,14 @@ def test_is_url():
     assert not utils.is_url("myfile.txt")
 
 
+def test_is_file():
+    assert not utils.is_file(None)
+    assert utils.is_file(resource_file('dummy.nc'))
+    long_str = "".join('a' for i in range(260))
+    assert not utils.is_file(long_str)
+    assert utils.is_file(Path(resource_file('dummy.nc')))
+
+
 def test_sanitize():
     assert utils.sanitize('output') == 'output'
     assert utils.sanitize('My Output 1') == 'my_output_1'

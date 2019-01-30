@@ -2,7 +2,7 @@ from pathlib import Path
 import datetime as dt
 import dateutil.parser
 from owslib.wps import ComplexDataInput
-from .. utils import sanitize
+from .. utils import sanitize, is_file
 import six
 from six.moves.urllib.parse import urlparse
 
@@ -192,12 +192,12 @@ def is_embedded_in_request(url, value):
         scheme = v.scheme
 
     if scheme == 'file':  # Explicit link to file
-        if p.is_file():
+        if is_file(p):
             return 'localhost' not in u.netloc
         else:
             raise IOError("{} should be a local file but was not found on disk.".format(value))
     elif scheme == '':  # Could be a local path or just a string
-        if p.is_file():
+        if is_file(p):
             return 'localhost' not in u.netloc
         else:
             return True
