@@ -43,6 +43,7 @@ def is_url(url):
 
 
 def is_file(path):
+    """Return True if `path` is a valid file."""
     if not path:
         ok = False
     elif isinstance(path, Path):
