@@ -159,7 +159,18 @@ def test_asobj_non_pythonic_id(wps):
     assert out.output_2 == d
 
 
-def t
+def test_esgfapi(wps):
+    from owslib.esgfapi import Domain, Dimension, Variable
+
+    uri = data_path("test.nc")
+
+    variable = Variable(var_name='meantemp', uri=uri, name='test')
+    domain = Domain([Dimension('time', 0, 10, crs='indices')])
+
+    resp = wps.emu_subset(variable=variable, domain=domain)
+    out = resp.get(asobj=True)
+    assert 'netcdf' in out.ncdump
+
 
 @pytest.mark.online
 def test_inputs(wps):

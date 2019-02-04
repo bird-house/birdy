@@ -208,12 +208,17 @@ class WPSClient(object):
                     encoding = input_param.defaultValue.encoding
                     mimetype = input_param.defaultValue.mimeType
 
-                    if utils.is_embedded_in_request(self._wps.url, value):
-                        # If encoding is None, this will return the actual encoding used (utf-8 or base64).
-                        value, encoding = embed(value, mimetype, encoding=encoding)
+                    if isinstance(value, ComplexData):
+                        inp = value
+
                     else:
-                        value = fix_url(value)
-                    inp = utils.to_owslib(value, data_type=input_param.dataType, encoding=encoding, mimetype=mimetype)
+                        if utils.is_embedded_in_request(self._wps.url, value):
+                            # If encoding is None, this will return the actual encoding used (utf-8 or base64).
+                            value, encoding = embed(value, mimetype, encoding=encoding)
+                        else:
+                            value = fix_url(value)
+
+                        inp = utils.to_owslib(value, data_type=input_param.dataType, encoding=encoding, mimetype=mimetype)
 
                 else:
                     inp = utils.to_owslib(value, data_type=input_param.dataType)
