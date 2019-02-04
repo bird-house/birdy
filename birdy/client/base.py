@@ -218,7 +218,10 @@ class WPSClient(object):
                         else:
                             value = fix_url(value)
 
-                        inp = utils.to_owslib(value, data_type=input_param.dataType, encoding=encoding, mimetype=mimetype)
+                        inp = utils.to_owslib(value,
+                                              data_type=input_param.dataType,
+                                              encoding=encoding,
+                                              mimetype=mimetype)
 
                 else:
                     inp = utils.to_owslib(value, data_type=input_param.dataType)

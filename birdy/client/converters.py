@@ -1,6 +1,8 @@
 from distutils.version import StrictVersion
 from importlib import import_module
 import six
+from . import notebook as nb
+
 
 if six.PY2:
     from urllib import urlretrieve
@@ -147,10 +149,25 @@ class ShpOgrConverter(BaseConverter):
         # return ogr.Open
 
 
+# TODO: Add test for this.
+class ImageConverter(BaseConverter):
+    mimetype = 'image/png'
+
+    def check_dependencies(self):
+        return nb.is_notebook()
+
+    def convert(self):
+        from birdy.dependencies import IPython
+
+        url = self.output.reference
+        return IPython.display.Image(url)
+
+
 default_converters = {
     TextConverter.mimetype: TextConverter,
     JSONConverter.mimetype: JSONConverter,
     GeoJSONConverter.mimetype: GeoJSONConverter,
     Netcdf4Converter.mimetype: Netcdf4Converter,
+    ImageConverter.mimetype: ImageConverter,
     # 'application/x-zipped-shp': ShpConverter,
 }
