@@ -150,6 +150,17 @@ def test_asobj(wps):
         assert out.output.startswith('http://')
 
 
+def test_asobj_non_pythonic_id(wps):
+    import json
+    d = {'a': 1}
+    resp = wps.non_py_id(input_1=1, input_2=json.dumps(d))
+    out = resp.get(asobj=True)
+    assert out.output_1 == 2
+    assert out.output_2 == d
+
+
+def t
+
 @pytest.mark.online
 def test_inputs(wps):
     import netCDF4 as nc

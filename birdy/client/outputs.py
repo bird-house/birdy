@@ -33,7 +33,8 @@ class WPSResult(WPSExecution):
         return self._make_output(asobj)
 
     def _make_output(self, convert_objects=False):
-        Output = namedtuple(self.process.identifier + 'Response', [sanitize(o.identifier) for o in self.processOutputs])
+        Output = namedtuple(sanitize(self.process.identifier) + 'Response', [sanitize(o.identifier) for o in
+                                                                    self.processOutputs])
         Output.__repr__ = utils.pretty_repr
         return Output(*[self._process_output(o, convert_objects) for o in self.processOutputs])
 

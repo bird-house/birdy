@@ -202,7 +202,7 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = []
         for name, input_param in self._inputs[pid].items():
-            value = kwargs.get(name)
+            value = kwargs.get(sanitize(name))
             if value is not None:
                 if isinstance(input_param.defaultValue, ComplexData):
                     encoding = input_param.defaultValue.encoding
@@ -217,6 +217,7 @@ class WPSClient(object):
 
                 else:
                     inp = utils.to_owslib(value, data_type=input_param.dataType)
+
                 wps_inputs.append((name, inp))
 
         wps_outputs = [
