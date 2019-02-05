@@ -8,7 +8,7 @@ dependencies:
   - six
   #- openssl
   - lxml
-  - owslib>=0.17
+  #- owslib>=0.17
   - pathlib
   - click
   - jinja2
@@ -24,3 +24,4 @@ dependencies:
   - sphinx
   - pip:
     - sphinx-autoapi
+    - -e git+https://github.com/bird-house/OWSLib.git@esgfwps#egg=owslib
