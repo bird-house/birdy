@@ -139,3 +139,9 @@ def input2widget(inpt):
         raise AttributeError("Data type not recognized {}".format(typ))
 
     return out
+
+
+def output2widget(output):
+    """Return notebook widget based on output mime-type.
+    """
+    pass

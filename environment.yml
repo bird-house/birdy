@@ -9,6 +9,7 @@ dependencies:
   #- openssl
   - lxml
   - owslib>=0.17
+  - owslib-esgfwps=0.1.0
   - pathlib
   - click
   - jinja2
