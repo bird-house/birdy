@@ -150,6 +150,7 @@ def test_asobj(wps):
         assert out.output.startswith('http://')
 
 
+@pytest.mark.online
 def test_asobj_non_pythonic_id(wps):
     import json
     d = {'a': 1}
@@ -159,8 +160,9 @@ def test_asobj_non_pythonic_id(wps):
     assert out.output_2 == d
 
 
+@pytest.mark.online
 def test_esgfapi(wps):
-    from owslib.esgfapi import Domain, Dimension, Variable
+    from owslib_esgfwps import Domain, Dimension, Variable
 
     uri = data_path("test.nc")
 
