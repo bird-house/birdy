@@ -102,6 +102,7 @@ def _encode(content, mimetype, encoding):
     """Encode in base64 if mimetype is a binary type."""
 
     if mimetype in BINARY_MIMETYPES:
+        # An error here might be due to a bad file path. Check that the file exists.
         return base64.b64encode(content), 'base64'
 
     else:
