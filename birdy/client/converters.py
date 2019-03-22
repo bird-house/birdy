@@ -124,6 +124,23 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(temp_file)
 
 
+class XarrayConverter(Netcdf4Converter):
+
+    def check_dependencies(self):
+        Netcdf4Converter.check_dependencies(self)
+        self._check_import('xarray')
+
+    def convert_data(self, data):
+        import xarray as xr
+        try:
+            # try OpenDAP url
+            return xr.open_dataset(self.output.reference)
+        except IOError:
+            # download the file
+            temp_file, _ = urlretrieve(self.output.reference)
+            return xr.open_dataset(temp_file)
+
+
 class ShpFionaConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
 
@@ -164,10 +181,10 @@ class ImageConverter(BaseConverter):
 
 
 default_converters = {
-    TextConverter.mimetype: TextConverter,
-    JSONConverter.mimetype: JSONConverter,
-    GeoJSONConverter.mimetype: GeoJSONConverter,
-    Netcdf4Converter.mimetype: Netcdf4Converter,
-    ImageConverter.mimetype: ImageConverter,
-    # 'application/x-zipped-shp': ShpConverter,
+    TextConverter.mimetype: [TextConverter, ],
+    JSONConverter.mimetype: [JSONConverter, ],
+    GeoJSONConverter.mimetype: [GeoJSONConverter, ],
+    Netcdf4Converter.mimetype: [XarrayConverter, Netcdf4Converter],
+    ImageConverter.mimetype: [ImageConverter, ],
+    # 'application/x-zipped-shp': [ShpConverter, ],
 }

@@ -60,8 +60,14 @@ class WPSResult(WPSExecution):
             # the `default` property of the converter class
             # ex: ShpConverter().default = "fiona"
             if output.mimeType in self._converters:
-                converter = self._converters[output.mimeType](output)
-                return converter.convert()
+                for cls in self._converters[output.mimeType]:
+                    try:
+                        converter = cls(output)
+                    except ImportError:
+                        pass
+
+                    return converter.convert()
+
             else:
                 warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
                 return output.reference

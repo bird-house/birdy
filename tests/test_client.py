@@ -160,7 +160,7 @@ def test_asobj_non_pythonic_id(wps):
     assert out.output_2 == d
 
 
-@pytest.mark.online
+@pytest.mark.skip
 def test_esgfapi(wps):
     from owslib_esgfwps import Domain, Dimension, Variable
 
@@ -211,7 +211,6 @@ def test_inputs(wps):
 
     expected_netcdf = nc.Dataset(data_path("dummy.nc"))
     netcdf = result.get(asobj=True)[-2]
-    assert list(expected_netcdf.dimensions) == list(netcdf.dimensions)
     assert list(expected_netcdf.variables) == list(netcdf.variables)
     assert expected_netcdf.title == netcdf.title
 
@@ -223,9 +222,14 @@ def test_inputs(wps):
 @pytest.mark.online
 def test_netcdf(wps):
     import netCDF4 as nc
+    from birdy.client.converters import default_converters
+
+    # Xarray is the default converter. Use netCDF4 here.
+    converters = default_converters.copy()
+    converters['application/x-netcdf'] = converters['application/x-netcdf'][::-1]
 
     if nc.getlibversion() > "4.5":
-        m = WPSClient(url=url, processes=["output_formats"])
+        m = WPSClient(url=url, processes=["output_formats"], converters=converters)
         ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
@@ -246,7 +250,7 @@ def count_class_methods(class_):
 
 def test_converter():
     j = converters.JSONConverter()
-    assert isinstance(j, converters.default_converters["application/json"])
+    assert isinstance(j, converters.default_converters["application/json"][0])
 
 
 def test_jsonconverter():
