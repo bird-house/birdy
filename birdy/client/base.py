@@ -64,6 +64,11 @@ class WPSClient(object):
         self._inputs = {}
         self._outputs = {}
 
+        if not verify:
+            import urllib3
+
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         self._wps = WebProcessingService(
             url,
             version=version,
