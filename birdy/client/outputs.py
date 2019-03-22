@@ -63,7 +63,7 @@ class WPSResult(WPSExecution):
                 for cls in self._converters[output.mimeType]:
                     try:
                         converter = cls(output)
-                    except ImportError as e:
+                    except ImportError:
                         pass
 
                     return converter.convert()
