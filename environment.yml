@@ -18,6 +18,7 @@ dependencies:
   - boltons
   # optional
   - netcdf4
+  - xarray
   # tests
   - pytest
   - flake8
