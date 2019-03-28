@@ -7,6 +7,7 @@ from birdy.client.converters import default_converters
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
 import warnings
+import tempfile
 
 
 class WPSResult(WPSExecution):
@@ -19,6 +20,7 @@ class WPSResult(WPSExecution):
         """
         self._wps_outputs = wps_outputs
         self._converters = converters or copy(default_converters)
+        self._path = tempfile.mkdtemp()
 
     def get(self, asobj=False):
         """
@@ -62,7 +64,7 @@ class WPSResult(WPSExecution):
             if output.mimeType in self._converters:
                 for cls in self._converters[output.mimeType]:
                     try:
-                        converter = cls(output)
+                        converter = cls(output, path=self._path)
                     except ImportError:
                         pass
 
