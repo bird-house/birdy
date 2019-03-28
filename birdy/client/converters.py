@@ -121,7 +121,7 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.output.reference)
         except IOError:
             # download the file
-            self.output.writeToDisk(path=self._path)
+            self.output.writeToDisk(path=self.path)
             return netCDF4.Dataset(self.output.filePath)
 
 
@@ -131,14 +131,14 @@ class XarrayConverter(Netcdf4Converter):
         Netcdf4Converter.check_dependencies(self)
         self._check_import('xarray')
 
-    def convert(self, data):
+    def convert(self):
         import xarray as xr
         try:
             # try OpenDAP url
             return xr.open_dataset(self.output.reference)
         except IOError:
             # download the file
-            self.output.writeToDisk(path=self._path)
+            self.output.writeToDisk(path=self.path)
             return xr.open_dataset(self.output.filePath)
 
 
@@ -187,7 +187,7 @@ class ZipConverter(BaseConverter):
     def convert(self):
         import zipfile
 
-        self.output.writeToDisk(path=self._path)
+        self.output.writeToDisk(path=self.path)
         with zipfile.ZipFile(self.output.filePath) as z:
             return z
 
