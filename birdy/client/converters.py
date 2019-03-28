@@ -39,7 +39,7 @@ class BaseConverter(object):
             import_module(name, package)
         except ImportError as e:
             message = "Class {} has unmet dependencies: {}"
-            raise type(e)(message.format(self.__name__, name))
+            raise type(e)(message.format(self.__class__.__name__, name))
 
     def convert(self):
         """Do the conversion from text or bytes to python object."""
@@ -114,18 +114,15 @@ class GeoJSONConverter(BaseConverter):
 
 
 class MetalinkConverter(BaseConverter):
-    mimetype = "application/metalink+xml"
+    mimetype = "application/metalink+xml; version=3.0"
 
     def check_dependencies(self):
         self._check_import("metalink.download")
 
-    def convert(self, data):
-        """
-        Args:
-            data:
-        """
+    def convert(self):
         import metalink.download as md
-        return md.get
+        files = md.get(self.output.reference, path=self.path)
+        return files
 
 
 class Netcdf4Converter(BaseConverter):
@@ -227,6 +224,7 @@ default_converters = {
     JSONConverter.mimetype: [JSONConverter, ],
     GeoJSONConverter.mimetype: [GeoJSONConverter, ],
     Netcdf4Converter.mimetype: [XarrayConverter, Netcdf4Converter],
+    MetalinkConverter.mimetype: [MetalinkConverter, ],
     ImageConverter.mimetype: [ImageConverter, ],
     ZipConverter.mimetype: [ZipConverter, ]
     # 'application/x-zipped-shp': [ShpConverter, ],

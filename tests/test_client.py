@@ -101,14 +101,13 @@ def test_wps_client_complex_output(wps):
     resp = wps.multiple_outputs(2)
 
     # As reference
-    out_r, ref_r = resp.get()
-    assert out_r.startswith("http")
-    assert out_r.endswith(".txt")
+    [meta, ] = resp.get()
+    assert meta.startswith("http")
+    assert meta.endswith(".metalink")
 
     # As objects
-    out_o, ref_o = resp.get(asobj=True)
-    assert out_o == "my output file number 0"
-    assert isinstance(ref_o, dict)
+    [files, ] = resp.get(asobj=True)
+    assert len(files) == 2
 
 
 @pytest.mark.online
