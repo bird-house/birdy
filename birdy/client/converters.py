@@ -3,6 +3,10 @@ from importlib import import_module
 import six
 from . import notebook as nb
 import tempfile
+from pathlib import Path
+from owslib.wps import Output
+import warnings
+
 
 if six.PY2:
     from urllib import urlretrieve
@@ -13,8 +17,8 @@ else:
 class BaseConverter(object):
     mimetype = None
     extensions = []
-
-    # _default = None
+    priority = 1
+    nested = False
 
     def __init__(self, output=None, path=None):
         """Instantiate the conversion class.
@@ -25,6 +29,20 @@ class BaseConverter(object):
         self.path = path or tempfile.mkdtemp()
         self.output = output
         self.check_dependencies()
+        if isinstance(output, Output):
+            self.url = output.reference
+            self._file = None
+        elif isinstance(output, (str, Path)):
+            self._file = Path(output)
+            if not self.file.exists():
+                raise FileNotFoundError(output)
+
+    @property
+    def file(self):
+        if self._file is None:
+            self.output.writeToDisk(path=self.path)
+            self._file = Path(self.output.filePath)
+        return self._file
 
     def check_dependencies(self):
         pass
@@ -42,91 +60,72 @@ class BaseConverter(object):
             raise type(e)(message.format(self.__class__.__name__, name))
 
     def convert(self):
-        """Do the conversion from text or bytes to python object."""
-        data = self.output.retrieveData()
-
-        # Launch conversion
-        return self.convert_data(data)
-
-    def convert_data(self, data):
-        """
-        Args:
-            data:
-        """
-        raise NotImplementedError
+        return self.file.read_text(encoding='utf8')
 
 
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
     extensions = ['txt', ]
 
-    def convert_data(self, data):
-        """
-        Args:
-            data:
-        """
-        if isinstance(data, bytes):
-            return data.decode("utf-8")
-        elif isinstance(data, str):
-            return data
-
 
 class CSVConverter(BaseConverter):
     mimetype = "text/plain"
     extensions = ['csv', ]
 
-    def convert_data(self, data):
+    def convert(self):
         """
         Args:
             data:
         """
         import csv
-        data = data.decode("utf-8") if isinstance(data, bytes) else data
-        return csv.reader(data.splitlines())
+        with open(self.file) as f:
+            return csv.reader(f)
 
 
 class JSONConverter(BaseConverter):
     mimetype = "application/json"
+    extensions = ['json', ]
 
-    def convert_data(self, data):
+    def convert(self):
         """
         Args:
             data:
         """
         import json
-
-        return json.loads(data)
+        with open(self.file) as f:
+            return json.load(f)
 
 
 class GeoJSONConverter(BaseConverter):
     mimetype = "application/vnd.geo+json"
+    extensions = ['geojson', ]
 
     def check_dependencies(self):
         self._check_import("geojson")
 
-    def convert_data(self, data):
-        """
-        Args:
-            data:
-        """
+    def convert(self):
         import geojson
-        return geojson.loads(data)
+        with open(self.file) as f:
+            return geojson.load(f)
 
 
 class MetalinkConverter(BaseConverter):
     mimetype = "application/metalink+xml; version=3.0"
+    extensions = ['metalink', 'meta4', ]
+    nested = True
 
     def check_dependencies(self):
         self._check_import("metalink.download")
 
     def convert(self):
         import metalink.download as md
-        files = md.get(self.output.reference, path=self.path)
+        files = md.get(self.url, path=self.path)
         return files
 
 
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
+    extensions = ['nc', ]
 
     def check_dependencies(self):
         self._check_import("netCDF4")
@@ -145,14 +144,14 @@ class Netcdf4Converter(BaseConverter):
 
         try:
             # try OpenDAP url
-            return netCDF4.Dataset(self.output.reference)
+            return netCDF4.Dataset(self.url)
         except IOError:
             # download the file
-            self.output.writeToDisk(path=self.path)
-            return netCDF4.Dataset(self.output.filePath)
+            return netCDF4.Dataset(self.file)
 
 
 class XarrayConverter(Netcdf4Converter):
+    priority = 2
 
     def check_dependencies(self):
         Netcdf4Converter.check_dependencies(self)
@@ -162,11 +161,10 @@ class XarrayConverter(Netcdf4Converter):
         import xarray as xr
         try:
             # try OpenDAP url
-            return xr.open_dataset(self.output.reference)
+            return xr.open_dataset(self.url)
         except IOError:
             # download the file
-            self.output.writeToDisk(path=self.path)
-            return xr.open_dataset(self.output.filePath)
+            return xr.open_dataset(self.file)
 
 
 class ShpFionaConverter(BaseConverter):
@@ -197,35 +195,86 @@ class ShpOgrConverter(BaseConverter):
 # TODO: Add test for this.
 class ImageConverter(BaseConverter):
     mimetype = 'image/png'
+    extensions = ['png', ]
 
     def check_dependencies(self):
         return nb.is_notebook()
 
     def convert(self):
         from birdy.dependencies import IPython
-
-        url = self.output.reference
-        return IPython.display.Image(url)
+        return IPython.display.Image(self.url)
 
 
 class ZipConverter(BaseConverter):
     mimetype = 'application/zip'
+    extensions = ['zip', ]
+    nested = True
 
     def convert(self):
         import zipfile
+        with zipfile.ZipFile(self.file) as z:
+            z.extractall(path=self.path)
+            return [str(Path(self.path) / fn) for fn in z.namelist()]
 
-        self.output.writeToDisk(path=self.path)
-        with zipfile.ZipFile(self.output.filePath) as z:
-            return z
+
+def _find_converter(mimetype=None, extension=None, converters=()):
+    """Return a list of compatible converters ordered by priority.
+    """
+    select = []
+    for obj in converters:
+        if (mimetype == obj.mimetype) or (extension in obj.extensions):
+            select.append(obj)
+
+    select.sort(key=lambda x: x.priority, reverse=True)
+    return select
 
 
-default_converters = {
-    TextConverter.mimetype: [TextConverter, ],
-    JSONConverter.mimetype: [JSONConverter, ],
-    GeoJSONConverter.mimetype: [GeoJSONConverter, ],
-    Netcdf4Converter.mimetype: [XarrayConverter, Netcdf4Converter],
-    MetalinkConverter.mimetype: [MetalinkConverter, ],
-    ImageConverter.mimetype: [ImageConverter, ],
-    ZipConverter.mimetype: [ZipConverter, ]
-    # 'application/x-zipped-shp': [ShpConverter, ],
-}
+def find_converter(obj, converters):
+    """Find converters for a WPS output or a file on disk."""
+    if isinstance(obj, Output):
+        mimetype = obj.mimeType
+        extension = Path(obj.fileName or '').suffix[1:]
+    elif isinstance(obj, (str, Path)):
+        mimetype = None
+        extension = Path(obj).suffix[1:]
+    else:
+        raise NotImplementedError
+
+    return _find_converter(mimetype, extension, converters=converters)
+
+
+def convert(output, path, converters=None):
+    """Convert a file to an object.
+
+    Parameters
+    ----------
+    output : owslib.wps.Output, Path, str
+      Item to convert to an object.
+    path : str, Path
+      Path on disk where temporary files are stored.
+    converters : sequence of BaseConverter subclasses
+      Converter classes to search within for a match.
+
+    Returns
+    -------
+    objs
+      Python object or path to file if no converter was found.
+    """
+    if converters is None:
+        converters = BaseConverter.__subclasses__()
+
+    convs = find_converter(output, converters)
+
+    for cls in convs:
+        try:
+            converter = cls(output, path=path)
+            out = converter.convert()
+            if converter.nested:  # Then the output is a list of files.
+                out = [convert(o, path) for o in out]
+            return out
+
+        except ImportError:
+            pass
+
+    warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
+    return output.reference
