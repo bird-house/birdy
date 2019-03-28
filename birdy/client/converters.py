@@ -2,7 +2,7 @@ from distutils.version import StrictVersion
 from importlib import import_module
 import six
 from . import notebook as nb
-
+import tempfile
 
 if six.PY2:
     from urllib import urlretrieve
@@ -15,12 +15,13 @@ class BaseConverter(object):
 
     # _default = None
 
-    def __init__(self, output=None):
+    def __init__(self, output=None, path=None):
         """Instantiate the conversion class.
 
         Args:
             output (owslib.wps.Output): Output object to be converted.
         """
+        self.path = path or tempfile.mkdtemp()
         self.output = output
         self.check_dependencies()
 
@@ -82,7 +83,7 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = "application/geojson"
+    mimetype = "application/vnd.geo+json"
 
     def check_dependencies(self):
         self._check_import("geojson")
@@ -108,7 +109,7 @@ class Netcdf4Converter(BaseConverter):
         if version < StrictVersion("4.5"):
             raise ImportError("netCDF4 library must be at least version 4.5")
 
-    def convert_data(self, data):
+    def convert(self):
         """
         Args:
             data:
@@ -120,8 +121,8 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.output.reference)
         except IOError:
             # download the file
-            temp_file, _ = urlretrieve(self.output.reference)
-            return netCDF4.Dataset(temp_file)
+            self.output.writeToDisk(path=self.path)
+            return netCDF4.Dataset(self.output.filePath)
 
 
 class XarrayConverter(Netcdf4Converter):
@@ -130,15 +131,15 @@ class XarrayConverter(Netcdf4Converter):
         Netcdf4Converter.check_dependencies(self)
         self._check_import('xarray')
 
-    def convert_data(self, data):
+    def convert(self):
         import xarray as xr
         try:
             # try OpenDAP url
             return xr.open_dataset(self.output.reference)
         except IOError:
             # download the file
-            temp_file, _ = urlretrieve(self.output.reference)
-            return xr.open_dataset(temp_file)
+            self.output.writeToDisk(path=self.path)
+            return xr.open_dataset(self.output.filePath)
 
 
 class ShpFionaConverter(BaseConverter):
@@ -180,11 +181,23 @@ class ImageConverter(BaseConverter):
         return IPython.display.Image(url)
 
 
+class ZipConverter(BaseConverter):
+    mimetype = 'application/zip'
+
+    def convert(self):
+        import zipfile
+
+        self.output.writeToDisk(path=self.path)
+        with zipfile.ZipFile(self.output.filePath) as z:
+            return z
+
+
 default_converters = {
     TextConverter.mimetype: [TextConverter, ],
     JSONConverter.mimetype: [JSONConverter, ],
     GeoJSONConverter.mimetype: [GeoJSONConverter, ],
     Netcdf4Converter.mimetype: [XarrayConverter, Netcdf4Converter],
     ImageConverter.mimetype: [ImageConverter, ],
+    ZipConverter.mimetype: [ZipConverter, ]
     # 'application/x-zipped-shp': [ShpConverter, ],
 }
