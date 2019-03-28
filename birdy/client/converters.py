@@ -12,6 +12,7 @@ else:
 
 class BaseConverter(object):
     mimetype = None
+    extensions = []
 
     # _default = None
 
@@ -56,6 +57,7 @@ class BaseConverter(object):
 
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
+    extensions = ['txt', ]
 
     def convert_data(self, data):
         """
@@ -66,6 +68,20 @@ class TextConverter(BaseConverter):
             return data.decode("utf-8")
         elif isinstance(data, str):
             return data
+
+
+class CSVConverter(BaseConverter):
+    mimetype = "text/plain"
+    extensions = ['csv', ]
+
+    def convert_data(self, data):
+        """
+        Args:
+            data:
+        """
+        import csv
+        data = data.decode("utf-8") if isinstance(data, bytes) else data
+        return csv.reader(data.splitlines())
 
 
 class JSONConverter(BaseConverter):
@@ -93,8 +109,22 @@ class GeoJSONConverter(BaseConverter):
             data:
         """
         import geojson
-
         return geojson.loads(data)
+
+
+class MetalinkConverter(BaseConverter):
+    mimetype = "application/metalink+xml"
+
+    def check_dependencies(self):
+        self._check_import("metalink.download")
+
+    def convert(self, data):
+        """
+        Args:
+            data:
+        """
+        import metalink.download as md
+        return md.get
 
 
 class Netcdf4Converter(BaseConverter):
