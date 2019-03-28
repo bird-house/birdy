@@ -65,21 +65,7 @@ class BaseConverter(object):
 
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
-    extensions = ['txt', ]
-
-
-class CSVConverter(BaseConverter):
-    mimetype = "text/plain"
-    extensions = ['csv', ]
-
-    def convert(self):
-        """
-        Args:
-            data:
-        """
-        import csv
-        with open(self.file) as f:
-            return csv.reader(f)
+    extensions = ['txt', 'csv']
 
 
 class JSONConverter(BaseConverter):
@@ -276,5 +262,5 @@ def convert(output, path, converters=None):
         except ImportError:
             pass
 
-    warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
+    warnings.warn(UserWarning("No converter was found."))
     return output.reference

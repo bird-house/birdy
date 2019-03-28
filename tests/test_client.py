@@ -270,6 +270,28 @@ def test_jsonconverter():
     fb.close()
 
 
+def test_zipconverter():
+    import zipfile
+    f = tempfile.mktemp(suffix='.zip')
+    zf = zipfile.ZipFile(f, mode='w')
+
+    a = tempfile.NamedTemporaryFile(mode='w', suffix='.json')
+    a.write(json.dumps({"a": 1}))
+    a.seek(0)
+
+    b = tempfile.NamedTemporaryFile(mode='w', suffix='.csv')
+    b.write('a, b, c\n1, 2, 3')
+    b.seek(0)
+
+    zf.write(a.name, arcname=os.path.split(a.name)[1])
+    zf.write(b.name, arcname=os.path.split(b.name)[1])
+    zf.close()
+
+    [oa, ob] = converters.convert(f, path='/tmp')
+    assert oa == {"a": 1}
+    assert len(ob.splitlines()) == 2
+
+
 class TestIsEmbedded():
     remote = 'http://remote.org'
     local = 'http://localhost:5000'
