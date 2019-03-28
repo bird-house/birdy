@@ -121,10 +121,7 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.output.reference)
         except IOError:
             # download the file
-            # Consider using self.output.writeToDisk(
-            #   path=None, username=None, password=None, headers=None, verify=True, cert=None):
             self.output.writeToDisk(path=self._path)
-            #temp_file, _ = urlretrieve(self.output.reference)
             return netCDF4.Dataset(self.output.filePath)
 
 
