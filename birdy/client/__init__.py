@@ -54,4 +54,4 @@ If a WPS server with a simple `hello` process is running on the local host on po
 
 """
 
-from .base import WPSClient
+from .base import WPSClient, nb_form

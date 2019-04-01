@@ -4,7 +4,7 @@ from owslib.wps import Input
 from . import utils
 from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
-
+from birdy.utils import sanitize
 
 def is_notebook():
     """Return whether or not this function is executed in a notebook environment."""
