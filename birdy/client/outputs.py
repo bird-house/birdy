@@ -65,13 +65,12 @@ class WPSResult(WPSExecution):
                 for cls in self._converters[output.mimeType]:
                     try:
                         converter = cls(output, path=self._path)
+                        return converter.convert()
+
                     except ImportError:
                         pass
 
-                    return converter.convert()
-
-            else:
-                warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
-                return output.reference
+            warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
+            return output.reference
         else:
             return output.reference
