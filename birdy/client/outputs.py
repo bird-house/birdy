@@ -8,7 +8,6 @@ from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
 import warnings
 import tempfile
-from pathlib import Path
 
 
 class WPSResult(WPSExecution):
