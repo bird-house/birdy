@@ -5,7 +5,7 @@ import json
 # from owslib import crs
 
 from pathlib import Path
-from birdy.client import converters
+from birdy.client import converters, nb_form
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
 
@@ -60,11 +60,11 @@ def test_wps_client_single_output(wps):
 
 
 @pytest.mark.online
-def test_wps_interact(wps):
+def test_wps_nb_form(wps):
     for pid in wps._processes.keys():
         if pid in ['bbox', ]:  # Unsupported
             continue
-        wps.interact(pid)
+        nb_form(wps, pid)
 
 
 @pytest.mark.online

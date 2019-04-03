@@ -4,6 +4,7 @@ from owslib.wps import Input
 from . import utils
 from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
+from birdy.utils import sanitize
 
 
 def is_notebook():
@@ -24,10 +25,14 @@ def is_notebook():
 
 
 def interact(func, inputs):
-    """Return a Notebook form to enter input values and launch process."""
-    ws = {key: input2widget(inpt) for key, inpt in inputs}
+    """Return a Notebook form to enter input values and launch process.
+
+    The output is stored in the `widget.result` attribute of the response.
+    """
+    ws = {sanitize(key): input2widget(inpt) for key, inpt in inputs}
     out = widgets.interact_manual(func, **ws)
     out.widget.children[-2].description = 'Launch process'
+    # IPython.display.display(out)
     return out
 
 

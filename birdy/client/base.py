@@ -292,11 +292,12 @@ class WPSClient(object):
         else:
             self.logger.info("{} failed.".format(execution.process.identifier))
 
-    def interact(self, pid):
-        """Return a Notebook form to enter input values and launch process."""
-        if self._notebook:
-            return notebook.interact(
-                func=getattr(self, pid),
-                inputs=self._inputs[pid].items())
-        else:
-            return None
+
+def nb_form(wps, pid):
+    """Return a Notebook form to enter input values and launch process."""
+    if wps._notebook:
+        return notebook.interact(
+            func=getattr(wps, sanitize(pid)),
+            inputs=wps._inputs[pid].items())
+    else:
+        return None
