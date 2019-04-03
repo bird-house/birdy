@@ -3,6 +3,10 @@ name: birdy
 channels:
   - conda-forge
 dependencies:
+  - pip
   - jupyterlab
   - ipywidgets
   - nodejs
+  - pip:
+    - -e git+https://github.com/metalink-dev/pymetalink
+
