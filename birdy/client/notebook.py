@@ -6,6 +6,7 @@ from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
 from birdy.utils import sanitize
 
+
 def is_notebook():
     """Return whether or not this function is executed in a notebook environment."""
     if not IPython:
@@ -31,7 +32,7 @@ def interact(func, inputs):
     ws = {sanitize(key): input2widget(inpt) for key, inpt in inputs}
     out = widgets.interact_manual(func, **ws)
     out.widget.children[-2].description = 'Launch process'
-    #IPython.display.display(out)
+    # IPython.display.display(out)
     return out
 
 

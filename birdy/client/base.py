@@ -294,10 +294,10 @@ class WPSClient(object):
 
 
 def nb_form(wps, pid):
-        """Return a Notebook form to enter input values and launch process."""
-        if wps._notebook:
-            return notebook.interact(
-                func=getattr(wps, sanitize(pid)),
-                inputs=wps._inputs[pid].items())
-        else:
-            return None
+    """Return a Notebook form to enter input values and launch process."""
+    if wps._notebook:
+        return notebook.interact(
+            func=getattr(wps, sanitize(pid)),
+            inputs=wps._inputs[pid].items())
+    else:
+        return None
