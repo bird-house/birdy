@@ -8,6 +8,9 @@ from pathlib import Path
 from birdy.client import converters, nb_form
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
+from io import StringIO, BytesIO
+import tempfile
+
 
 # These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
@@ -144,7 +147,7 @@ def test_asobj(wps):
 
     # If the converter is missing, we should still get the reference.
     with pytest.warns(UserWarning):
-        resp._converters.pop("text/plain")
+        resp._converters = []
         out = resp.get(asobj=True)
         assert out.output.startswith('http://')
 
@@ -221,14 +224,11 @@ def test_inputs(wps):
 @pytest.mark.online
 def test_netcdf(wps):
     import netCDF4 as nc
-    from birdy.client.converters import default_converters
+    from birdy.client.converters import Netcdf4Converter, JSONConverter
 
     # Xarray is the default converter. Use netCDF4 here.
-    converters = default_converters.copy()
-    converters['application/x-netcdf'] = converters['application/x-netcdf'][::-1]
-
     if nc.getlibversion() > "4.5":
-        m = WPSClient(url=url, processes=["output_formats"], converters=converters)
+        m = WPSClient(url=url, processes=["output_formats"], converters=[Netcdf4Converter, JSONConverter])
         ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
@@ -247,20 +247,49 @@ def count_class_methods(class_):
     )
 
 
-def test_converter():
-    j = converters.JSONConverter()
-    assert isinstance(j, converters.default_converters["application/json"][0])
-
-
 def test_jsonconverter():
-    j = converters.JSONConverter()
-
     d = {"a": 1}
     s = json.dumps(d)
-    assert j.convert_data(s) == d
+    b = bytes(s, 'utf8')
 
-    s = b'{"a": 1}'
-    assert j.convert_data(s) == d
+    fs = tempfile.NamedTemporaryFile(mode='w')
+    fs.write(s)
+    fs.file.seek(0)
+
+    fb = tempfile.NamedTemporaryFile(mode='w+b')
+    fb.write(b)
+    fb.file.seek(0)
+
+    j = converters.JSONConverter(fs.name)
+    assert j.convert() == d
+
+    j = converters.JSONConverter(fb.name)
+    assert j.convert() == d
+
+    fs.close()
+    fb.close()
+
+
+def test_zipconverter():
+    import zipfile
+    f = tempfile.mktemp(suffix='.zip')
+    zf = zipfile.ZipFile(f, mode='w')
+
+    a = tempfile.NamedTemporaryFile(mode='w', suffix='.json')
+    a.write(json.dumps({"a": 1}))
+    a.seek(0)
+
+    b = tempfile.NamedTemporaryFile(mode='w', suffix='.csv')
+    b.write('a, b, c\n1, 2, 3')
+    b.seek(0)
+
+    zf.write(a.name, arcname=os.path.split(a.name)[1])
+    zf.write(b.name, arcname=os.path.split(b.name)[1])
+    zf.close()
+
+    [oa, ob] = converters.convert(f, path='/tmp')
+    assert oa == {"a": 1}
+    assert len(ob.splitlines()) == 2
 
 
 class TestIsEmbedded():

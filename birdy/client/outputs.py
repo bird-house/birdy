@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from birdy.utils import sanitize, delist
 from birdy.client import utils
-from birdy.client.converters import default_converters
+from birdy.client.converters import convert
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
 import warnings
@@ -15,11 +15,10 @@ class WPSResult(WPSExecution):
     def attach(self, wps_outputs, converters=None):
         """
         Args:
-            converters (dict): Correspondence of {mimetype: class} to convert
-                this mimetype to a python object.
+            converters (dict): Converter dictionary {name: object}
         """
         self._wps_outputs = wps_outputs
-        self._converters = converters or copy(default_converters)
+        self._converters = converters
         self._path = tempfile.mkdtemp()
 
     def get(self, asobj=False):
@@ -56,21 +55,7 @@ class WPSResult(WPSExecution):
             data = [utils.from_owslib(d, data_type) for d in output.data]
             return delist(data)
 
-        if convert_objects and output.mimeType:
-            # Try to convert the bytes to an object.
-            # The default converter can be modified by users modifying
-            # the `default` property of the converter class
-            # ex: ShpConverter().default = "fiona"
-            if output.mimeType in self._converters:
-                for cls in self._converters[output.mimeType]:
-                    try:
-                        converter = cls(output, path=self._path)
-                        return converter.convert()
-
-                    except ImportError:
-                        pass
-
-            warnings.warn(UserWarning("No converter was found for mime type: {}".format(output.mimeType)))
-            return output.reference
+        if convert_objects:
+            return convert(output, self._path, self._converters)
         else:
             return output.reference
