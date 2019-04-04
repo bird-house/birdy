@@ -1,6 +1,20 @@
 Change History
 **************
 
+0.6.0 (2019-04-04)
+==================
+
+Changes:
+
+* Added conversion support for nested outputs (metalink, zip) (#114).
+* Added support for Metalink (#113).
+* Added support for zip converter (#111).
+* Added support for ESGF CWT API (#102).
+* Speed up by using `DescribeProcess` with `identifier=all` (#98).
+* Added support for passing local files to server as raw data (#97).
+* Cleaned up notebooks (#107).
+* Various Bugfixes: #83, #91, #99
+
 0.5.1 (2018-12-18)
 ==================
 
