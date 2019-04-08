@@ -97,7 +97,7 @@ class GeoJSONConverter(BaseConverter):
 
 class MetalinkConverter(BaseConverter):
     mimetype = "application/metalink+xml; version=3.0"
-    extensions = ['metalink', 'meta4', ]
+    extensions = ['metalink', ]
     nested = True
 
     def check_dependencies(self):
@@ -107,6 +107,11 @@ class MetalinkConverter(BaseConverter):
         import metalink.download as md
         files = md.get(self.url, path=self.path)
         return files
+
+
+class MetalinkConverter(MetalinkConverter):
+    mimetype = "application/metalink+xml; version=4.0"
+    extensions = ['meta4', ]
 
 
 class Netcdf4Converter(BaseConverter):
@@ -136,7 +141,9 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.file)
 
 
-class XarrayConverter(Netcdf4Converter):
+class XarrayConverter(BaseConverter):
+    mimetype = "application/x-netcdf"
+    extensions = ['nc', ]
     priority = 2
 
     def check_dependencies(self):
@@ -247,7 +254,7 @@ def convert(output, path, converters=None):
       Python object or path to file if no converter was found.
     """
     if converters is None:
-        converters = BaseConverter.__subclasses__()
+        converters = all_subclasses(BaseConverter)
 
     convs = find_converter(output, converters)
 
@@ -264,3 +271,9 @@ def convert(output, path, converters=None):
 
     warnings.warn(UserWarning("No converter was found."))
     return output.reference
+
+
+def all_subclasses(cls):
+    """Return all subclasses of a class."""
+    return set(cls.__subclasses__()).union(
+        [s for c in cls.__subclasses__() for s in all_subclasses(c)])

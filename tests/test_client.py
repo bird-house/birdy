@@ -222,7 +222,7 @@ def test_inputs(wps):
 
 
 @pytest.mark.online
-def test_netcdf(wps):
+def test_netcdf():
     import netCDF4 as nc
     from birdy.client.converters import Netcdf4Converter, JSONConverter
 
@@ -233,6 +233,13 @@ def test_netcdf(wps):
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
         assert isinstance(jsondata, dict)
+
+
+def test_xarray_converter(wps):
+    pytest.importorskip('xarray')
+    import xarray as xr
+    ncdata, jsondata = wps.output_formats().get(asobj=True)
+    assert isinstance(ncdata, xr.Dataset)
 
 
 def count_class_methods(class_):
