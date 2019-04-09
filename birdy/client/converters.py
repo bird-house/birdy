@@ -109,7 +109,7 @@ class MetalinkConverter(BaseConverter):
         return files
 
 
-class MetalinkConverter(MetalinkConverter):
+class Meta4Converter(MetalinkConverter):
     mimetype = "application/metalink+xml; version=4.0"
     extensions = ['meta4', ]
 
@@ -269,7 +269,7 @@ def convert(output, path, converters=None):
         except ImportError:
             pass
 
-    warnings.warn(UserWarning("No converter was found."))
+    warnings.warn(UserWarning("No converter was found for {}".format(output.identifier)))
     return output.reference
 
 

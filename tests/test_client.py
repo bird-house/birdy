@@ -104,13 +104,17 @@ def test_wps_client_complex_output(wps):
     resp = wps.multiple_outputs(2)
 
     # As reference
-    [meta, ] = resp.get()
+    [meta, meta4] = resp.get()
     assert meta.startswith("http")
     assert meta.endswith(".metalink")
 
+    assert meta4.startswith("http")
+    assert meta4.endswith(".meta4")
+
     # As objects
-    [files, ] = resp.get(asobj=True)
+    [files, files4] = resp.get(asobj=True)
     assert len(files) == 2
+    assert len(files4) == 2
 
 
 @pytest.mark.online
@@ -240,6 +244,11 @@ def test_xarray_converter(wps):
     import xarray as xr
     ncdata, jsondata = wps.output_formats().get(asobj=True)
     assert isinstance(ncdata, xr.Dataset)
+
+
+def test_all_subclasses():
+    c = converters.all_subclasses(converters.BaseConverter)
+    assert converters.Meta4Converter in c
 
 
 def count_class_methods(class_):
