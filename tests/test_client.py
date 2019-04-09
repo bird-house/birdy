@@ -239,6 +239,7 @@ def test_netcdf():
         assert isinstance(jsondata, dict)
 
 
+@pytest.mark.online
 def test_xarray_converter(wps):
     pytest.importorskip('xarray')
     import xarray as xr
