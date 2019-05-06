@@ -5,6 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - pip
   - six
   #- openssl
   - lxml
