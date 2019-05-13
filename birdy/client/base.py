@@ -166,7 +166,7 @@ class WPSClient(object):
         process = self._processes[pid]
 
         def sort_inputs_key(i):
-            """Sort inputs for function creation.
+            """Function used as key when sorting process inputs.
 
             The order is:
              - Inputs that have minOccurs >= 1 and no default value
