@@ -165,11 +165,33 @@ class WPSClient(object):
 
         process = self._processes[pid]
 
-        input_defaults = OrderedDict()
-        for inpt in process.dataInputs:
-            iid = sanitize(inpt.identifier)
-            default = getattr(inpt, "defaultValue", None) if inpt.dataType != 'ComplexData' else None
-            input_defaults[iid] = utils.from_owslib(default, inpt.dataType)
+        def sort_inputs_key(i):
+            """Function used as key when sorting process inputs.
+
+            The order is:
+             - Inputs that have minOccurs >= 1 and no default value
+             - Inputs that have minOccurs >= 1 and a default value
+             - Every other input
+            """
+            return list(reversed([
+                i.minOccurs >= 1 and i.defaultValue is None,
+                i.minOccurs >= 1,
+                i.minOccurs == 0,
+            ]))
+
+        required_inputs_first = sorted(process.dataInputs, key=sort_inputs_key)
+
+        input_names = []
+        # defaults will be set to the function's __defaults__:
+        # A tuple containing default argument values for those arguments that have defaults,
+        # or None if no arguments have a default value.
+        defaults = []
+        for inpt in required_inputs_first:
+            input_names.append(sanitize(inpt.identifier))
+            if inpt.minOccurs == 0 or inpt.defaultValue is not None:
+                default = inpt.defaultValue if inpt.dataType != "ComplexData" else None
+                defaults.append(utils.from_owslib(default, inpt.dataType))
+        defaults = tuple(defaults) if defaults else None
 
         body = dedent("""
             inputs = locals()
@@ -180,8 +202,8 @@ class WPSClient(object):
         func_builder = FunctionBuilder(
             name=sanitize(pid),
             doc=utils.build_process_doc(process),
-            args=["self"] + list(input_defaults),
-            defaults=tuple(input_defaults.values()),
+            args=["self"] + input_names,
+            defaults=defaults,
             body=body,
             filename=__file__,
             module=self.__module__,
