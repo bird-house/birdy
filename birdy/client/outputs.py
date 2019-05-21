@@ -56,6 +56,6 @@ class WPSResult(WPSExecution):
             return delist(data)
 
         if convert_objects:
-            return convert(output, self._path, self._converters)
+            return convert(output, self._path, self._converters, self.verify)
         else:
             return output.reference
