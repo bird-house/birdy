@@ -20,7 +20,7 @@ class BaseConverter(object):
     priority = 1
     nested = False
 
-    def __init__(self, output=None, path=None):
+    def __init__(self, output=None, path=None, verify=True):
         """Instantiate the conversion class.
 
         Args:
@@ -28,6 +28,7 @@ class BaseConverter(object):
         """
         self.path = path or tempfile.mkdtemp()
         self.output = output
+        self.verify = verify
         self.check_dependencies()
         if isinstance(output, Output):
             self.url = output.reference
@@ -40,7 +41,7 @@ class BaseConverter(object):
     @property
     def file(self):
         if self._file is None:
-            self.output.writeToDisk(path=self.path)
+            self.output.writeToDisk(path=self.path, verify=self.verify)
             self._file = Path(self.output.filePath)
         return self._file
 
@@ -236,7 +237,7 @@ def find_converter(obj, converters):
     return _find_converter(mimetype, extension, converters=converters)
 
 
-def convert(output, path, converters=None):
+def convert(output, path, converters=None, verify=True):
     """Convert a file to an object.
 
     Parameters
@@ -260,7 +261,7 @@ def convert(output, path, converters=None):
 
     for cls in convs:
         try:
-            converter = cls(output, path=path)
+            converter = cls(output, path=path, verify=verify)
             out = converter.convert()
             if converter.nested:  # Then the output is a list of files.
                 out = [convert(o, path) for o in out]
