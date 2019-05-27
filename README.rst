@@ -32,7 +32,7 @@ It is using `OWSLib` from the `GeoPython` project.
 You can try Birdy online using Binder, just click on the binder link below.
 
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/bird-house/birdy.git/master?filepath=notebooks
+   :target: https://mybinder.org/v2/gh/bird-house/birdy.git/v0.6.0?filepath=notebooks
    :alt: Binder Launcher
 
 Birdy is part of the `Birdhouse`_ project.
