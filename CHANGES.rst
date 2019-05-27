@@ -1,6 +1,14 @@
 Change History
 **************
 
+0.6.1 (2019-05-27)
+==================
+
+Changes:
+
+* Added verify argument when downloading files to disk (#123).
+* Bugfixes: #118, #121
+
 0.6.0 (2019-04-04)
 ==================
 
