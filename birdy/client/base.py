@@ -104,11 +104,10 @@ class WPSClient(object):
                 raise
 
             self._timing[u] = toc - tic
+            self._all_processes[u] = self._get_process_description(wps, processes)
 
         # Pick the server with the fastest response time
         self._current_server = u = self._pick_server()
-
-        self._all_processes[u] = self._get_process_description(wps, processes)
         self._wps = self._all_wps[u]
         self._processes = self._all_processes[u]
         self._check_versions()
