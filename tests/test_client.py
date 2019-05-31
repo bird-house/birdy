@@ -15,6 +15,7 @@ import tempfile
 # These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
 
+bovec = "https://bovec.dkrz.de/ows/proxy/emu/wps"
 
 def data_path(*args):
     return os.path.join(os.path.dirname(__file__), "resources", *args)
@@ -345,3 +346,9 @@ class TestIsEmbedded():
     def test_url(self):
         assert not is_embedded_in_request(self.remote, self.url)
         assert not is_embedded_in_request(self.local, self.url)
+
+
+def test_pick_server():
+    wps = WPSClient(url=[url, bovec])
+    assert wps._timing[url] < wps._timing[bovec]
+    assert wps._current_server == url

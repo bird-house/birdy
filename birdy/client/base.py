@@ -1,7 +1,8 @@
 import types
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from textwrap import dedent
 from boltons.funcutils import FunctionBuilder
+import time
 
 import owslib
 from owslib.util import ServiceException
@@ -43,7 +44,9 @@ class WPSClient(object):
     ):
         """
         Args:
-            url (str): Link to WPS provider. config (Config): an instance
+            url (str, list): Link to one or multiple WPS providers offering
+                the same set of processes. An error will be raised if services
+                or their versions are different.
             processes: Specify a subset of processes to bind. Defaults to all
                 processes.
             converters (dict): Correspondence of {mimetype: class} to convert
@@ -69,28 +72,46 @@ class WPSClient(object):
 
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        self._wps = WebProcessingService(
-            url,
-            version=version,
-            username=username,
-            password=password,
-            verbose=verbose,
-            headers=headers,
-            verify=verify,
-            cert=cert,
-            skip_caps=True,
-        )
+        if type(url) == str:
+            url = [url, ]
 
-        try:
-            self._wps.getcapabilities()
-        except ServiceException as e:
-            if "AccessForbidden" in str(e):
-                raise UnauthorizedException(
-                    "You are not authorized to do a request of type: GetCapabilities"
-                )
-            raise
+        self._all_wps = {}
+        self._all_processes = {}
+        self._timing = {}
+        for u in url:
+            wps = WebProcessingService(
+                u,
+                version=version,
+                username=username,
+                password=password,
+                verbose=verbose,
+                headers=headers,
+                verify=verify,
+                cert=cert,
+                skip_caps=True,
+            )
+            self._all_wps[u] = wps
 
-        self._processes = self._get_process_description(processes)
+            try:
+                tic = time.clock()
+                wps.getcapabilities() # Fetch the available processes
+                toc = time.clock()
+            except ServiceException as e:
+                if "AccessForbidden" in str(e):
+                    raise UnauthorizedException(
+                        "You are not authorized to do a request of type: GetCapabilities at {}".format(u)
+                    )
+                raise
+
+            self._timing[u] = toc - tic
+
+        # Pick the server with the fastest response time
+        self._current_server = u = self._pick_server()
+
+        self._all_processes[u] = self._get_process_description(wps, processes)
+        self._wps = self._all_wps[u]
+        self._processes = self._all_processes[u]
+        self._check_versions()
 
         # Build the methods
         for pid in self._processes:
@@ -102,7 +123,28 @@ class WPSClient(object):
 
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
 
-    def _get_process_description(self, processes):
+    def _pick_server(self):
+        """Return the url of the fastest GetCapabilities response."""
+        return sorted(self._timing.items(), key=lambda kv: (kv[1], kv[0]))[0][0]
+
+    def _check_versions(self):
+        """Raise an error if different machines run different versions of the same WPS process."""
+
+        n = len(self._all_wps)
+
+        pv = defaultdict(dict)
+        for u, procs in self._all_processes.items():
+            for name, proc in procs.items():
+                pv[name][u] = proc.processVersion
+
+        for name, versions in pv.items():
+            if len(versions) != n:
+                raise UserWarning("Process {} is not available on all servers: {}".format(name, versions))
+
+            if len(set(versions.values())) > 1:
+                raise UserWarning("Process {} has different versions on servers: {}".format(name, versions))
+
+    def _get_process_description(self, wps, processes):
         """Return the description for each process.
 
         Sends the server a `describeProcess` request for each process.
@@ -117,12 +159,12 @@ class WPSClient(object):
         OrderedDict
           A dictionary keyed by the process identifier of process descriptions.
         """
-        all_wps_processes = [p.identifier for p in self._wps.processes]
+        all_wps_processes = [p.identifier for p in wps.processes]
 
         if processes is None:
             if owslib.__version__ > '0.17.0':
                 # Get the description for all processes in one request.
-                ps = self._wps.describeprocess('all')
+                ps = wps.describeprocess('all')
                 return OrderedDict((p.identifier, p) for p in ps)
             else:
                 processes = all_wps_processes
@@ -137,7 +179,7 @@ class WPSClient(object):
             raise ValueError(message.format(", ".join(missing)))
 
         # Get the description for each process.
-        ps = [self._wps.describeprocess(pid) for pid in process_names]
+        ps = [wps.describeprocess(pid) for pid in process_names]
 
         return OrderedDict((p.identifier, p) for p in ps)
 
