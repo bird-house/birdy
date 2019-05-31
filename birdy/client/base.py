@@ -93,9 +93,8 @@ class WPSClient(object):
             self._all_wps[u] = wps
 
             try:
-                tic = time.clock()
                 wps.getcapabilities()  # Fetch the available processes
-                toc = time.clock()
+
             except ServiceException as e:
                 if "AccessForbidden" in str(e):
                     raise UnauthorizedException(
@@ -103,8 +102,11 @@ class WPSClient(object):
                     )
                 raise
 
-            self._timing[u] = toc - tic
+            # Get the processes description and clock the time to send the response.
+            tic = time.clock()
             self._all_processes[u] = self._get_process_description(wps, processes)
+            toc = time.clock()
+            self._timing[u] = toc - tic
 
         # Pick the server with the fastest response time
         self._current_server = u = self._pick_server()
