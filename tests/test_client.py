@@ -14,8 +14,8 @@ import tempfile
 
 # These tests assume Emu is running on the localhost
 url = "http://localhost:5000/wps"
-
 bovec = "https://bovec.dkrz.de/ows/proxy/emu/wps"
+
 
 def data_path(*args):
     return os.path.join(os.path.dirname(__file__), "resources", *args)

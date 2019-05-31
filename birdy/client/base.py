@@ -94,7 +94,7 @@ class WPSClient(object):
 
             try:
                 tic = time.clock()
-                wps.getcapabilities() # Fetch the available processes
+                wps.getcapabilities()  # Fetch the available processes
                 toc = time.clock()
             except ServiceException as e:
                 if "AccessForbidden" in str(e):
