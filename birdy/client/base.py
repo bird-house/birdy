@@ -233,7 +233,7 @@ class WPSClient(object):
             if arg is None:
                 continue
 
-            values = [arg, ] if type(arg) not in [list, tuple] else arg
+            values = [arg, ] if not isinstance(arg, (list, tuple)) else arg
 
             for value in values:
                 if isinstance(input_param.defaultValue, ComplexData):
