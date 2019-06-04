@@ -225,12 +225,17 @@ class WPSClient(object):
 
         return func
 
-    def _execute(self, pid, **kwargs):
-        """Execute the process."""
+    def _build_inputs(self, pid, **kwargs):
+        """Build the input sequence from the function arguments."""
         wps_inputs = []
         for name, input_param in self._inputs[pid].items():
-            value = kwargs.get(sanitize(name))
-            if value is not None:
+            arg = kwargs.get(sanitize(name))
+            if arg is None:
+                continue
+
+            values = [arg, ] if not isinstance(arg, (list, tuple)) else arg
+
+            for value in values:
                 if isinstance(input_param.defaultValue, ComplexData):
                     encoding = input_param.defaultValue.encoding
                     mimetype = input_param.defaultValue.mimeType
@@ -255,6 +260,11 @@ class WPSClient(object):
 
                 wps_inputs.append((name, inp))
 
+        return wps_inputs
+
+    def _execute(self, pid, **kwargs):
+        """Execute the process."""
+        wps_inputs = self._build_inputs(pid, **kwargs)
         wps_outputs = [
             (o.identifier, "ComplexData" in o.dataType)
             for o in self._outputs[pid].values()

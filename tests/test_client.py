@@ -189,7 +189,7 @@ def test_inputs(wps):
     result = wps.inout(
         string="test string",
         int=3,
-        float=3.5,
+        float=(3.5, 1.),
         boolean=True,
         angle=67.,
         time=time_.isoformat(),
@@ -197,13 +197,16 @@ def test_inputs(wps):
         datetime=datetime_.isoformat(sep=" "),
         string_choice="rock",
         string_multiple_choice="sitting duck",
+        int_range=5,
+        any_value='7',
+        ref_value='Scots',
         text="some unsafe text &<",
         dataset="file://" + data_path("dummy.nc"),
     )
     expected = (
         "test string",
         3,
-        3.5,
+        4.5,
         True,
         67.,
         time_,
@@ -211,6 +214,9 @@ def test_inputs(wps):
         datetime_,
         "rock",
         "sitting duck",
+        5,
+        '7',
+        'Scots',
         "some unsafe text &<",
     )
     assert expected == result.get(asobj=True)[:-2]
