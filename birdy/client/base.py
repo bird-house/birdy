@@ -234,7 +234,7 @@ class WPSClient(object):
                 continue
 
             values = [arg, ] if type(arg) not in [list, tuple] else arg
-                
+
             for value in values:
                 if isinstance(input_param.defaultValue, ComplexData):
                     encoding = input_param.defaultValue.encoding
