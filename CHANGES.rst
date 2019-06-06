@@ -1,6 +1,13 @@
 Change History
 **************
 
+0.6.2 (2019-06-06)
+==================
+
+Changes:
+
+* Added support for passing sequences (list, tuple) as WPS inputs (#128).
+
 0.6.1 (2019-05-27)
 ==================
 
