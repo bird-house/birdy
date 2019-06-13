@@ -209,7 +209,7 @@ class LinkConverter(BaseConverter):
     def convert(self):
         from birdy.dependencies import ipywidgets as widgets
         from birdy.dependencies import IPython
-        
+
         if self.url:
             w = widgets.HTML(value="<a href={0}>{0}</a>".format(self.url))
             IPython.display.display(w)

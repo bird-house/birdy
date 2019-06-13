@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from birdy.utils import sanitize, delist
 from birdy.client import utils
-from birdy.client.converters import convert
+from birdy.client.converters import convert, LinkConverter
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
 import warnings
@@ -47,6 +47,7 @@ class WPSResult(WPSExecution):
             output (owslib.wps.Output):
             convert_objects: If True, object_converters will be used.
         """
+
         # Get the data for recognized types.
         if output.data:
             data_type = output.dataType
@@ -58,4 +59,4 @@ class WPSResult(WPSExecution):
         if convert_objects:
             return convert(output, self._path, self._converters, self.verify)
         else:
-            return output.reference
+            return LinkConverter(output).convert()
