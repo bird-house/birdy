@@ -199,6 +199,23 @@ class ImageConverter(BaseConverter):
         return IPython.display.Image(self.url)
 
 
+class LinkConverter(BaseConverter):
+    """Convert URL reference to active link."""
+    priority = -1
+
+    def check_dependencies(self):
+        return nb.is_notebook()
+
+    def convert(self):
+        from birdy.dependencies import ipywidgets as widgets
+        from birdy.dependencies import IPython
+        
+        if self.url:
+            w = widgets.HTML(value="<a href={0}>{0}</a>".format(self.url))
+            IPython.display.display(w)
+        return self.file
+
+
 class ZipConverter(BaseConverter):
     mimetype = 'application/zip'
     extensions = ['zip', ]
@@ -214,7 +231,7 @@ class ZipConverter(BaseConverter):
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority.
     """
-    select = []
+    select = [LinkConverter]
     for obj in converters:
         if (mimetype == obj.mimetype) or (extension in obj.extensions):
             select.append(obj)
