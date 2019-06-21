@@ -123,7 +123,7 @@ class MetalinkConverter(BaseConverter):
 
     def convert(self):
         import metalink.download as md
-        files = md.get(self.url, path=self.path)
+        files = md.get(self.url, path=self.path, segmented=False)
         return files
 
 

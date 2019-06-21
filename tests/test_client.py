@@ -71,7 +71,7 @@ def test_wps_nb_form(wps):
 
 
 @pytest.mark.online
-def test_wps_client_multiple_output(wps):
+def test_wps_client_dummy_process(wps):
     # For multiple outputs, the output is a namedtuple
     result = wps.dummyprocess(10, 20)
     output = result.get()
@@ -100,7 +100,7 @@ def test_interactive(capsys):
 
 
 @pytest.mark.online
-def test_wps_client_complex_output(wps):
+def test_wps_client_multiple_outputs(wps):
     resp = wps.multiple_outputs(2)
 
     # As reference
@@ -113,6 +113,7 @@ def test_wps_client_complex_output(wps):
 
     # As objects
     [files, files4] = resp.get(asobj=True)
+    print(files)
     assert len(files) == 2
     assert len(files4) == 2
 
