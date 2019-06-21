@@ -315,13 +315,14 @@ def test_zipconverter():
     assert oa == {"a": 1}
     assert len(ob.splitlines()) == 2
 
+
 @pytest.mark.skip("jpeg not supported yet")
 def test_jpeg_imageconverter():
     fn = tempfile.mktemp(suffix='.jpeg')
     with open(fn, 'w') as f:
         f.write('jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000')
 
-    out = converters.convert(fn, path='/tmp')
+    converters.convert(fn, path='/tmp')
 
 
 class TestIsEmbedded():
