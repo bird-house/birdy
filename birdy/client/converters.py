@@ -33,10 +33,11 @@ class BaseConverter(object):
         if isinstance(output, Output):
             self.url = output.reference
             self._file = None
-        elif isinstance(output, (str, Path)):
+        elif isinstance(output, str):
+            self.url = output
             self._file = Path(output)
-            if not self.file.exists():
-                raise FileNotFoundError(output)
+        else:
+            raise NotImplementedError
 
     @property
     def file(self):
@@ -67,6 +68,22 @@ class BaseConverter(object):
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
     extensions = ['txt', 'csv']
+
+
+# class HTMLConverter(BaseConverter):
+#     """Create HTML cell in notebook."""
+#     mimetype = "text/html"
+#     extensions = ['html', ]
+#
+#     def check_dependencies(self):
+#         return nb.is_notebook()
+#
+#     def convert(self):
+#         from birdy.dependencies import ipywidgets as widgets
+#         from birdy.dependencies import IPython
+#
+#         w = widgets.HTML(value=self.file.read_text(encoding='utf8'))
+#         IPython.display.display(w)
 
 
 class JSONConverter(BaseConverter):
@@ -267,11 +284,15 @@ def convert(output, path, converters=None, verify=True):
                 out = [convert(o, path) for o in out]
             return out
 
-        except ImportError:
+        except (ImportError, NotImplementedError):
             pass
 
-    warnings.warn(UserWarning("No converter was found for {}".format(output.identifier)))
-    return output.reference
+    if isinstance(output, Output):
+        warnings.warn(UserWarning("No converter was found for {}".format(output.identifier)))
+        return output.reference
+    else:
+        warnings.warn(UserWarning("No converter was found for {}".format(output)))
+        return output
 
 
 def all_subclasses(cls):
