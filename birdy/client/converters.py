@@ -33,7 +33,7 @@ class BaseConverter(object):
         if isinstance(output, Output):
             self.url = output.reference
             self._file = None
-        elif isinstance(output, str):
+        elif isinstance(output, (str, Path)):
             self.url = output
             self._file = Path(output)
         else:
