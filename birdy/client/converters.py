@@ -41,10 +41,19 @@ class BaseConverter(object):
 
     @property
     def file(self):
+        """Return output Path object. Download from server if """
         if self._file is None:
             self.output.writeToDisk(path=self.path, verify=self.verify)
             self._file = Path(self.output.filePath)
         return self._file
+
+    @property
+    def data(self):
+        """Return the data from the remote output in memory."""
+        if self._file is not None:
+            return self.file.read_bytes()
+        else:
+            return self.output.retrieveData()
 
     def check_dependencies(self):
         pass
@@ -271,11 +280,14 @@ def convert(output, path, converters=None, verify=True):
     objs
       Python object or path to file if no converter was found.
     """
+    # Get all converters
     if converters is None:
         converters = all_subclasses(BaseConverter)
 
+    # Find converters matching mime type or extension.
     convs = find_converter(output, converters)
 
+    # Try converters in order of priority
     for cls in convs:
         try:
             converter = cls(output, path=path, verify=verify)
@@ -287,12 +299,10 @@ def convert(output, path, converters=None, verify=True):
         except (ImportError, NotImplementedError):
             pass
 
-    if isinstance(output, Output):
-        warnings.warn(UserWarning("No converter was found for {}".format(output.identifier)))
-        return output.reference
-    else:
-        warnings.warn(UserWarning("No converter was found for {}".format(output)))
-        return output
+    # If all else fails, return the raw bytes from the object. 
+    warnings.warn(
+        UserWarning("No converter was found for {}. Returning bytes.".format(getattr(output, 'identifier', output))))
+    return BaseConverter(output).data
 
 
 def all_subclasses(cls):
