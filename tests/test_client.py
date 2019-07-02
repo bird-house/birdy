@@ -315,7 +315,6 @@ def test_zipconverter():
     assert len(ob.splitlines()) == 2
 
 
-
 def test_jpeg_imageconverter():
     "Since the format is not supported, bytes will be returned."
     fn = tempfile.mktemp(suffix='.jpeg')
