@@ -150,11 +150,10 @@ def test_asobj(wps):
         out = resp.get(asobj=True)
         assert 'URL' in out.output
 
-    # If the converter is missing, we should still get the reference.
-    with pytest.warns(UserWarning):
-        resp._converters = []
-        out = resp.get(asobj=True)
-        assert isinstance(out.output, bytes)
+    # If the converter is missing, we should still get the data as bytes.
+    resp._converters = []
+    out = resp.get(asobj=True)
+    assert isinstance(out.output, bytes)
 
 
 @pytest.mark.online

@@ -17,7 +17,7 @@ else:
 class BaseConverter(object):
     mimetype = None
     extensions = []
-    priority = 1
+    priority = 0
     nested = False
 
     def __init__(self, output=None, path=None, verify=True):
@@ -71,13 +71,18 @@ class BaseConverter(object):
             raise type(e)(message.format(self.__class__.__name__, name))
 
     def convert(self):
-        return self.file.read_text(encoding='utf8')
+        """Return raw bytes memory representation."""
+        return self.data
 
 
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
-    extensions = ['txt', 'csv']
+    extensions = ['txt', 'csv', 'md', 'rst']
+    priority = 1
 
+    def convert(self):
+        """Return text content."""
+        return self.file.read_text(encoding='utf8')
 
 # class HTMLConverter(BaseConverter):
 #     """Create HTML cell in notebook."""
@@ -98,6 +103,7 @@ class TextConverter(BaseConverter):
 class JSONConverter(BaseConverter):
     mimetype = "application/json"
     extensions = ['json', ]
+    priority = 1
 
     def convert(self):
         """
@@ -112,6 +118,7 @@ class JSONConverter(BaseConverter):
 class GeoJSONConverter(BaseConverter):
     mimetype = "application/vnd.geo+json"
     extensions = ['geojson', ]
+    priority = 1
 
     def check_dependencies(self):
         self._check_import("geojson")
@@ -126,6 +133,7 @@ class MetalinkConverter(BaseConverter):
     mimetype = "application/metalink+xml; version=3.0"
     extensions = ['metalink', ]
     nested = True
+    priority = 1
 
     def check_dependencies(self):
         self._check_import("metalink.download")
@@ -144,6 +152,7 @@ class Meta4Converter(MetalinkConverter):
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
     extensions = ['nc', ]
+    priority = 1
 
     def check_dependencies(self):
         self._check_import("netCDF4")
@@ -189,6 +198,7 @@ class XarrayConverter(BaseConverter):
 
 class ShpFionaConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
+    priority = 1
 
     def check_dependencies(self):
         self._check_import("fiona")
@@ -202,6 +212,7 @@ class ShpFionaConverter(BaseConverter):
 
 class ShpOgrConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
+    priority = 1
 
     def check_dependencies(self):
         self._check_import("ogr", package="osgeo")
@@ -216,6 +227,7 @@ class ShpOgrConverter(BaseConverter):
 class ImageConverter(BaseConverter):
     mimetype = 'image/png'
     extensions = ['png', ]
+    priority = 1
 
     def check_dependencies(self):
         return nb.is_notebook()
@@ -229,6 +241,7 @@ class ZipConverter(BaseConverter):
     mimetype = 'application/zip'
     extensions = ['zip', ]
     nested = True
+    priority = 1
 
     def convert(self):
         import zipfile
@@ -240,7 +253,7 @@ class ZipConverter(BaseConverter):
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority.
     """
-    select = []
+    select = [BaseConverter]
     for obj in converters:
         if (mimetype == obj.mimetype) or (extension in obj.extensions):
             select.append(obj)
@@ -278,7 +291,7 @@ def convert(output, path, converters=None, verify=True):
     Returns
     -------
     objs
-      Python object or path to file if no converter was found.
+      Python object or file's content as bytes.
     """
     # Get all converters
     if converters is None:
@@ -298,11 +311,6 @@ def convert(output, path, converters=None, verify=True):
 
         except (ImportError, NotImplementedError):
             pass
-
-    # If all else fails, return the raw bytes from the object. 
-    warnings.warn(
-        UserWarning("No converter was found for {}. Returning bytes.".format(getattr(output, 'identifier', output))))
-    return BaseConverter(output).data
 
 
 def all_subclasses(cls):
