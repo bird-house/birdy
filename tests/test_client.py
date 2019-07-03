@@ -150,11 +150,10 @@ def test_asobj(wps):
         out = resp.get(asobj=True)
         assert 'URL' in out.output
 
-    # If the converter is missing, we should still get the reference.
-    with pytest.warns(UserWarning):
-        resp._converters = []
-        out = resp.get(asobj=True)
-        assert out.output.startswith('http://')
+    # If the converter is missing, we should still get the data as bytes.
+    resp._converters = []
+    out = resp.get(asobj=True)
+    assert isinstance(out.output, bytes)
 
 
 @pytest.mark.online
@@ -316,13 +315,14 @@ def test_zipconverter():
     assert len(ob.splitlines()) == 2
 
 
-@pytest.mark.skip("jpeg not supported yet")
 def test_jpeg_imageconverter():
+    "Since the format is not supported, bytes will be returned."
     fn = tempfile.mktemp(suffix='.jpeg')
     with open(fn, 'w') as f:
         f.write('jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000')
 
-    converters.convert(fn, path='/tmp')
+    b = converters.convert(fn, path='/tmp')
+    assert isinstance(b, bytes)
 
 
 class TestIsEmbedded():
