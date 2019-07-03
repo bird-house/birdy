@@ -17,7 +17,7 @@ else:
 class BaseConverter(object):
     mimetype = None
     extensions = []
-    priority = 0
+    priority = None
     nested = False
 
     def __init__(self, output=None, path=None, verify=True):
@@ -69,6 +69,14 @@ class BaseConverter(object):
         except ImportError as e:
             message = "Class {} has unmet dependencies: {}"
             raise type(e)(message.format(self.__class__.__name__, name))
+
+    def convert(self):
+        """To be subclassed"""
+        raise NotImplementedError
+
+
+class GenericConverter(BaseConverter):
+    priority = 0
 
     def convert(self):
         """Return raw bytes memory representation."""
@@ -253,7 +261,7 @@ class ZipConverter(BaseConverter):
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority.
     """
-    select = [BaseConverter]
+    select = [GenericConverter]
     for obj in converters:
         if (mimetype == obj.mimetype) or (extension in obj.extensions):
             select.append(obj)
