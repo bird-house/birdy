@@ -11,7 +11,7 @@ Example usage::
 import warnings
 from .exceptions import IPythonWarning
 
-warnings.filterwarnings('default', category=IPythonWarning)
+warnings.filterwarnings('ignore', category=IPythonWarning)
 
 try:
     import ipywidgets
