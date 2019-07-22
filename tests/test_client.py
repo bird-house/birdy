@@ -5,7 +5,11 @@ import json
 # from owslib import crs
 
 from pathlib import Path
+
+from unittest import mock
+
 from birdy.client import converters, nb_form
+from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
 from io import StringIO, BytesIO
@@ -251,6 +255,34 @@ def test_xarray_converter(wps):
     import xarray as xr
     ncdata, jsondata = wps.output_formats().get(asobj=True)
     assert isinstance(ncdata, xr.Dataset)
+
+
+def test_sort_inputs():
+    """
+    The order should be:
+     - Inputs that have minOccurs >= 1 and no default value
+     - Inputs that have minOccurs >= 1 and a default value
+     - Every other input
+    """
+
+    i = mock.Mock()
+    i.minOccurs = 1
+    i.defaultValue = None
+    assert sort_inputs_key(i) == [False, False, True]
+
+    i = mock.Mock()
+    i.minOccurs = 1
+    i.defaultValue = "default"
+    assert sort_inputs_key(i) == [True, False, True]
+
+    i = mock.Mock()
+    i.minOccurs = 0
+    assert sort_inputs_key(i) == [True, True, False]
+
+    i = mock.Mock()
+    i.minOccurs = 0
+    i.defaultValue = "default"
+    assert sort_inputs_key(i) == [True, True, False]
 
 
 def test_all_subclasses():
