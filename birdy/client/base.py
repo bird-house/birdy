@@ -165,20 +165,6 @@ class WPSClient(object):
 
         process = self._processes[pid]
 
-        def sort_inputs_key(i):
-            """Function used as key when sorting process inputs.
-
-            The order is:
-             - Inputs that have minOccurs >= 1 and no default value
-             - Inputs that have minOccurs >= 1 and a default value
-             - Every other input
-            """
-            return list(reversed([
-                i.minOccurs >= 1 and i.defaultValue is None,
-                i.minOccurs >= 1,
-                i.minOccurs == 0,
-            ]))
-
         required_inputs_first = sorted(process.dataInputs, key=sort_inputs_key)
 
         input_names = []
@@ -323,6 +309,27 @@ class WPSClient(object):
             self.logger.info("{} done.".format(execution.process.identifier))
         else:
             self.logger.info("{} failed.".format(execution.process.identifier))
+
+
+def sort_inputs_key(i):
+    """Function used as key when sorting process inputs.
+
+    The order is:
+     - Inputs that have minOccurs >= 1 and no default value
+     - Inputs that have minOccurs >= 1 and a default value
+     - Every other input
+
+    Parameters
+    ----------
+    i: owslib.wps.Input
+      An owslib Input
+    """
+    conditions = [
+        i.minOccurs >= 1 and i.defaultValue is None,
+        i.minOccurs >= 1,
+        i.minOccurs == 0,
+    ]
+    return [not c for c in conditions]  # False values are sorted first
 
 
 def nb_form(wps, pid):
