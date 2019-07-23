@@ -1,19 +1,17 @@
 import datetime
 import os
-import pytest
 import json
-# from owslib import crs
-
+import tempfile
 from pathlib import Path
-
 from unittest import mock
+
+import pytest
+# from owslib import crs
 
 from birdy.client import converters, nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
-from io import StringIO, BytesIO
-import tempfile
 
 
 # These tests assume Emu is running on the localhost
