@@ -11,7 +11,9 @@ Example usage::
 import warnings
 from .exceptions import IPythonWarning
 
-warnings.filterwarnings('default', category=IPythonWarning)
+# TODO: we ignore warnings for now. They are only needed when birdy is used in a notebook,
+# but we currently don't know how to handle this (see #89 and #138).
+warnings.filterwarnings('ignore', category=IPythonWarning)
 
 try:
     import ipywidgets
