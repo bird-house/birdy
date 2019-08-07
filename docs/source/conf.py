@@ -29,7 +29,7 @@ needs_sphinx = '1.8'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'autoapi.extension',
+    'nbsphinx',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinx.ext.autodoc',
@@ -312,6 +312,10 @@ texinfo_documents = [
 # http://www.sphinx-doc.org/en/stable/config.html?highlight=linkchecker#options-for-the-linkcheck-builder
 linkcheck_ignore = [r'http[s]*://localhost.*/', ]
 linkcheck_timeout = 5
+
+# -- nbsphinx options ----------------------------------------------------------
+# https://nbsphinx.readthedocs.io/en/0.4.2/executing-notebooks.html
+nbsphinx_execute = 'never'
 
 # Link references always present on RST page.
 rst_epilog = """

@@ -84,4 +84,7 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+	pip install -e .
+
+develop: clean ## like install but with testing packages
+	pip install -e .[dev]

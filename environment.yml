@@ -25,5 +25,7 @@ dependencies:
   - flake8
   # sphinx for rtd
   - sphinx
-  - pip:
-    - sphinx-autoapi
+  - nbsphinx
+  - pandoc
+  - ipykernel
+  - nbconvert
