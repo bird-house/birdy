@@ -3,6 +3,8 @@ from collections import OrderedDict
 from textwrap import dedent
 from boltons.funcutils import FunctionBuilder
 
+import requests
+import requests.auth
 import owslib
 from owslib.util import ServiceException
 from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, ComplexData
@@ -35,6 +37,7 @@ class WPSClient(object):
         username=None,
         password=None,
         headers=None,
+        auth=None,
         verify=True,
         cert=None,
         verbose=False,
@@ -51,6 +54,8 @@ class WPSClient(object):
             username (str): passed to :class:`owslib.wps.WebProcessingService`
             password (str): passed to :class:`owslib.wps.WebProcessingService`
             headers (str): passed to :class:`owslib.wps.WebProcessingService`
+            auth (requests.auth.AuthBase): requests-style auth class to authenticate,
+                see https://2.python-requests.org/en/master/user/authentication/
             verify (bool): passed to :class:`owslib.wps.WebProcessingService`
             cert (str): passed to :class:`owslib.wps.WebProcessingService`
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
@@ -68,6 +73,22 @@ class WPSClient(object):
             import urllib3
 
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        if headers is None:
+            headers = {}
+
+        if auth is not None:
+            if isinstance(auth, tuple) and len(auth) == 2:
+                # special-case basic HTTP auth
+                auth = requests.auth.HTTPBasicAuth(*auth)
+
+            # We only need some headers from the requests.auth.AuthBase implementation
+            # We prepare a dummy request, call the auth object with it, and get its headers
+            dummy_request = requests.Request("get", "http://localhost")
+            r = auth(dummy_request.prepare())
+
+            auth_headers = ["Authorization", "Proxy-Authorization", "Cookie"]
+            headers.update({h: r.headers[h] for h in auth_headers if h in r.headers})
 
         self._wps = WebProcessingService(
             url,
