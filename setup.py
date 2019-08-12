@@ -2,8 +2,12 @@
 
 from setuptools import find_packages
 from setuptools import setup
+from pathlib import Path
+import re
 
-version = __import__('birdy').__version__
+with open(Path(__file__).parent / 'birdy' / '__init__.py', 'r') as f:
+    version = re.search(r'__version__ = [\'"](.+?)[\'"]', f.read()).group(1)
+
 description = 'Birdy provides a command-line tool to work with Web Processing Services.'
 long_description = (
     open('README.rst').read() + '\n' + open('AUTHORS.rst').read() + '\n' + open('CHANGES.rst').read()
