@@ -52,6 +52,37 @@ If a WPS server with a simple `hello` process is running on the local host on po
   >>> emu.hello('stranger')
   hello(output='Hello stranger')
 
+Authentication
+--------------
+If you want to connect to a server that requires authentication, the
+:class:`WPSClient` class accepts an `auth` argument that
+behaves exactly like in the popular `requests` module
+(see `requests Authentication`_)
+
+The simplest form of authentication is HTTP Basic Auth. Although
+wps processes are not commonly protected by this authentication method,
+here is a simple example of how to use it::
+
+    >>> from birdy import WPSClient
+    >>> from requests.auth import HTTPBasicAuth
+    >>> auth = HTTPBasicAuth('user', 'pass')
+    >>> wps = WPSClient('http://www.example.com/wps', auth=auth)
+
+Because any `requests`-compatible class is accepted, custom
+authentication methods are implemented the same way as in `requests`.
+
+For example, to connect to a magpie_ protected wps, you can use the
+requests-magpie_ module::
+
+    >>> from birdy import WPSClient
+    >>> from requests_magpie import MagpieAuth
+    >>> auth = MagpieAuth('https://www.example.com/magpie', 'user', 'pass')
+    >>> wps = WPSClient('http://www.example.com/wps', auth=auth)
+
+.. _requests Authentication: https://2.python-requests.org/en/master/user/authentication/
+.. _magpie: https://github.com/ouranosinc/magpie
+.. _requests-magpie: https://github.com/ouranosinc/requests-magpie
+
 """
 
 from .base import WPSClient, nb_form
