@@ -1,5 +1,4 @@
 # conda env update -f environment.yml
-name: birdy
 channels:
   - conda-forge
 dependencies:
@@ -8,4 +7,5 @@ dependencies:
   - ipywidgets
   - nodejs
   - pip:
-    - -e git+https://github.com/bird-house/pymetalink@birdhouse#egg=metalink
+    - -e git+https://github.com/metalink-dev/pymetalink.git@master#egg=metalink
+    - -e git+https://github.com/bird-house/OWSLib-esgfwps.git@master#egg=owslib-esgfwps

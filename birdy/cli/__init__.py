@@ -28,5 +28,22 @@ the environment variable ``WPS_SSL_VERIFY``::
 You can also set the path of the service certificate.
 Read the requests_ documentation.
 
+Use a Twitcher access token
+---------------------------
+
+If the WPS service is secured by a Twitcher security proxy service then you can
+provide an access token with the ``--token`` option::
+
+    $ birdy --token abc123 hello --name stranger
+
+Use client certificate to access WPS service
+--------------------------------------------
+
+If the WPS service is secured by x509 certificates you can add a certificate
+with the ``--cert`` option to a request::
+
+   # run hello with certificate
+   $ birdy --cert cert.pem hello --name stranger
+
 .. _requests: http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification
 """

@@ -1,12 +1,12 @@
-.. _usage:
+.. _api:
 
-*****
-Usage
-*****
+*************
+API Reference
+*************
 
 .. contents::
     :local:
-    :depth: 2
+    :depth: 1
 
 Using the command line
 ======================

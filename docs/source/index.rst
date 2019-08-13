@@ -4,7 +4,7 @@
    :maxdepth: 1
 
    installation
-   usage
-   tutorial
+   examples
    development
+   api
    changes
