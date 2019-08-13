@@ -68,7 +68,7 @@ here is a simple example of how to use it::
     >>> auth = HTTPBasicAuth('user', 'pass')
     >>> wps = WPSClient('http://www.example.com/wps', auth=auth)
 
-The fact that any `requests`-compatible class is accepted, custom
+Because any `requests`-compatible class is accepted, custom
 authentication methods are implemented the same way as in `requests`.
 
 For example, to connect to a magpie_ protected wps, you can use the
