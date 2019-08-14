@@ -28,11 +28,11 @@ the environment variable ``WPS_SSL_VERIFY``::
 You can also set the path of the service certificate.
 Read the requests_ documentation.
 
-Use a Twitcher access token
----------------------------
+Use an OAuth2 access token
+--------------------------
 
-If the WPS service is secured by a Twitcher security proxy service then you can
-provide an access token with the ``--token`` option::
+If the WPS service is secured by an OAuth2 access tokens
+then you can provide an access token with the ``--token`` option::
 
     $ birdy --token abc123 hello --name stranger
 
