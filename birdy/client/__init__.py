@@ -85,4 +85,4 @@ requests-magpie_ module::
 
 """
 
-from .base import WPSClient, nb_form
+from .base import WPSClient, nb_form  # noqa: F401

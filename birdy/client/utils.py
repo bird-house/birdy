@@ -3,8 +3,7 @@ import datetime as dt
 import dateutil.parser
 from owslib.wps import ComplexDataInput
 from .. utils import sanitize, is_file
-import six
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 
 def filter_case_insensitive(names, complete_list):
@@ -13,7 +12,7 @@ def filter_case_insensitive(names, complete_list):
     missing = []
     complete_list_lower = set(map(str.lower, complete_list))
 
-    if isinstance(names, six.string_types):
+    if isinstance(names, str):
         names = [names, ]
 
     for name in names:
@@ -42,10 +41,10 @@ def pretty_repr(obj, linebreaks=True):
         pass
 
     try:
-        items = obj.items()
+        items = list(obj.items())
     except AttributeError:
         try:
-            items = obj.__dict__.items()
+            items = list(obj.__dict__.items())
         except AttributeError:
             return repr(obj)
 
@@ -86,7 +85,7 @@ def build_wps_client_doc(wps, processes):
            "---------",
            ""]
 
-    for process_name, process in processes.items():
+    for process_name, process in list(processes.items()):
         sanitized_name = sanitize(process_name)
         description = "{name}\n    {abstract}".format(
             name=sanitized_name,

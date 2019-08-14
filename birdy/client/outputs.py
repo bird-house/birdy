@@ -1,4 +1,3 @@
-from copy import copy
 from collections import namedtuple
 
 from birdy.utils import sanitize, delist
@@ -6,7 +5,6 @@ from birdy.client import utils
 from birdy.client.converters import convert
 from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
 from owslib.wps import WPSExecution
-import warnings
 import tempfile
 
 
@@ -56,6 +54,6 @@ class WPSResult(WPSExecution):
             return delist(data)
 
         if convert_objects:
-            return convert(output, self._path, self._converters, self.verify)
+            return convert(output, self._path, self._converters, self.auth.verify)
         else:
             return output.reference

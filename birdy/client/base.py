@@ -235,7 +235,7 @@ class WPSClient(object):
     def _build_inputs(self, pid, **kwargs):
         """Build the input sequence from the function arguments."""
         wps_inputs = []
-        for name, input_param in self._inputs[pid].items():
+        for name, input_param in list(self._inputs[pid].items()):
             arg = kwargs.get(sanitize(name))
             if arg is None:
                 continue
@@ -274,7 +274,7 @@ class WPSClient(object):
         wps_inputs = self._build_inputs(pid, **kwargs)
         wps_outputs = [
             (o.identifier, "ComplexData" in o.dataType)
-            for o in self._outputs[pid].values()
+            for o in list(self._outputs[pid].values())
         ]
 
         mode = self._mode if self._processes[pid].storeSupported else SYNC
@@ -358,6 +358,6 @@ def nb_form(wps, pid):
     if wps._notebook:
         return notebook.interact(
             func=getattr(wps, sanitize(pid)),
-            inputs=wps._inputs[pid].items())
+            inputs=list(wps._inputs[pid].items()))
     else:
         return None
