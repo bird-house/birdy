@@ -1,8 +1,7 @@
 import re
 import collections
 import base64
-import six
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from pathlib import Path
 
 
@@ -65,7 +64,7 @@ def sanitize(name):
 def delist(data):
     """If data is a sequence with a single element, returns this element, otherwise return the sequence."""
     if (
-        isinstance(data, collections.Iterable) and not isinstance(data, six.string_types) and len(data) == 1
+        isinstance(data, collections.abc.Iterable) and not isinstance(data, str) and len(data) == 1
     ):
         return data[0]
     return data

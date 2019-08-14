@@ -6,10 +6,9 @@ channels:
   - defaults
 dependencies:
   - pip
-  - six
   #- openssl
   - lxml
-  - owslib>=0.17
+  - owslib>=0.18
   - owslib-esgfwps=0.1.0
   - pathlib
   - click

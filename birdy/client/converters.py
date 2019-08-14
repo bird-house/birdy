@@ -1,17 +1,9 @@
 from distutils.version import StrictVersion
 from importlib import import_module
-import six
 from . import notebook as nb
 import tempfile
 from pathlib import Path
 from owslib.wps import Output
-import warnings
-
-
-if six.PY2:
-    from urllib import urlretrieve
-else:
-    from urllib.request import urlretrieve
 
 
 class BaseConverter(object):

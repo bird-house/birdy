@@ -1,10 +1,11 @@
+dist: xenial   # required for Python >= 3.7
 language: python
 branches:
   only:
     - master
 python:
-  # - "2.7"
   - "3.6"
+  - "3.7"
 sudo: false
 install:
   # Python 3.x is default

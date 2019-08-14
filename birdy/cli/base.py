@@ -50,7 +50,7 @@ class BirdyCLI(click.MultiCommand):
     def list_commands(self, ctx):
         ctx.obj = True
         self._update_commands()
-        return self.commands.keys()
+        return list(self.commands.keys())
 
     def get_command(self, ctx, name):
         self._update_commands()

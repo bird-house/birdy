@@ -66,7 +66,7 @@ def test_wps_client_single_output(wps):
 
 @pytest.mark.online
 def test_wps_nb_form(wps):
-    for pid in wps._processes.keys():
+    for pid in list(wps._processes.keys()):
         if pid in ['bbox', ]:  # Unsupported
             continue
         nb_form(wps, pid)
@@ -294,7 +294,7 @@ def count_class_methods(class_):
     return len(
         [
             f
-            for f in class_.__dict__.values()
+            for f in list(class_.__dict__.values())
             if isinstance(f, types.MethodType) and not f.__name__.startswith("_")
         ]
     )
@@ -370,7 +370,7 @@ class TestIsEmbedded():
     def test_file_like(self):
         import io
         f = io.StringIO()
-        f.write(u"just a string")
+        f.write("just a string")
         f.seek(0)
 
         assert is_embedded_in_request(self.remote, f)
