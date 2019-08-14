@@ -24,7 +24,7 @@ def cli(ctx, **options):
     """{{ help }}"""
     headers = {}
     if 'token' in ctx.obj:
-        headers = {'Access-Token': ctx.obj['token']}
+        headers = {'Authorization': 'Bearer {}'.format(ctx.obj['token'])}
     verify = ctx.obj.get('verify', True)
     cert = ctx.obj.get('cert')
     send = ctx.obj.get('send', False)
@@ -52,5 +52,9 @@ def cli(ctx, **options):
         raise ConnectionError('SSL verification of server certificate failed.')
     except OpenSSL.SSL.Error:
         raise ConnectionError('SSL error occurred. Did you use an invalid client certificate?')
-    except Exception:
-        raise ConnectionError('Connection failed.')
+    except Exception as err:
+        if 'AccessForbidden' in str(err):
+            msg = 'Access to service is forbidden.'
+        else:
+            msg = 'Connection failed.'
+        raise ConnectionError(msg)
