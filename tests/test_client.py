@@ -4,6 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 from unittest import mock
+import owslib.wps
 
 import pytest
 # from owslib import crs
@@ -25,6 +26,15 @@ def data_path(*args):
 @pytest.fixture(scope="module")
 def wps():
     return WPSClient(url=url)
+
+
+@pytest.fixture(scope="module")
+def process():
+    """Return an owslib.Process instance taken from Finch.subset_gridpoint."""
+    reader = owslib.wps.WPSDescribeProcessReader()
+    root = reader.readFromString(open(data_path('process_description.xml')).read())
+    xml = root.findall('ProcessDescription')[0]
+    return owslib.wps.Process(xml)
 
 
 @pytest.mark.online
@@ -255,7 +265,14 @@ def test_xarray_converter(wps):
     assert isinstance(ncdata, xr.Dataset)
 
 
-def test_sort_inputs():
+def test_sort_inputs(process):
+    # The first three inputs are all minOccurs=1 with no default, so we expect them to remain in the same order.
+    ps = sorted(process.dataInputs, key=sort_inputs_key)
+    for i in range(3):
+        assert ps[i] == process.dataInputs[i]
+
+
+def test_sort_inputs_conditions():
     """
     The order should be:
      - Inputs that have minOccurs >= 1 and no default value

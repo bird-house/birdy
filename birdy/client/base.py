@@ -344,9 +344,13 @@ def sort_inputs_key(i):
     ----------
     i: owslib.wps.Input
       An owslib Input
+
+    Notes
+    -----
+    The defaultValue for ComplexData is ComplexData instance specifying mimetype, encoding and schema.
     """
     conditions = [
-        i.minOccurs >= 1 and i.defaultValue is None,
+        i.minOccurs >= 1 and (i.defaultValue is None or isinstance(i.defaultValue, ComplexData)),
         i.minOccurs >= 1,
         i.minOccurs == 0,
     ]
