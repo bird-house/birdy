@@ -1,0 +1,123 @@
+<!--  PyWPS 4.3.dev0  -->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 ../wpsDescribeProcess_response.xsd" service="WPS" version="1.0.0" xml:lang="en-US">
+<ProcessDescription wps:processVersion="0.1" storeSupported="true" statusSupported="true">
+<ows:Identifier>subset_gridpoint</ows:Identifier>
+<ows:Title>Subset with a grid point</ows:Title>
+<ows:Abstract>
+Return the data for which grid cells includes the point coordinates for each input dataset as well as the time range selected.
+</ows:Abstract>
+<DataInputs>
+<Input minOccurs="1" maxOccurs="1000">
+<ows:Identifier>resource</ows:Identifier>
+<ows:Title>NetCDF resource</ows:Title>
+<ows:Abstract>NetCDF files, can be OPEnDAP urls.</ows:Abstract>
+<ComplexData maximumMegabytes="200">
+<Default>
+<Format>
+<MimeType>application/x-netcdf</MimeType>
+<Encoding>base64</Encoding>
+</Format>
+</Default>
+<Supported>
+<Format>
+<MimeType>application/x-netcdf</MimeType>
+<Encoding>base64</Encoding>
+</Format>
+<Format>
+<MimeType>application/x-ogc-dods</MimeType>
+<Encoding/>
+</Format>
+</Supported>
+</ComplexData>
+</Input>
+<Input minOccurs="1" maxOccurs="1">
+<ows:Identifier>lon</ows:Identifier>
+<ows:Title>Longitude</ows:Title>
+<ows:Abstract>Longitude coordinate</ows:Abstract>
+<LiteralData>
+<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#float">float</ows:DataType>
+</LiteralData>
+</Input>
+<Input minOccurs="1" maxOccurs="1">
+<ows:Identifier>lat</ows:Identifier>
+<ows:Title>Latitude</ows:Title>
+<ows:Abstract>Latitude coordinate.</ows:Abstract>
+<LiteralData>
+<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#float">float</ows:DataType>
+</LiteralData>
+</Input>
+<Input minOccurs="0" maxOccurs="1">
+<ows:Identifier>year0</ows:Identifier>
+<ows:Title>Initial year</ows:Title>
+<ows:Abstract>
+Initial year for temporal subsetting. Defaults to first year in file.
+</ows:Abstract>
+<LiteralData>
+<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</ows:DataType>
+</LiteralData>
+</Input>
+<Input minOccurs="0" maxOccurs="1">
+<ows:Identifier>year1</ows:Identifier>
+<ows:Title>Final year</ows:Title>
+<ows:Abstract>
+Final year for temporal subsetting. Defaults to last year in file.
+</ows:Abstract>
+<LiteralData>
+<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#integer">integer</ows:DataType>
+</LiteralData>
+</Input>
+<Input minOccurs="0" maxOccurs="1">
+<ows:Identifier>variable</ows:Identifier>
+<ows:Title>Variable</ows:Title>
+<ows:Abstract>
+Name of the variable in the NetCDF file.If not provided, all variables will be subsetted.
+</ows:Abstract>
+<LiteralData>
+<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#string">string</ows:DataType>
+</LiteralData>
+</Input>
+</DataInputs>
+<ProcessOutputs>
+<Output>
+<ows:Identifier>output</ows:Identifier>
+<ows:Title>netCDF output</ows:Title>
+<ows:Abstract/>
+<ComplexOutput>
+<Default>
+<Format>
+<MimeType>application/x-netcdf</MimeType>
+<Encoding>base64</Encoding>
+</Format>
+</Default>
+<Supported>
+<Format>
+<MimeType>application/x-netcdf</MimeType>
+<Encoding>base64</Encoding>
+</Format>
+</Supported>
+</ComplexOutput>
+</Output>
+<Output>
+<ows:Identifier>ref</ows:Identifier>
+<ows:Title>Link to all output files</ows:Title>
+<ows:Abstract>
+Metalink file storing all references to output file.
+</ows:Abstract>
+<ComplexOutput>
+<Default>
+<Format>
+<MimeType>application/metalink+xml; version=4.0</MimeType>
+<Schema>metalink/4.0/metalink4.xsd</Schema>
+</Format>
+</Default>
+<Supported>
+<Format>
+<MimeType>application/metalink+xml; version=4.0</MimeType>
+<Schema>metalink/4.0/metalink4.xsd</Schema>
+</Format>
+</Supported>
+</ComplexOutput>
+</Output>
+</ProcessOutputs>
+</ProcessDescription>
+</wps:ProcessDescriptions>
