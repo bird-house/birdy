@@ -20,10 +20,6 @@ import shlex
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../..'))
 
-# Set flag to not fail doc build.
-if 'DO_NOT_CHECK_EXECUTABLE_EXISTENCE' not in os.environ:
-    os.environ['DO_NOT_CHECK_EXECUTABLE_EXISTENCE'] = "1"
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
