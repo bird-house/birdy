@@ -64,7 +64,7 @@ before_install:
 install:
   # Update now the env with our environment
   - if [[ $DOCS = true ]]; then conda env update -f environment-docs.yml; else conda env update -f environment.yml; fi
-  - if [[ $DOCS = false ]]; then source activate birdy; fi
+  - source activate birdy
   # Packages for testing
   - if [[ $DOCS = false ]]; then conda install pytest flake8; fi
   # Install Emu WPS
