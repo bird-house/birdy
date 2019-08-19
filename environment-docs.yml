@@ -5,7 +5,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - pywps>=4.2
+  - pywps
   - sphinx
   - ipython
   - nbsphinx
