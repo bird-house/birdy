@@ -18,7 +18,11 @@ import shlex
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../..'))
+
+# Set flag to not fail doc build.
+if 'DO_NOT_CHECK_EXECUTABLE_EXISTENCE' not in os.environ:
+    os.environ['DO_NOT_CHECK_EXECUTABLE_EXISTENCE'] = "1"
 
 # -- General configuration ------------------------------------------------
 
@@ -35,10 +39,23 @@ extensions = [
     'sphinx.ext.autodoc',
 ]
 
-# autoapi_type = 'python'
-# autoapi_dirs = ['../../birdy']
-# autoapi_file_pattern = '*.py'
-# autoapi_options = ['members', 'undoc-members', 'private-members']
+autoapi_type = 'python'
+autoapi_dirs = ['../../birdy']
+autoapi_file_pattern = '*.py'
+autoapi_options = ['members', 'undoc-members', 'private-members']
+
+# To avoid having to install these and burst memory limit on ReadTheDocs.
+autodoc_mock_imports = [
+    'click',
+    'jinja2',
+    'lxml',
+    'owslib',
+    'wrapt',
+    'funcsigs',
+    'boltons',
+    'pathlib',
+    'requests'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
