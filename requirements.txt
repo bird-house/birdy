@@ -5,5 +5,4 @@ owslib>=0.18
 wrapt
 funcsigs
 boltons
-pathlib
 requests

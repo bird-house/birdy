@@ -1,0 +1,10 @@
+# conda env create -f environment-docs.yml
+name: birdy
+channels:
+  - birdhouse
+  - conda-forge
+  - defaults
+dependencies:
+  - sphinx
+  - ipython
+  - nbsphinx

@@ -1,15 +1,57 @@
 dist: xenial   # required for Python >= 3.7
-language: python
+
+language: generic
+
 branches:
   only:
     - master
-python:
-  - "3.6"
-  - "3.7"
+
+matrix:
+  fast_finish: true
+  include:
+    - os: osx
+      python: "3.5"
+      name: "macOS (Python3.5)"
+      addons:
+        homebrew:
+          packages:
+            - pandoc
+          update: true
+      env:
+       - CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
+       - PEP8=false
+       - DOCS=false
+    - os: linux
+      name: "Linux (Python3.6 + pep8)"
+      dist: xenial
+      python: "3.6"
+      addons:
+          apt:
+            packages:
+              - pandoc
+            update: true
+      env:
+        - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
+        - PEP8=true
+        - DOCS=false
+    - os: linux
+      name: "Linux (Python3.7 + docs)"
+      python: "3.7"
+      dist: xenial
+      addons:
+        apt:
+          packages:
+            - pandoc
+          update: true
+      env:
+        - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
+        - PEP8=false
+        - DOCS=true
+
 sudo: false
-install:
+before_install:
   # Python 3.x is default
-  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget "https://repo.continuum.io/miniconda/$CONDA_FN" -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
@@ -19,13 +61,15 @@ install:
   - conda info -a
   # Prepare env with Python version
   - conda create -n birdy python=$TRAVIS_PYTHON_VERSION
+install:
   # Update now the env with our environment
-  - conda env update -f environment.yml
+  - if [[ $DOCS = true ]]; then conda env update -f environment-docs.yml; else conda env update -f environment.yml; fi
   - source activate birdy
   # Packages for testing
-  - conda install pytest flake8
+  - if [[ $DOCS = false ]]; then conda install pytest flake8; fi
   # Install Emu WPS
-  - python setup.py install
+  - if [[ $DOCS = false ]]; then python setup.py install; fi
 script:
-  - pytest -m 'not online'
-  - flake8
+  - if [[ $DOCS = true ]]; then make docs; fi
+  - if [[ $DOCS = false ]]; then pytest -m 'not online'; fi
+  - if [[ $PEP8 = true ]]; then flake8; fi
