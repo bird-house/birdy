@@ -17,7 +17,10 @@ matrix:
           packages:
             - pandoc
           update: true
-      env: CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
+      env:
+       - CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
+       - PEP8=false
+       - DOCS=false
     - os: linux
       name: "Linux (Python3.6 + pep8)"
       dist: xenial
@@ -30,6 +33,7 @@ matrix:
       env:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
         - PEP8=true
+        - DOCS=false
     - os: linux
       name: "Linux (Python3.7 + docs)"
       python: "3.7"
@@ -41,6 +45,7 @@ matrix:
           update: true
       env:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
+        - PEP8=false
         - DOCS=true
 
 sudo: false
