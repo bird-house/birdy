@@ -20,4 +20,9 @@ def cli(ctx, cert, send, sync, token):
     Documentation is available on readthedocs:
     http://birdy.readthedocs.org/en/latest/
     """
-    ctx.obj = dict(verify=get_ssl_verify(), cert=cert, send=send, sync=sync, token=token)
+    ctx.obj = ctx.obj or dict()
+    ctx.obj['verify'] = get_ssl_verify()
+    ctx.obj['cert'] = cert
+    ctx.obj['send'] = send
+    ctx.obj['sync'] = sync
+    ctx.obj['token'] = token

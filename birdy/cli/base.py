@@ -55,15 +55,15 @@ class BirdyCLI(click.MultiCommand):
     def get_command(self, ctx, name):
         self._update_commands()
         cmd_templ = template_env.get_template('cmd.py.j2')
-        rendered_cmd = cmd_templ.render(self._get_command_info(name, details=ctx.obj is None or False))
+        rendered_cmd = cmd_templ.render(self._get_command_info(name, ctx))
         ns = {}
         code = compile(rendered_cmd, filename='<string>', mode='exec')
         eval(code, ns, ns)
         return ns['cli']
 
-    def _get_command_info(self, name, details=False):
+    def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)
-        if details:
+        if ctx.obj is None or False:
             pp = self.wps.describeprocess(name)
             for inp in pp.dataInputs:
                 help = inp.title or ''
@@ -76,6 +76,10 @@ class BirdyCLI(click.MultiCommand):
                     help=help,
                     type=BirdyCLI.get_param_type(inp),
                     multiple=inp.maxOccurs > 1))
+            outputs = []
+            for output in pp.processOutputs:
+                outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
+            ctx.obj = dict(outputs=outputs)
         return cmd
 
     @staticmethod
