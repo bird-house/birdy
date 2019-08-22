@@ -38,16 +38,15 @@ def process():
 
 
 @pytest.mark.online
-@pytest.mark.skip("slow")
+@pytest.mark.xfail(reason="a wps process hat invalid defaultValue Inf")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
-          "WebProcessingService?service=WPS&version=2.0.0&request=GetCapabilities"
+          "WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"
     WPSClient(url)
 
 
 @pytest.mark.online
-@pytest.mark.skip("slow")
 def test_flyingpigeon():
     url = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
     WPSClient(url)
@@ -113,6 +112,7 @@ def test_interactive(capsys):
 
 @pytest.mark.online
 def test_wps_client_multiple_outputs(wps):
+    pytest.importorskip("metalink.download")
     resp = wps.multiple_outputs(2)
 
     # As reference

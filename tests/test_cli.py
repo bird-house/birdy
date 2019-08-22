@@ -16,7 +16,6 @@ def cli():
     pass
 
 
-@pytest.mark.skip(reason="openssl import issue on travis")
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ['--help'])
@@ -34,7 +33,6 @@ def test_hello():
 
 
 @pytest.mark.online
-@pytest.mark.skip(reason="hidden traceback")
 def test_hello_stranger():
     runner = CliRunner()
     result = runner.invoke(cli, ['hello', '--name', 'stranger'])
@@ -42,7 +40,7 @@ def test_hello_stranger():
 
 
 @pytest.mark.online
-@pytest.mark.skip(reason="hidden traceback")
+@pytest.mark.xfail(reason="click hides exception")
 def test_multiple_outputs():
     runner = CliRunner()
     result = runner.invoke(cli, ['multiple_outputs', '--count 2', ])
