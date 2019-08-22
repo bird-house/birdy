@@ -38,7 +38,7 @@ def process():
 
 
 @pytest.mark.online
-@pytest.mark.xfail(reason="a wps process hat invalid defaultValue Inf")
+@pytest.mark.xfail(reason="a wps process has invalid defaultValue Inf")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     url = "http://geoprocessing.demo.52north.org:8080/wps/" \
