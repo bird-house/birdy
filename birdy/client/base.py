@@ -43,6 +43,8 @@ class WPSClient(object):
         verbose=False,
         progress=False,
         version=WPS_DEFAULT_VERSION,
+        caps_xml=None,
+        desc_xml=None,
     ):
         """
         Args:
@@ -103,7 +105,7 @@ class WPSClient(object):
         )
 
         try:
-            self._wps.getcapabilities()
+            self._wps.getcapabilities(xml=caps_xml)
         except ServiceException as e:
             if "AccessForbidden" in str(e):
                 raise UnauthorizedException(
@@ -111,7 +113,7 @@ class WPSClient(object):
                 )
             raise
 
-        self._processes = self._get_process_description(processes)
+        self._processes = self._get_process_description(processes, xml=desc_xml)
 
         # Build the methods
         for pid in self._processes:
@@ -123,7 +125,7 @@ class WPSClient(object):
 
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
 
-    def _get_process_description(self, processes):
+    def _get_process_description(self, processes=None, xml=None):
         """Return the description for each process.
 
         Sends the server a `describeProcess` request for each process.
@@ -143,7 +145,7 @@ class WPSClient(object):
         if processes is None:
             if owslib.__version__ > '0.17.0':
                 # Get the description for all processes in one request.
-                ps = self._wps.describeprocess('all')
+                ps = self._wps.describeprocess('all', xml=xml)
                 return OrderedDict((p.identifier, p) for p in ps)
             else:
                 processes = all_wps_processes
@@ -158,7 +160,7 @@ class WPSClient(object):
             raise ValueError(message.format(", ".join(missing)))
 
         # Get the description for each process.
-        ps = [self._wps.describeprocess(pid) for pid in process_names]
+        ps = [self._wps.describeprocess(pid, xml=xml) for pid in process_names]
 
         return OrderedDict((p.identifier, p) for p in ps)
 

@@ -4,14 +4,18 @@ import click
 from click.testing import CliRunner
 
 from birdy.cli.base import BirdyCLI
-from .common import resource_file
-
-XML = open(resource_file('wps_emu_caps.xml'), 'rb').read()
+from .common import (
+    URL_EMU,
+    EMU_CAPS_XML,
+    # EMU_DESC_XML,
+)
 
 
 @click.command(cls=BirdyCLI,
-               url="http://localhost:5000/wps",
-               xml=XML)
+               url=URL_EMU,
+               caps_xml=EMU_CAPS_XML,
+               # desc_xml=EMU_DESC_XML
+               )
 def cli():
     pass
 

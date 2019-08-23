@@ -21,20 +21,22 @@ class BirdyCLI(click.MultiCommand):
     command-line interface.
 
     :param url: URL of the Web Processing Service.
-    :param xml: A WPS GetCapabilities response for testing.
+    :param caps_xml: A WPS GetCapabilities response for testing.
+    :param desc_xml: A WPS DescribeProcess response with "identifier=all" for testing.
     """
-    def __init__(self, name=None, url=None, xml=None, **attrs):
+    def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, **attrs):
         click.MultiCommand.__init__(self, name, **attrs)
         self.url = os.environ.get('WPS_SERVICE') or url
         self.verify = get_ssl_verify()
-        self.xml = xml
+        self.caps_xml = caps_xml
+        self.desc_xml = desc_xml
         self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True)
         self.commands = OrderedDict()
 
     def _update_commands(self):
         if not self.commands:
             try:
-                self.wps.getcapabilities(xml=self.xml)
+                self.wps.getcapabilities(xml=self.caps_xml)
             except SSLError:
                 raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
             except Exception:
@@ -64,7 +66,7 @@ class BirdyCLI(click.MultiCommand):
     def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)
         if ctx.obj is None or False:
-            pp = self.wps.describeprocess(name)
+            pp = self.wps.describeprocess(name, xml=self.desc_xml)
             for inp in pp.dataInputs:
                 help = inp.title or ''
                 default = BirdyCLI.get_param_default(inp)

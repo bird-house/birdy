@@ -1,0 +1,532 @@
+<!-- PyWPS 4.0.0 -->
+<wps:Capabilities xmlns:gml="http://www.opengis.net/gml" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="WPS" version="1.0.0" xml:lang="en-US" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" updateSequence="1">
+  <ows:ServiceIdentification>
+    <ows:Title>Flyingpigeon 1.1_dev</ows:Title>
+    <ows:Abstract>Processes for climate data, indices and extreme events</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>PyWPS</ows:Keyword>
+      <ows:Keyword>WPS</ows:Keyword>
+      <ows:Keyword>OGC</ows:Keyword>
+      <ows:Keyword>processing</ows:Keyword>
+      <ows:Keyword>Birdhouse</ows:Keyword>
+      <ows:Keyword>flyingpigeon</ows:Keyword>
+      <ows:Type codeSpace="ISOTC211/19115">theme</ows:Type>
+    </ows:Keywords>
+    <ows:ServiceType>WPS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>NONE</ows:Fees>
+    <ows:AccessConstraints>NONE</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>Birdhouse/Flyingpigeon</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://flyingpigeon.readthedocs.org/en/latest/"/>
+    <ows:ServiceContact>
+      <ows:IndividualName>Lastname, Firstname</ows:IndividualName>
+      <ows:PositionName>Position Title</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+xx-xxx-xxx-xxxx</ows:Voice>
+        </ows:Phone>
+        <ows:Address>
+          <ows:AdministrativeArea>Administrative Area</ows:AdministrativeArea>
+          <ows:PostalCode>Zip or Postal Code</ows:PostalCode>
+          <ows:ElectronicMailAddress>Email Address</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="Contact URL"/>
+        <ows:HoursOfService>0:00-24:00</ows:HoursOfService>
+        <ows:ContactInstructions>During hours of service. Off on weekends.</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>pointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://pavics.ouranos.ca:443/wps"/>
+          <ows:Post xlink:href="https://pavics.ouranos.ca:443/wps"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeProcess">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://pavics.ouranos.ca:443/wps"/>
+          <ows:Post xlink:href="https://pavics.ouranos.ca:443/wps"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="Execute">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="https://pavics.ouranos.ca:443/wps"/>
+          <ows:Post xlink:href="https://pavics.ouranos.ca:443/wps"/>
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <wps:ProcessOfferings>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>subset_countries</ows:Identifier>
+      <ows:Title>Subset (World Countries)</ows:Title>
+      <ows:Abstract>Return the data whose grid cells intersect the selected countries for each input dataset.</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>subset_continents</ows:Identifier>
+      <ows:Title>Subset (Continents)</ows:Title>
+      <ows:Abstract>Return the data whose grid cells intersect the selected continents for each input dataset.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>subset_regionseurope</ows:Identifier>
+      <ows:Title>Subset (European Regions)</ows:Title>
+      <ows:Abstract>Return the data whose grid cells inteserct the selected regions for each input dataset.</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>pointinspection</ows:Identifier>
+      <ows:Title>Point Inspection</ows:Title>
+      <ows:Abstract>Extract the timeseries at the given coordinates.</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.3">
+      <ows:Identifier>landseamask</ows:Identifier>
+      <ows:Title>Land-Sea Mask</ows:Title>
+      <ows:Abstract>Mask grid cells according to their land area fraction. This process uses the ESGF datastore to access an appropriate land/sea mask.</ows:Abstract>
+      <ows:Metadata href="http://flyingpigeon.readthedocs.io/en/latest/" title="Doc"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>fetch_resources</ows:Identifier>
+      <ows:Title>Fetch Resources</ows:Title>
+      <ows:Abstract>Fetch data resources (limited to 50GB) to the local filesystem of the birdhouse compute provider.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>indices_percentiledays</ows:Identifier>
+      <ows:Title>Climate indices (Daily percentiles)</ows:Title>
+      <ows:Abstract>Climatological percentile for each day of the year computed over the entire dataset.</ows:Abstract>
+      <ows:Metadata href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/                 index.html#climate-indices" title="Doc"/>
+      <ows:Metadata href="http://icclim.readthedocs.io/en/latest/" title="ICCLIM"/>
+      <ows:Metadata href="http://flyingpigeon.readthedocs.io/en/                latest/descriptions/indices.html#percentile-based-indices" title="Percentile-based indices"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>indices_single</ows:Identifier>
+      <ows:Title>Climate indices (Single variable)</ows:Title>
+      <ows:Abstract>Climate index calculated from one daily input variable.</ows:Abstract>
+      <ows:Metadata href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/                 index.html#climate-indices" title="Doc"/>
+      <ows:Metadata href="http://icclim.readthedocs.io/en/latest/" title="ICCLIM"/>
+      <ows:Metadata href="http://flyingpigeon.readthedocs.io/en/                latest/descriptions/indices.html#percentile-based-indices" title="Percentile-based indices"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.2">
+      <ows:Identifier>sdm_gbiffetch</ows:Identifier>
+      <ows:Title>Species distribution Model (GBIF data fetch only)</ows:Title>
+      <ows:Abstract>Species occurence search in Global Biodiversity              Infrastructure Facillity (GBIF)</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://gbif.org/" xlink:title="GBIF" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>sdm_getindices</ows:Identifier>
+      <ows:Title>Species distribution Model (only indices calculation )</ows:Title>
+      <ows:Abstract>Indices preparation for SDM process</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lwf.bayern.de/" xlink:title="LWF" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/index.html#species-distribution-model" xlink:title="Doc" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://www.hindawi.com/journals/jcli/2013/787250/" xlink:title="paper" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/tutorials/sdm.html" xlink:title="Tutorial" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>sdm_csvindices</ows:Identifier>
+      <ows:Title>Species distribution Model (GBIF-CSV Table and Indices as calculation basis)</ows:Title>
+      <ows:Abstract>Indices preparation for SDM process</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lwf.bayern.de/" xlink:title="LWF" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/index.html#species-distribution-model" xlink:title="Doc" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://www.hindawi.com/journals/jcli/2013/787250/" xlink:title="paper" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/tutorials/sdm.html" xlink:title="Tutorial" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>sdm_csv</ows:Identifier>
+      <ows:Title>Species distribution Model (GBIF-CSV table as input)</ows:Title>
+      <ows:Abstract>Indices preparation for SDM process</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lwf.bayern.de/" xlink:title="LWF" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/index.html#species-distribution-model" xlink:title="Doc" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://www.hindawi.com/journals/jcli/2013/787250/" xlink:title="paper" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/tutorials/sdm.html" xlink:title="Tutorial" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>sdm_allinone</ows:Identifier>
+      <ows:Title>Species distribution Model (all in one)</ows:Title>
+      <ows:Abstract>Indices preparation for SDM process</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lwf.bayern.de/" xlink:title="LWF" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/descriptions/index.html#species-distribution-model" xlink:title="Doc" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://www.hindawi.com/journals/jcli/2013/787250/" xlink:title="paper" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/tutorials/sdm.html" xlink:title="Tutorial" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>weatherregimes_reanalyse</ows:Identifier>
+      <ows:Title>Weather Regimes (based on reanalyses data)</ows:Title>
+      <ows:Abstract>k-mean cluster analyse of the pressure patterns. Clusters are equivalent to weather regimes</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>weatherregimes_projection</ows:Identifier>
+      <ows:Title>Weather Regimes (Projection based on precalculated statistics)</ows:Title>
+      <ows:Abstract>k-mean cluster analyse of the pressure patterns. Clusters are equivalent to weather regimes</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>weatherregimes_model</ows:Identifier>
+      <ows:Title>Weather Regimes (based on climate model data)</ows:Title>
+      <ows:Abstract>k-mean cluster analyse of the pressure patterns. Clusters are equivalent to weather regimes</ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>plot_timeseries</ows:Identifier>
+      <ows:Title>Graphics (timeseries)</ows:Title>
+      <ows:Abstract>Outputs some timeseries of the file field means. Spaghetti and uncertainty plot</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>segetalflora</ows:Identifier>
+      <ows:Title>Segetal Flora</ows:Title>
+      <ows:Abstract>Species biodiversity of segetal flora. </ows:Abstract>
+      <ows:Metadata xlink:href="http://www.lsce.ipsl.fr/en/index.php" xlink:title="LSCE" xlink:type="simple"/>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>spatial_analog</ows:Identifier>
+      <ows:Title>Spatial analog of a target climate.</ows:Title>
+      <ows:Abstract>Spatial analogs based on the comparison of climate indices. The algorithm compares the distribution of the target indices with the distribution of spatially distributed candidate indices and returns a value  measuring the dissimilarity between both distributions over the candidate grid.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>map_spatial_analog</ows:Identifier>
+      <ows:Title>Map of dissimilarity values calculated by the spatial_analog process.</ows:Title>
+      <ows:Abstract>Produce map showing the dissimilarity values computed by the spatial_analog process as well as indicating by a marker the location of the target site.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>subset</ows:Identifier>
+      <ows:Title>Subset</ows:Title>
+      <ows:Abstract>Return the data for which grid cells intersect the selected polygon for each input dataset as well asthe time range selected.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>averager</ows:Identifier>
+      <ows:Title>Averager</ows:Title>
+      <ows:Abstract>Return the data with weighted average of grid cells intersecting the selected polygon for each input dataset as well as the time range selected.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>subset_WFS</ows:Identifier>
+      <ows:Title>Subset WFS</ows:Title>
+      <ows:Abstract>Return the data for which grid cells intersect the selected polygon for each input dataset.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>averager_WFS</ows:Identifier>
+      <ows:Title>Averager WFS</ows:Title>
+      <ows:Abstract>Return the data with weighted average of grid cells intersecting the selected polygon for each input dataset.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>subset_bbox</ows:Identifier>
+      <ows:Title>Subset</ows:Title>
+      <ows:Abstract>Return the data for which grid cells intersect the bounding box for each input dataset as well asthe time range selected.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>averager_bbox</ows:Identifier>
+      <ows:Title>Averager</ows:Title>
+      <ows:Abstract>Return the data with weighted average of grid cells intersecting the bounding box for each input dataset as well as the time range selected.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>ouranos_public_indicators</ows:Identifier>
+      <ows:Title>Climate indicators for the public web site.</ows:Title>
+      <ows:Abstract>Compute climate indicators: mean daily temp., min daily temp., max daily temp., growing degree days, number of days above 30C, freeze thaw cycles, total precipitation, and max 5-day precip.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>ncmerge</ows:Identifier>
+      <ows:Title>NetCDF merge</ows:Title>
+      <ows:Abstract>Merge NetCDF files in the time dimension.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>EO_COPERNICUS_search</ows:Identifier>
+      <ows:Title>EO COPERNICUS search products</ows:Title>
+      <ows:Abstract>Search for EO Data in the scihub.copernicus archiveoutput is a list of Product according to the querry and a graphical visualisation.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>EO_COPERNICUS_fetch</ows:Identifier>
+      <ows:Title>EO COPERNICUS search products and fetch them into the compute provider</ows:Title>
+      <ows:Abstract>Search for EO Data in the scihub.copernicus archiveproducts will be fechted into the local disc system.outuput is a list of produces and a graphical visualisation.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.10">
+      <ows:Identifier>esmf_regrid</ows:Identifier>
+      <ows:Title>ESMF regridding</ows:Title>
+      <ows:Abstract>Regrid netCDF files to a destination grid.</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.2">
+      <ows:Identifier>EO_COPERNICUS_rgb</ows:Identifier>
+      <ows:Title>SENTINEL RGB images</ows:Title>
+      <ows:Abstract>Based on a search querry the appropriate products are ploted as RGB graphics</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="0.1">
+      <ows:Identifier>EO_COPERNICUS_indices</ows:Identifier>
+      <ows:Title>EO indices</ows:Title>
+      <ows:Abstract>Derivateing indices like NDVI based on</ows:Abstract>
+      <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0">
+      <ows:Identifier>kddm_bc</ows:Identifier>
+      <ows:Title>Kernel Density Distribution Mapping Bias Correction</ows:Title>
+      <ows:Abstract>Bias correction method using Kernel Density Distribution Mapping (KDDM).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>freezethaw</ows:Identifier>
+      <ows:Title>Number of freeze-thaw events</ows:Title>
+      <ows:Abstract>Number of freeze-thaw events, where freezing and thawing occurs once a threshold of degree days below or above 0C is reached. A complete cycle (freeze-thaw-freeze) will return a value of 2. </ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>duration</ows:Identifier>
+      <ows:Title>Duration</ows:Title>
+      <ows:Abstract>Summarizes consecutive occurrences in a sequence where the logical operation returns TRUE. The summary operation is applied to the sequences within a temporal aggregation.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TXx</ows:Identifier>
+      <ows:Title>TXx</ows:Title>
+      <ows:Abstract>Calculates the TXx indice: maximum of daily maximum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SD</ows:Identifier>
+      <ows:Title>SD</ows:Title>
+      <ows:Abstract>Calculates the SD indice: mean of daily snow depth [cm]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TX90p</ows:Identifier>
+      <ows:Title>TX90p</ows:Title>
+      <ows:Abstract>Calculate the TX90p indice: number of warm days-times (i.e. days with daily max temperature &gt; 90th percentile of daily max temperature in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TG90p</ows:Identifier>
+      <ows:Title>TG90p</ows:Title>
+      <ows:Abstract>Calculate the TG90p indice: number of warm days (i.e. days with daily mean temperature &gt; 90th percentile of daily mean temperature in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TXn</ows:Identifier>
+      <ows:Title>TXn</ows:Title>
+      <ows:Abstract>Calculates the TXn indice: minimum of daily maximum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_CDD</ows:Identifier>
+      <ows:Title>CDD</ows:Title>
+      <ows:Abstract>Calculates the CDD indice: maximum number of consecutive dry days (i.e. days with daily precipitation amount &lt; 1 mm) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R99pTOT</ows:Identifier>
+      <ows:Title>R99pTOT</ows:Title>
+      <ows:Abstract>Calculate the R99pTOT indice: precipitation fraction due to extremely wet days (i.e. days with daily precipitation amount &gt; 99th percentile of daily amount in the base period) [%]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SU</ows:Identifier>
+      <ows:Title>SU</ows:Title>
+      <ows:Abstract>Calculates the SU indice: number of summer days (i.e. days with daily maximum temperature &gt; 25 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_CFD</ows:Identifier>
+      <ows:Title>CFD</ows:Title>
+      <ows:Abstract>Calculates the CFD indice: maximum number of consecutive frost days (i.e. days with daily minimum temperature &lt; 0 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TN10p</ows:Identifier>
+      <ows:Title>TN10p</ows:Title>
+      <ows:Abstract>Calculate the TN10p indice: number of cold nights (i.e. days with daily min temperature &lt; 10th percentile of daily min temperature in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TG</ows:Identifier>
+      <ows:Title>TG</ows:Title>
+      <ows:Abstract>Calculates the TG indice: mean of daily mean temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TN90p</ows:Identifier>
+      <ows:Title>TN90p</ows:Title>
+      <ows:Abstract>Calculate the TN90p indice: number of warm nights (i.e. days with daily min temperature &gt; 90th percentile of daily min temperature in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TR</ows:Identifier>
+      <ows:Title>TR</ows:Title>
+      <ows:Abstract>Calculates the TR indice: number of tropical nights (i.e. days with daily minimum temperature &gt; 20 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_RX5day</ows:Identifier>
+      <ows:Title>RX5day</ows:Title>
+      <ows:Abstract>Calculates the RX5day indice: maximum consecutive 5-day precipitation amount [mm]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_vDTR</ows:Identifier>
+      <ows:Title>vDTR</ows:Title>
+      <ows:Abstract>Calculates the vDTR indice: mean absolute day-to-day difference in DTR.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SD50cm</ows:Identifier>
+      <ows:Title>SD50cm</ows:Title>
+      <ows:Abstract>Calculates the SD50cm indice: number of days with snow depth &gt;= 50 cm [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_CWD</ows:Identifier>
+      <ows:Title>CWD</ows:Title>
+      <ows:Abstract>Calculates the CWD indice: maximum number of consecutive wet days (i.e. days with daily precipitation amount &gt; = 1 mm) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_ID</ows:Identifier>
+      <ows:Title>ID</ows:Title>
+      <ows:Abstract>Calculates the ID indice: number of ice days (i.e. days with daily maximum temperature &lt; 0 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R20mm</ows:Identifier>
+      <ows:Title>R20mm</ows:Title>
+      <ows:Abstract>Calculates the R20mm indice: number of very heavy precipitation days (i.e. days with daily precipitation amount &gt; = 20 mm) [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_CSU</ows:Identifier>
+      <ows:Title>CSU</ows:Title>
+      <ows:Abstract>Calculates the CSU indice: maximum number of consecutive summer days (i.e. days with daily maximum temperature &gt; 25 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_RX1day</ows:Identifier>
+      <ows:Title>RX1day</ows:Title>
+      <ows:Abstract>Calculates the RX1day indice: maximum 1-day precipitation amount [mm]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_WSDI</ows:Identifier>
+      <ows:Title>WSDI</ows:Title>
+      <ows:Abstract>Calculate the WSDI indice (warm-spell duration index): number of days where, in intervals of at least 6 consecutive days,</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_RR1</ows:Identifier>
+      <ows:Title>RR1</ows:Title>
+      <ows:Abstract>Calculates the RR1 indice: number of wet days (i.e. days with daily precipitation amount &gt; = 1 mm) [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_CSDI</ows:Identifier>
+      <ows:Title>CSDI</ows:Title>
+      <ows:Abstract>Calculate the CSDI indice (cold-spell duration index): number of days where, in intervals of at least 6 consecutive days,</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R75pTOT</ows:Identifier>
+      <ows:Title>R75pTOT</ows:Title>
+      <ows:Abstract>Calculate the R75pTOT indice: precipitation fraction due to moderate wet days (i.e. days with daily precipitation amount &gt; 75th percentile of daily amount in the base period) [%]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R95pTOT</ows:Identifier>
+      <ows:Title>R95pTOT</ows:Title>
+      <ows:Abstract>Calculate the R95pTOT indice: precipitation fraction due to very wet days (i.e. days with daily precipitation amount &gt; 95th percentile of daily amount in the base period) [%]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R10mm</ows:Identifier>
+      <ows:Title>R10mm</ows:Title>
+      <ows:Abstract>Calculates the R10mm indice: number of heavy precipitation days (i.e. days with daily precipitation amount &gt; = 10 mm) [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SDII</ows:Identifier>
+      <ows:Title>SDII</ows:Title>
+      <ows:Abstract>Calculates the SDII (simple daily intensity index) indice:  mean precipitation amount of wet days (i.e. days with daily precipitation amount &gt; = 1 mm) [mm]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_DTR</ows:Identifier>
+      <ows:Title>DTR</ows:Title>
+      <ows:Abstract>Calculates the DTR indice: mean of daily temperature range.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TG10p</ows:Identifier>
+      <ows:Title>TG10p</ows:Title>
+      <ows:Abstract>Calculate the TG10p indice: number of cold days (i.e. days with daily mean temperature &lt; 10th percentile of daily mean temperature in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TX</ows:Identifier>
+      <ows:Title>TX</ows:Title>
+      <ows:Abstract>Calculates the TX indice: mean of daily maximum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_PRCPTOT</ows:Identifier>
+      <ows:Title>PRCPTOT</ows:Title>
+      <ows:Abstract>Calculates the PRCPTOT indice: total precipitation in wet days [mm]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TN</ows:Identifier>
+      <ows:Title>TN</ows:Title>
+      <ows:Abstract>Calculates the TN indice: mean of daily minimum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R75p</ows:Identifier>
+      <ows:Title>R75p</ows:Title>
+      <ows:Abstract>Calculate the R75p indice: number of moderate wet days (i.e. days with daily precipitation amount &gt; 75th percentile of daily amount in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TNx</ows:Identifier>
+      <ows:Title>TNx</ows:Title>
+      <ows:Abstract>Calculates the TNx indice: maximum of daily minimum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SD5cm</ows:Identifier>
+      <ows:Title>SD5cm</ows:Title>
+      <ows:Abstract>Calculates the SD5cm indice: number of days with snow depth &gt;= 5 cm [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_FD</ows:Identifier>
+      <ows:Title>FD</ows:Title>
+      <ows:Abstract>Calculates the FD indice: number of frost days (i.e. days with daily minimum temperature &lt; 0 degrees Celsius) [days].</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R99p</ows:Identifier>
+      <ows:Title>R99p</ows:Title>
+      <ows:Abstract>Calculate the R99p indice: number of extremely wet days (i.e. days with daily precipitation amount &gt; 99th percentile of daily amount in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_R95p</ows:Identifier>
+      <ows:Title>R95p</ows:Title>
+      <ows:Abstract>Calculate the R95p indice: number of very wet days (i.e. days with daily precipitation amount &gt; 95th percentile of daily amount in the base period).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_SD1</ows:Identifier>
+      <ows:Title>SD1</ows:Title>
+      <ows:Abstract>Calculates the SD1 indice: number of days with snow depth &gt;= 1 cm [days]</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_GD4</ows:Identifier>
+      <ows:Title>GD4</ows:Title>
+      <ows:Abstract>Calculates the GD4 indice: growing degree days (sum of daily mean temperature &gt; 4 degrees Celsius).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TNn</ows:Identifier>
+      <ows:Title>TNn</ows:Title>
+      <ows:Abstract>Calculates the TNn indice: minimum of daily minimum temperature.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_HD17</ows:Identifier>
+      <ows:Title>HD17</ows:Title>
+      <ows:Abstract>Calculates the HD17 indice: heating degree days (sum of (17 degrees Celsius - daily mean temperature)).</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_ETR</ows:Identifier>
+      <ows:Title>ETR</ows:Title>
+      <ows:Abstract>Calculates the ETR indice: intra-period extreme temperature range.</ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="undefined">
+      <ows:Identifier>icclim_TX10p</ows:Identifier>
+      <ows:Title>TX10p</ows:Title>
+      <ows:Abstract>Calculate the TX10p indice: number of cold day-times (i.e. days with daily max temperature &lt; 10th percentile of daily max temperature in the base period).</ows:Abstract>
+    </wps:Process>
+  </wps:ProcessOfferings>
+  <wps:Languages>
+    <wps:Default>
+      <ows:Language>en-US</ows:Language>
+    </wps:Default>
+    <wps:Supported>
+      <ows:Language>en-US</ows:Language>
+    </wps:Supported>
+  </wps:Languages>
+</wps:Capabilities>
