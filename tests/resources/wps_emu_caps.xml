@@ -1,76 +1,254 @@
-<?xml version="1.0" encoding="utf-8"?>
-<wps:Capabilities service="WPS" version="1.0.0" xml:lang="en-CA" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd" updateSequence="1">
-	<ows:ServiceIdentification>
-		<ows:Title>Emu</ows:Title>
-		<ows:Abstract>WPS processes for testing and demos.</ows:Abstract>
-		<ows:Keywords>
-			<ows:Keyword>WPS</ows:Keyword>
-			<ows:Keyword>PyWPS</ows:Keyword>
-			<ows:Keyword>Birdhouse</ows:Keyword>
-			<ows:Keyword>emu</ows:Keyword>
-		</ows:Keywords>
-		<ows:ServiceType>WPS</ows:ServiceType>
-		<ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
-		<ows:Fees>None</ows:Fees>
-		<ows:AccessConstraints>None</ows:AccessConstraints>
-	</ows:ServiceIdentification>
-	<ows:ServiceProvider>
-		<ows:ProviderName>Birdhouse/Emu</ows:ProviderName>
-		<ows:ProviderSite xlink:href="http://emu.readthedocs.org/en/latest/"/>
-		<ows:ServiceContact>
-			<ows:ContactInfo>
-				<ows:OnlineResource xlink:href="http://emu.readthedocs.org/en/latest/"/>
-				<ows:HoursOfService>0:00-24:00</ows:HoursOfService>
-				<ows:ContactInstructions>None</ows:ContactInstructions>
-			</ows:ContactInfo>
-		</ows:ServiceContact>
-	</ows:ServiceProvider>
-	<ows:OperationsMetadata>
-		<ows:Operation name="GetCapabilities">
-			<ows:DCP>
-				<ows:HTTP>
-					<ows:Get xlink:href="http://localhost:8094/wps?"/>
-					<ows:Post xlink:href="http://localhost:8094/wps"/>
-				</ows:HTTP>
-			</ows:DCP>
-		</ows:Operation>
-		<ows:Operation name="DescribeProcess">
-			<ows:DCP>
-				<ows:HTTP>
-					<ows:Get xlink:href="http://localhost:8094/wps?"/>
-					<ows:Post xlink:href="http://localhost:8094/wps"/>
-				</ows:HTTP>
-			</ows:DCP>
-		</ows:Operation>
-		<ows:Operation name="Execute">
-			<ows:DCP>
-				<ows:HTTP>
-					<ows:Get xlink:href="http://localhost:8094/wps?"/>
-					<ows:Post xlink:href="http://localhost:8094/wps"/>
-				</ows:HTTP>
-			</ows:DCP>
-		</ows:Operation>
-	</ows:OperationsMetadata>
-	<wps:ProcessOfferings>
-		<wps:Process wps:processVersion="1.0">
-			<ows:Identifier>hello</ows:Identifier>
-			<ows:Title>Hello World</ows:Title>
-			<ows:Abstract>Welcome user and say hello ... [100% quick response]</ows:Abstract>
-      <ows:Metadata xlink:title="Documentation" xlink:href="http://emu.readthedocs.org/en/latest/" />
-		</wps:Process>
-		<wps:Process wps:processVersion="1.0">
-			<ows:Identifier>wordcount</ows:Identifier>
-			<ows:Title>Word Counter</ows:Title>
-			<ows:Abstract>Counts words in a given text ...</ows:Abstract>
-		</wps:Process>
-	</wps:ProcessOfferings>
-	<wps:Languages>
-		<wps:Default>
-			<ows:Language>en-CA</ows:Language>
-		</wps:Default>
-		<wps:Supported>
-			<ows:Language>en-CA</ows:Language>
-		</wps:Supported>
-	</wps:Languages>
-	<wps:WSDL xlink:href="http://localhost:8094/wps?WSDL"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PyWPS 4.3.dev0 -->
+<wps:Capabilities service="WPS" version="1.0.0" xml:lang="en-CA" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 ../wpsGetCapabilities_response.xsd" updateSequence="1">
+    <ows:ServiceIdentification>
+        <ows:Title>Emu</ows:Title>
+        <ows:Abstract>WPS processes for testing and demos.</ows:Abstract>
+        <ows:Keywords>
+        <ows:Keyword>PyWPS</ows:Keyword>
+        <ows:Keyword> WPS</ows:Keyword>
+        <ows:Keyword> OGC</ows:Keyword>
+        <ows:Keyword> processing</ows:Keyword>
+        <ows:Keyword> birdhouse</ows:Keyword>
+        <ows:Keyword> emu</ows:Keyword>
+        <ows:Keyword> demo</ows:Keyword>
+            <ows:Type codeSpace="ISOTC211/19115">theme</ows:Type>
+        </ows:Keywords>
+        <ows:ServiceType>WPS</ows:ServiceType>
+        <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+        <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+        <ows:Fees>NONE</ows:Fees>
+        <ows:AccessConstraints>
+        NONE
+        </ows:AccessConstraints>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>Emu</ows:ProviderName>
+        <ows:ProviderSite xlink:href="http://emu.readthedocs.org/en/latest/"/>
+        <ows:ServiceContact>
+            <ows:IndividualName>Lastname, Firstname</ows:IndividualName>
+            <ows:PositionName>Position Title</ows:PositionName>
+            <ows:ContactInfo>
+                <ows:Phone>
+                    <ows:Voice>+xx-xxx-xxx-xxxx</ows:Voice>
+                    <ows:Facsimile></ows:Facsimile>
+                </ows:Phone>
+                <ows:Address>
+                    <ows:DeliveryPoint></ows:DeliveryPoint>
+                    <ows:City>City</ows:City>
+                    <ows:AdministrativeArea></ows:AdministrativeArea>
+                    <ows:PostalCode>Zip or Postal Code</ows:PostalCode>
+                    <ows:Country>Country</ows:Country>
+                    <ows:ElectronicMailAddress>Email Address</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://localhost:5000/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeProcess">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://localhost:5000/wps"/>
+                    <ows:Post xlink:href="http://localhost:5000/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="Execute">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://localhost:5000/wps"/>
+                    <ows:Post xlink:href="http://localhost:5000/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <wps:ProcessOfferings>
+        <wps:Process wps:processVersion="2.0">
+            <ows:Identifier>ultimate_question</ows:Identifier>
+            <ows:Title>Answer to the ultimate question</ows:Title>
+            <ows:Abstract>This process gives the answer to the ultimate question of &#34;What is the meaning of life?&#34;</ows:Abstract>
+            <ows:Metadata xlink:title="Ultimate Question" xlink:type="simple"
+            />
+            <ows:Metadata xlink:title="What is the meaning of life" xlink:type="simple"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>sleep</ows:Identifier>
+            <ows:Title>Sleep Process</ows:Title>
+            <ows:Abstract>Testing a long running process, in the sleep. This process will sleep for a given delay or 10 seconds if not a valid value.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
+            />
+            <ows:Metadata xlink:title="PyWPS Demo" xlink:type="simple"
+              xlink:href="https://pywps-demo.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>nap</ows:Identifier>
+            <ows:Title>Afternoon Nap (supports sync calls only)</ows:Title>
+            <ows:Abstract>This process will have a short nap for a given delay or 1 second if not a valid value. This process only supports synchronous WPS requests... so, make sure the nap does not take to long.</ows:Abstract>
+            <ows:Metadata xlink:title="Birdhouse" xlink:type="simple"
+              xlink:href="http://bird-house.github.io/"
+            />
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="0.2">
+            <ows:Identifier>bbox</ows:Identifier>
+            <ows:Title>Bounding box in- and out</ows:Title>
+            <ows:Abstract>Give bounding box, return the same</ows:Abstract>
+            <ows:Metadata xlink:title="Birdhouse" xlink:type="simple"
+              xlink:href="http://bird-house.github.io/"
+            />
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+            <ows:Metadata xlink:title="PyWPS" xlink:type="simple"
+              xlink:href="https://pywps.org/"
+            />
+            <ows:Metadata xlink:title="WPS Tutorial" xlink:type="simple"
+              xlink:href="http://geoprocessing.info/wpsdoc/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.5">
+            <ows:Identifier>hello</ows:Identifier>
+            <ows:Title>Say Hello</ows:Title>
+            <ows:Abstract>Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword>hello</ows:Keyword>
+                <ows:Keyword>demo</ows:Keyword>
+            </ows:Keywords>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
+            />
+            <ows:Metadata xlink:title="PyWPS Demo" xlink:type="simple"
+              xlink:href="https://pywps-demo.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="2.0">
+            <ows:Identifier>dummyprocess</ows:Identifier>
+            <ows:Title>Dummy Process</ows:Title>
+            <ows:Abstract>DummyProcess to check the WPS structure</ows:Abstract>
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>wordcounter</ows:Identifier>
+            <ows:Title>Word Counter</ows:Title>
+            <ows:Abstract>Counts words in a given text.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>chomsky</ows:Identifier>
+            <ows:Title>Chomsky text generator</ows:Title>
+            <ows:Abstract>Generates a random chomsky text</ows:Abstract>
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>inout</ows:Identifier>
+            <ows:Title>In and Out</ows:Title>
+            <ows:Abstract>Testing all WPS input and output parameters.</ows:Abstract>
+            <ows:Metadata xlink:title="Birdhouse" xlink:type="simple"
+              xlink:href="http://bird-house.github.io/"
+            />
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+              xlink:role="http://www.opengis.net/spec/wps/2.0/def/process/description/documentation"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>binaryoperatorfornumbers</ows:Identifier>
+            <ows:Title>Binary Operator for Numbers</ows:Title>
+            <ows:Abstract>Performs operation on two numbers and returns the answer. This example process is taken from Climate4Impact.</ows:Abstract>
+            <ows:Metadata xlink:title="Birdhouse" xlink:type="simple"
+              xlink:href="http://bird-house.github.io/"
+            />
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+            <ows:Metadata xlink:title="Climate4Impact" xlink:type="simple"
+              xlink:href="https://dev.climate4impact.eu"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>show_error</ows:Identifier>
+            <ows:Title>Show a WPS Error</ows:Title>
+            <ows:Abstract>This process will fail intentionally with a friendly WPS error message.</ows:Abstract>
+            <ows:Metadata xlink:title="PyWPS" xlink:type="simple"
+              xlink:href="https://pywps.org/"
+            />
+            <ows:Metadata xlink:title="Birdhouse" xlink:type="simple"
+              xlink:href="http://bird-house.github.io/"
+            />
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.1">
+            <ows:Identifier>multiple_outputs</ows:Identifier>
+            <ows:Title>Multiple Outputs</ows:Title>
+            <ows:Abstract>Produces multiple files and returns a document with references to these files.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>esgf_demo</ows:Identifier>
+            <ows:Title>ESGF Demo</ows:Title>
+            <ows:Abstract>Shows how to use WPS metadata for processes using ESGF data.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
+            />
+            <ows:Metadata xlink:title="ESGF Constraints" xlink:type="simple"
+              xlink:href="http://esgf-data.dkrz.de/esg-search/search?project=CMIP5&amp;time_frequency=mon&amp;variable=tas,tasmax,tasmin&amp;experiment=historical"
+              xlink:role="https://www.earthsystemcog.org/spec/esgf_search/4.12.0/def/constraints"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="2.0">
+            <ows:Identifier>output_formats</ows:Identifier>
+            <ows:Title>Return different output formats. </ows:Title>
+            <ows:Abstract>Dummy process returning various output file formats.</ows:Abstract>
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>poly_centroid</ows:Identifier>
+            <ows:Title>Approximate centroid of a polygon.</ows:Title>
+            <ows:Abstract>Return the polygon&#39;s centroid coordinates. If the geometry contains multiple polygons, only the centroid of the first one will be computed. Do not use for serious computations, this is only a test process and uses a crude approximation. </ows:Abstract>
+        </wps:Process>
+        <wps:Process wps:processVersion="4">
+            <ows:Identifier>ncmeta</ows:Identifier>
+            <ows:Title>Return NetCDF Metadata</ows:Title>
+            <ows:Abstract>Return metadata from a netCDF dataset, either on file or an OpenDAP service.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="http://emu.readthedocs.io/en/latest/"
+            />
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>non.py-id</ows:Identifier>
+            <ows:Title>Dummy process including non-pythonic identifiers</ows:Title>
+            <ows:Abstract>Dummy process whose process, input and output identifiers include characters not allowed in Python.</ows:Abstract>
+        </wps:Process>
+        <wps:Process wps:processVersion="1.0">
+            <ows:Identifier>simple_dry_run</ows:Identifier>
+            <ows:Title>Simple Dry Run</ows:Title>
+            <ows:Abstract>A dummy download as simple dry-run example.</ows:Abstract>
+            <ows:Metadata xlink:title="User Guide" xlink:type="simple"
+              xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
+            />
+        </wps:Process>
+    </wps:ProcessOfferings>
+    <wps:Languages>
+        <wps:Default>
+            <ows:Language>en-US</ows:Language>
+        </wps:Default>
+        <wps:Supported>
+            <ows:Language>lang</ows:Language>
+        </wps:Supported>
+    </wps:Languages>
 </wps:Capabilities>

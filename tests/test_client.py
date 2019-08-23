@@ -13,56 +13,92 @@ from birdy.client import converters, nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
+from .common import (
+    resource_file,
+    URL_EMU,
+    EMU_CAPS_XML,
+    EMU_DESC_XML,
+)
 
 
-# These tests assume Emu is running on the localhost
-url = "http://localhost:5000/wps"
-
-
-def data_path(*args):
-    return os.path.join(os.path.dirname(__file__), "resources", *args)
+# 52 north WPS
+url_52n = 'http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities'  # noqa: E501
+# flyingpigeon WPS at Ouranos
+url_fly = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
 
 
 @pytest.fixture(scope="module")
 def wps():
-    return WPSClient(url=url)
+    return WPSClient(url=URL_EMU)
+
+
+@pytest.fixture(scope="module")
+def wps_offline():
+    return WPSClient(url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
 
 
 @pytest.fixture(scope="module")
 def process():
     """Return an owslib.Process instance taken from Finch.subset_gridpoint."""
     reader = owslib.wps.WPSDescribeProcessReader()
-    root = reader.readFromString(open(data_path('process_description.xml')).read())
+    root = reader.readFromString(open(resource_file('process_description.xml')).read())
     xml = root.findall('ProcessDescription')[0]
     return owslib.wps.Process(xml)
+
+
+def test_emu_offline():
+    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
+    assert 'Hello' in wps.hello.__doc__
 
 
 @pytest.mark.online
 @pytest.mark.xfail(reason="a wps process has invalid defaultValue Inf")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
-    url = "http://geoprocessing.demo.52north.org:8080/wps/" \
-          "WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"
-    WPSClient(url)
+    WPSClient(url_52n)
+
+
+@pytest.mark.online
+def test_52north_simple():
+    """Check only a few 52north processes."""
+    WPSClient(url_52n, processes=[
+        'org.n52.wps.server.algorithm.r.AnnotationValidation',
+        'org.n52.wps.server.r.uncertweb.make-realizations',
+    ])
+
+
+def test_52north_offline():
+    """Check offline 52north processes."""
+    WPSClient(
+        url_52n,
+        caps_xml=open(resource_file('wps_52n_caps.xml'), 'rb').read(),
+        desc_xml=open(resource_file('wps_52n_desc.xml'), 'rb').read(),
+    )
 
 
 @pytest.mark.online
 def test_flyingpigeon():
-    url = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
-    WPSClient(url)
+    WPSClient(url_fly)
+
+
+def test_flyingpigeon_offline():
+    WPSClient(
+        url_fly,
+        caps_xml=open(resource_file('wps_fly_caps.xml'), 'rb').read(),
+        desc_xml=open(resource_file('wps_fly_desc.xml'), 'rb').read(),
+    )
 
 
 @pytest.mark.online
 def test_wps_client_backward_compability():
     from birdy import BirdyClient
-    BirdyClient(url=url)
+    BirdyClient(url=URL_EMU)
     from birdy import import_wps
-    import_wps(url=url)
+    import_wps(url=URL_EMU)
 
 
-@pytest.mark.online
-def test_wps_docs(wps):
-    assert "Processes" in wps.__doc__
+def test_wps_docs(wps_offline):
+    assert "Processes" in wps_offline.__doc__
 
 
 @pytest.mark.online
@@ -73,12 +109,11 @@ def test_wps_client_single_output(wps):
     assert result.get()[0] == 3.0
 
 
-@pytest.mark.online
-def test_wps_nb_form(wps):
-    for pid in list(wps._processes.keys()):
+def test_wps_nb_form(wps_offline):
+    for pid in list(wps_offline._processes.keys()):
         if pid in ['bbox', ]:  # Unsupported
             continue
-        nb_form(wps, pid)
+        nb_form(wps_offline, pid)
 
 
 @pytest.mark.online
@@ -103,7 +138,7 @@ def test_wps_wordcounter(wps):
 
 @pytest.mark.online
 def test_interactive(capsys):
-    m = WPSClient(url=url, progress=True)
+    m = WPSClient(url=URL_EMU, progress=True)
     assert m.hello("david").get()[0] == "Hello david"
     captured = capsys.readouterr()
     assert captured.out.startswith(str(datetime.date.today()))
@@ -132,32 +167,32 @@ def test_wps_client_multiple_outputs(wps):
 
 @pytest.mark.online
 def test_process_subset_only_one():
-    m = WPSClient(url=url, processes=["nap", "sleep"])
+    m = WPSClient(url=URL_EMU, processes=["nap", "sleep"])
     assert count_class_methods(m) == 2
 
-    m = WPSClient(url=url, processes="nap")
+    m = WPSClient(url=URL_EMU, processes="nap")
     assert count_class_methods(m) == 1
 
 
 @pytest.mark.online
 def test_process_subset_names():
     with pytest.raises(ValueError, match="missing"):
-        WPSClient(url=url, processes=["missing"])
+        WPSClient(url=URL_EMU, processes=["missing"])
     with pytest.raises(ValueError, match="wrong, process, names"):
-        WPSClient(url=url, processes=["wrong", "process", "names"])
+        WPSClient(url=URL_EMU, processes=["wrong", "process", "names"])
 
 
 @pytest.mark.online
 def test_asobj(wps):
-    resp = wps.ncmeta(dataset=data_path("dummy.nc"))
+    resp = wps.ncmeta(dataset=resource_file("dummy.nc"))
     out = resp.get(asobj=True)
     assert 'URL' in out.output  # Part of expected text file content.
 
-    resp = wps.ncmeta(dataset='file://' + data_path("dummy.nc"))
+    resp = wps.ncmeta(dataset='file://' + resource_file("dummy.nc"))
     out = resp.get(asobj=True)
     assert 'URL' in out.output
 
-    with open(data_path("dummy.nc"), 'rb') as fp:
+    with open(resource_file("dummy.nc"), 'rb') as fp:
         resp = wps.ncmeta(dataset=fp)
         out = resp.get(asobj=True)
         assert 'URL' in out.output
@@ -182,7 +217,7 @@ def test_asobj_non_pythonic_id(wps):
 def test_esgfapi(wps):
     from owslib_esgfwps import Domain, Dimension, Variable
 
-    uri = data_path("test.nc")
+    uri = resource_file("test.nc")
 
     variable = Variable(var_name='meantemp', uri=uri, name='test')
     domain = Domain([Dimension('time', 0, 10, crs='indices')])
@@ -213,7 +248,7 @@ def test_inputs(wps):
         any_value='7',
         ref_value='Scots',
         text="some unsafe text &<",
-        dataset="file://" + data_path("dummy.nc"),
+        dataset="file://" + resource_file("dummy.nc"),
     )
     expected = (
         "test string",
@@ -233,7 +268,7 @@ def test_inputs(wps):
     )
     assert expected == result.get(asobj=True)[:-2]
 
-    expected_netcdf = nc.Dataset(data_path("dummy.nc"))
+    expected_netcdf = nc.Dataset(resource_file("dummy.nc"))
     netcdf = result.get(asobj=True)[-2]
     assert list(expected_netcdf.variables) == list(netcdf.variables)
     assert expected_netcdf.title == netcdf.title
@@ -250,7 +285,7 @@ def test_netcdf():
 
     # Xarray is the default converter. Use netCDF4 here.
     if nc.getlibversion() > "4.5":
-        m = WPSClient(url=url, processes=["output_formats"], converters=[Netcdf4Converter, JSONConverter])
+        m = WPSClient(url=URL_EMU, processes=["output_formats"], converters=[Netcdf4Converter, JSONConverter])
         ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
@@ -375,8 +410,8 @@ def test_jpeg_imageconverter():
 class TestIsEmbedded():
     remote = 'http://remote.org'
     local = 'http://localhost:5000'
-    fn = data_path('dummy.nc')
-    path = Path(data_path('dummy.nc'))
+    fn = resource_file('dummy.nc')
+    path = Path(resource_file('dummy.nc'))
     uri = 'file://' + fn
     url = 'http://some.random.site/test.txt'
 
