@@ -5,7 +5,6 @@ language: generic
 branches:
   only:
     - master
-    - pingudev
 
 matrix:
   fast_finish: true
