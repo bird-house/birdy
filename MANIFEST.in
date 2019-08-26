@@ -1,4 +1,6 @@
 include *.rst
+include tests/resources/*.nc
+include tests/resources/*.xml
 graft birdy
 global-exclude __pycache__
 global-exclude *.py[co]
