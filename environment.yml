@@ -1,7 +1,6 @@
 # conda env create -f environment.yml
 name: birdy
 channels:
-  - birdhouse
   - conda-forge
   - defaults
 dependencies:
@@ -9,7 +8,7 @@ dependencies:
   #- openssl
   - lxml
   - owslib>=0.18
-  - owslib-esgfwps=0.1.0
+  #- owslib-esgfwps=0.1.0
   - click
   - jinja2
   - wrapt
