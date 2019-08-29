@@ -20,7 +20,6 @@ matrix:
       env:
        - CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
        - PEP8=false
-       - DOCS=false
     - os: linux
       name: "Linux (Python3.6 + pep8)"
       dist: xenial
@@ -33,7 +32,8 @@ matrix:
       env:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
         - PEP8=true
-        - DOCS=false
+      script:
+        - flake8
     - os: linux
       name: "Linux (Python3.7 + docs)"
       python: "3.7"
@@ -46,7 +46,10 @@ matrix:
       env:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
         - PEP8=false
-        - DOCS=true
+      install:
+        - conda env update -f environment-docs.yml
+      script:
+        - make docs
 
 sudo: false
 before_install:
@@ -63,13 +66,11 @@ before_install:
   - conda create -n birdy python=$TRAVIS_PYTHON_VERSION
 install:
   # Update now the env with our environment
-  - if [[ $DOCS = true ]]; then conda env update -f environment-docs.yml; else conda env update -f environment.yml; fi
+  - if [[ $DOCS = false ]]; conda env update -f environment.yml; fi
   - source activate birdy
   # Packages for testing
   - if [[ $DOCS = false ]]; then conda install pytest flake8; fi
   # Install Emu WPS
   - if [[ $DOCS = false ]]; then python setup.py install; fi
 script:
-  - if [[ $DOCS = true ]]; then make docs; fi
-  - if [[ $DOCS = false ]]; then pytest -m 'not online'; fi
-  - if [[ $PEP8 = true ]]; then flake8; fi
+  - pytest -m 'not online'
