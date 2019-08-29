@@ -1,7 +1,6 @@
 # conda env create -f environment.yml
 name: birdy
 channels:
-  - birdhouse
   - conda-forge
   - defaults
 dependencies:

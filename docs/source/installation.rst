@@ -7,39 +7,30 @@ Installation
 Install from Anaconda
 =====================
 
-.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/installer/conda.svg
-   :target: http://anaconda.org/birdhouse/birdhouse-birdy
+.. image:: https://anaconda.org/conda-forge/birdy/badges/installer/conda.svg
+   :target: https://anaconda.org/conda-forge/birdy
    :alt: Ananconda Install
 
-.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/version.svg
-   :target: http://anaconda.org/birdhouse/birdhouse-birdy
+.. image:: https://anaconda.org/conda-forge/birdy/badges/version.svg
+   :target: https://anaconda.org/conda-forge/birdy
    :alt: Anaconda Version
 
-.. image:: http://anaconda.org/birdhouse/birdhouse-birdy/badges/downloads.svg
-   :target: http://anaconda.org/birdhouse/birdhouse-birdy
+.. image:: https://anaconda.org/conda-forge/birdy/badges/downloads.svg
+   :target: https://anaconda.org/conda-forge/birdy
    :alt: Anaconda Downloads
 
-.. code-block:: sh
+.. code-block:: console
 
-   $ conda install -c birdhouse -c conda-forge birdhouse-birdy
+   $ conda install -c conda-forge birdy
 
 Install from GitHub
 ===================
 
 Check out code from the birdy GitHub repo and start the installation:
 
-.. code-block:: sh
+.. code-block:: console
 
    $ git clone https://github.com/bird-house/birdy.git
    $ cd birdy
    $ conda env create -f environment.yml
    $ python setup.py install
-
-Using bash completion
-+++++++++++++++++++++
-
-You can enable bash completion for Birdy by using the following script::
-
-  $ . birdy-complete.sh
-
-For details read the `Click documentation <http://click.pocoo.org/6/bashcomplete/>`_.
