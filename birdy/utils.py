@@ -3,6 +3,7 @@ import collections
 import base64
 from urllib.parse import urlparse
 from pathlib import Path
+import keyword
 
 
 # These mimetypes will be encoded in base64 when embedded in requests.
@@ -57,8 +58,13 @@ def is_file(path):
 
 
 def sanitize(name):
-    """Lower-case name and replace all non-ascii chars by `_`."""
-    return re.sub(r'\W|^(?=\d)', '_', name.lower())
+    """Lower-case name and replace all non-ascii chars by `_`.
+    If name is a Python keyword (like `return`) then add a trailing `_`.
+    """
+    new_name = re.sub(r'\W|^(?=\d)', '_', name.lower())
+    if keyword.iskeyword(new_name):
+        new_name = new_name + '_'
+    return new_name
 
 
 def delist(data):
