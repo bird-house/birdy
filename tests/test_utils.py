@@ -22,6 +22,8 @@ def test_sanitize():
     assert utils.sanitize('My Output 1') == 'my_output_1'
     assert utils.sanitize('a.b') == 'a_b'
     assert utils.sanitize('a-b') == 'a_b'
+    assert utils.sanitize('return') == 'return_'
+    assert utils.sanitize('Finally') == 'finally_'
 
 
 def test_delist():
