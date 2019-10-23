@@ -1,4 +1,4 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
+.PHONY: clean clean-test clean-pyc clean-build docs help test test-nb
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -56,6 +56,10 @@ lint: ## check style with flake8
 test: ## run tests quickly with the default Python
 	# py.test
 	pytest -v -m 'not slow and not online'
+
+test-nb: ## run tests quickly with the default Python
+	#py.test
+	pytest --nbval $(CURDIR)/notebooks/demo $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg --ignore $(CURDIR)/notebooks/*/.ipynb_checkpoints
 
 test-all: ## run tests on every Python version with tox
 	# tox

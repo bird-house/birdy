@@ -1,13 +1,15 @@
 pip
 bumpversion
 wheel
+twine
 watchdog
 flake8
 coverage
 Sphinx
-nbsphinx
 pandoc
 ipykernel
+nbsphinx
 nbconvert
-twine
+nbval
 pytest
+pytest-notebook
