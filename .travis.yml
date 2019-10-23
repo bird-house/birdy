@@ -66,7 +66,7 @@ install:
   - if [[ $DOCS == true ]]; then conda env update -f environment-docs.yml; fi
   - source activate birdy
   # Packages for testing
-  - conda install pytest flake8
+  - conda install pytest pytest-notebook flake8
   # Install Emu WPS
   - python setup.py install
 script:

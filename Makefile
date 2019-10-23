@@ -58,8 +58,8 @@ test: ## run tests quickly with the default Python
 	pytest -v -m 'not slow and not online'
 
 test-nb: ## run tests quickly with the default Python
-	#py.test
-	pytest --nbval $(CURDIR)/notebooks/demo $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg --ignore $(CURDIR)/notebooks/*/.ipynb_checkpoints
+	#py.test for notebooks
+	pytest --nbval $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg --ignore $(CURDIR)/notebooks/*/.ipynb_checkpoints
 
 test-all: ## run tests on every Python version with tox
 	# tox
