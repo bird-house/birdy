@@ -2,5 +2,5 @@ netCDF4
 ipywidgets
 ipython
 geojson
-pymetalink
-# owslib-esgfwps
+# pymetalink
+https://github.com/metalink-dev/pymetalink/archive/master.zip
