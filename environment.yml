@@ -8,7 +8,6 @@ dependencies:
   #- openssl
   - lxml
   - owslib>=0.18
-  #- owslib-esgfwps=0.1.0
   - click
   - jinja2
   - wrapt
@@ -19,10 +18,14 @@ dependencies:
   - xarray
   # tests
   - pytest
+  - pytest-notebook
+  - nbval
   - flake8
   # sphinx for rtd
-  - sphinx
-  - nbsphinx
   - pandoc
   - ipykernel
+  - sphinx
+  - nbsphinx
   - nbconvert
+  - pip:
+    - git+https://github.com/bird-house/OWSLib-esgfwps.git@3eb62aaeece3c156e898c2d836c889a421b3b981#egg=OWSLib-esgfwps #tagged v0.2.1

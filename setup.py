@@ -5,6 +5,19 @@ from setuptools import setup
 from pathlib import Path
 import re
 
+
+def parse_reqs(file):
+    egg_regex = re.compile(r"#egg=(\w+)")
+    reqs = list()
+    for req in open(file):
+        req = req.strip()
+        git_url_match = egg_regex.search(req)
+        if git_url_match:
+            req = git_url_match.group(1)
+        reqs.append(req)
+    return reqs
+
+
 with open(Path(__file__).parent / 'birdy' / '__init__.py', 'r') as f:
     version = re.search(r'__version__ = [\'"](.+?)[\'"]', f.read()).group(1)
 
@@ -13,8 +26,8 @@ long_description = (
     open('README.rst').read() + '\n' + open('AUTHORS.rst').read() + '\n' + open('CHANGES.rst').read()
 )
 
-reqs = [line.strip() for line in open('requirements.txt')]
-dev_reqs = [line.strip() for line in open('requirements_dev.txt')]
+requirements = parse_reqs("requirements.txt")
+dev_requirements = parse_reqs('requirements_dev.txt')
 
 classifiers = [
     'Development Status :: 4 - Beta',
@@ -38,9 +51,9 @@ setup(name='birdhouse-birdy',
       license="Apache License v2.0",
       packages=find_packages(),
       include_package_data=True,
-      install_requires=reqs,
+      install_requires=requirements,
       extras_require={
-          "dev": dev_reqs,              # pip install ".[dev]"
+          "dev": dev_requirements,              # pip install ".[dev]"
       },
       entry_points={
           'console_scripts': [
