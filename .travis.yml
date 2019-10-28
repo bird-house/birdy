@@ -21,7 +21,7 @@ matrix:
         - CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
         - PEP8=false
         - DOCS=false
-        - PYTHON_DESIRED=3.5
+        - PYTHON_DESIRED=3.6
     - os: linux
       name: "Linux (Python3.6 + pep8)"
       python: "3.6"
