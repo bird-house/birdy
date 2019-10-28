@@ -21,6 +21,7 @@ matrix:
         - CONDA_FN="Miniconda3-latest-MacOSX-x86_64.sh"
         - PEP8=false
         - DOCS=false
+        - PYTHON_DESIRED=3.5
     - os: linux
       name: "Linux (Python3.6 + pep8)"
       python: "3.6"
@@ -33,7 +34,7 @@ matrix:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
         - PEP8=true
         - DOCS=false
-
+        - PYTHON_DESIRED=3.6
     - os: linux
       name: "Linux (Python3.7 + docs)"
       python: "3.7"
@@ -46,6 +47,7 @@ matrix:
         - CONDA_FN="Miniconda3-latest-Linux-x86_64.sh"
         - PEP8=false
         - DOCS=true
+        - PYTHON_DESIRED=3.7
 
 sudo: false
 before_install:
@@ -59,7 +61,7 @@ before_install:
   # Useful for debugging any issues with conda
   - conda info -a
   # Prepare env with Python version
-  - conda create -n birdy python=$TRAVIS_PYTHON_VERSION
+  - conda create -n birdy python=$PYTHON_DESIRED
 install:
   # Update now the env with our environment
   - conda env update -f environment.yml
