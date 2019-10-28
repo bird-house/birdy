@@ -10,8 +10,8 @@ matrix:
   fast_finish: true
   include:
     - os: osx
-      python: "3.5"
-      name: "macOS (Python3.5)"
+      python: "3.6"
+      name: "macOS (Python3.6)"
       addons:
         homebrew:
           packages:
