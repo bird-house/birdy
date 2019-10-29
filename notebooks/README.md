@@ -17,3 +17,9 @@ Install JupyterLab widget extension:
 ## Start JupyterLab
 
     $ jupyter lab
+
+## Demo notebooks
+
+Notebooks in the demo folder are run and tested by [pytest](https://pypi.org/project/nbval/).
+You can run this test manually with ``make test-nb``.
+The notebooks test will always be checked by Travis.

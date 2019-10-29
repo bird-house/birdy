@@ -59,7 +59,7 @@ test: ## run tests quickly with the default Python
 
 test-nb: ## run tests quickly with the default Python
 	#py.test for notebooks
-	pytest --nbval $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg --ignore $(CURDIR)/notebooks/*/.ipynb_checkpoints
+	pytest --nbval $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg
 
 test-all: ## run tests on every Python version with tox
 	# tox
