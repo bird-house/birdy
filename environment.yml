@@ -27,5 +27,3 @@ dependencies:
   - sphinx
   - nbsphinx
   - nbconvert
-  - pip:
-    - git+https://github.com/bird-house/OWSLib-esgfwps.git@3eb62aaeece3c156e898c2d836c889a421b3b981#egg=OWSLib-esgfwps #tagged v0.2.1
