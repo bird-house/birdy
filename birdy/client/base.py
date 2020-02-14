@@ -65,7 +65,7 @@ class WPSClient(object):
             progress (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
             language (str): passed to :class:`owslib.wps.WebProcessingService`
-                ex: 'fr-CA', 'en_US'. Will default to en-US.
+                ex: 'fr-CA', 'en-US'. Will default to en-US.
         """
         self._converters = converters
         self._interactive = progress
