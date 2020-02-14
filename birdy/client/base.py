@@ -118,9 +118,6 @@ class WPSClient(object):
                 )
             raise
 
-        if self.language is None:
-            self.language = self._wps.languages.default
-
         self._processes = self._get_process_description(processes, xml=desc_xml)
 
         # Build the methods
