@@ -23,14 +23,16 @@ class BirdyCLI(click.MultiCommand):
     :param url: URL of the Web Processing Service.
     :param caps_xml: A WPS GetCapabilities response for testing.
     :param desc_xml: A WPS DescribeProcess response with "identifier=all" for testing.
+    :param language: Language parameter for WPS GetCapabilities and DescribeProcess responses.
     """
-    def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, **attrs):
+    def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, language=None, **attrs):
         click.MultiCommand.__init__(self, name, **attrs)
         self.url = os.environ.get('WPS_SERVICE') or url
         self.verify = get_ssl_verify()
         self.caps_xml = caps_xml
         self.desc_xml = desc_xml
-        self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True)
+        self.language = language
+        self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True, language=language)
         self.commands = OrderedDict()
 
     def _update_commands(self):

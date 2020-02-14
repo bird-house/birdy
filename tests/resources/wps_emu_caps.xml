@@ -248,7 +248,8 @@
             <ows:Language>en-US</ows:Language>
         </wps:Default>
         <wps:Supported>
-            <ows:Language>lang</ows:Language>
+            <ows:Language>en-US</ows:Language>
+            <ows:Language>fr-CA</ows:Language>
         </wps:Supported>
     </wps:Languages>
 </wps:Capabilities>

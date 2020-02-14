@@ -51,6 +51,16 @@ def test_emu_offline():
     assert 'Hello' in wps.hello.__doc__
 
 
+def test_wps_supported_languages():
+    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
+    assert wps.languages.supported == ['en-US', 'fr-CA']
+
+
+def test_wps_with_language_arg():
+    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, language='fr-CA')
+    assert wps.language == 'fr-CA'
+
+
 @pytest.mark.online
 @pytest.mark.xfail(reason="a wps process has invalid defaultValue Inf")
 def test_52north():
