@@ -65,7 +65,7 @@ class WPSClient(object):
             progress (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
             language (str): passed to :class:`owslib.wps.WebProcessingService`
-                ex: 'fr-CA', 'en_US'. Will default to en-US.
+                ex: 'fr-CA', 'en_US'.
         """
         self._converters = converters
         self._interactive = progress
@@ -73,7 +73,6 @@ class WPSClient(object):
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
-        self._language = language
 
         if not verify:
             import urllib3
