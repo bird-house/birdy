@@ -28,14 +28,14 @@ def cli(ctx, supported, set=None):
 
     # TODO Add try:except for set language in case of unsupported language
     try:
-        command_output = "Active language : " + wps.language
+        command_output = "Active language : {}".format(wps.language)
 
         if supported:
             languages = ', '.join(wps.languages)
-            command_output = "This wps service supports the following languages : " + languages
+            command_output = "This wps service supports the following languages : {}".format(languages)
         if set:
             wps.language = set
-            command_output = "Changed active language to : " + wps.language
+            command_output = "Changed active language to : {}".format(wps.language)
 
         click.echo(command_output)
 
