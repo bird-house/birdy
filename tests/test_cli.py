@@ -26,6 +26,15 @@ def test_help():
     assert result.exit_code == 0
     assert 'hello' in result.output
     assert 'wordcount' in result.output
+    assert 'language' in result.output
+
+
+def test_language_help():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['language',  '--help'])
+    assert result.exit_code == 0
+    assert 'supported' in result.output
+    assert 'set' in result.output
 
 
 @pytest.mark.online
