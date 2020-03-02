@@ -10,7 +10,9 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 @click.option('--set', help='Set active language for wps service')
 @click.pass_context
 def cli(ctx, supported, set=None):
-    """Language parameter for the wps service"""
+    """
+    Language parameter for the wps service : Returns the service's current language.
+    """
 
     headers = {}
 
