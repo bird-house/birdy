@@ -120,3 +120,33 @@ def _encode(content, mimetype, encoding):
             return content, encoding
         # Do we need to escape content that is not HTML safe ?
         # return u'<![CDATA[{}]]>'.format(content)
+
+
+def guess_type(url):
+    """Guess the mime type of the file link.
+
+    Returns
+    -------
+    mimetype, encoding
+    """
+    import mimetypes
+
+    try:
+        mime, enc = mimetypes.guess_type(url, strict=False)
+    except TypeError:
+        mime, enc = None, None
+
+    # Special cases
+    # -------------
+
+    # netCDF
+    if mime == "application/x-netcdf" and "dodsC" in url:
+        mime = "application/x-ogc-dods"
+
+    # application/zip vs application/x-zipped-shp
+    # TODO
+
+    # All the various XML schemes
+    # TODO
+
+    return mime, enc
