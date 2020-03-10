@@ -123,7 +123,8 @@ def _encode(content, mimetype, encoding):
 
 
 def guess_type(url, supported):
-    """Guess the mime type of the file link.
+    """Guess the mime type of the file link. If the mimetype is not recognized, default to the first supported value.
+
 
     Parameters
     ----------

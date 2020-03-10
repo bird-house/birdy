@@ -1,7 +1,6 @@
 from birdy import utils
 from .common import resource_file
 from pathlib import Path
-import pytest
 
 
 def test_is_url():
@@ -83,5 +82,5 @@ class TestGuessType:
         assert mime == "application/x-ogc-dods"
 
         mime, enc = utils.guess_type("https://remote.org/thredds/file/a.nc", ["application/x-ogc-dods",
-                                                                              "application/x-netcdf",])
+                                                                              "application/x-netcdf"])
         assert mime == "application/x-netcdf"
