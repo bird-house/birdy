@@ -250,14 +250,7 @@ class WPSClient(object):
                 if isinstance(input_param.defaultValue, ComplexData):
 
                     # Guess the mimetype of the input value
-                    mimetype, encoding = guess_type(value)
-
-                    # If unrecognized, default to the first supported mimetype
-                    if mimetype is None:
-                        mimetype = supported_mimetypes[0]
-                    else:
-                        if mimetype not in supported_mimetypes:
-                            raise ValueError(f"mimetype {mimetype} not in supported mimetypes {supported_mimetypes}.")
+                    mimetype, encoding = guess_type(value, supported_mimetypes)
 
                     if encoding is None:
                         encoding = input_param.defaultValue.encoding
