@@ -122,8 +122,16 @@ def _encode(content, mimetype, encoding):
         # return u'<![CDATA[{}]]>'.format(content)
 
 
-def guess_type(url):
-    """Guess the mime type of the file link.
+def guess_type(url, supported):
+    """Guess the mime type of the file link. If the mimetype is not recognized, default to the first supported value.
+
+
+    Parameters
+    ----------
+    url : str
+      Path or URL to file.
+    supported : list, tuple
+      Supported mimetypes.
 
     Returns
     -------
@@ -143,10 +151,20 @@ def guess_type(url):
     if mime == "application/x-netcdf" and "dodsC" in url:
         mime = "application/x-ogc-dods"
 
-    # application/zip vs application/x-zipped-shp
-    # TODO
+    zips = ["application/zip", "application/x-zipped-shp"]
+
+    if mime not in supported:
+        if mime in zips and set(zips).intersection(supported):
+            mime = set(zips).intersection(supported).pop()
 
     # All the various XML schemes
     # TODO
+
+    # If unrecognized, default to the first supported mimetype
+    if mime is None:
+        mime = supported[0]
+    else:
+        if mime not in supported:
+            raise ValueError(f"mimetype {mime} not in supported mimetypes {supported}.")
 
     return mime, enc

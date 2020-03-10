@@ -1,7 +1,6 @@
 from birdy import utils
 from .common import resource_file
 from pathlib import Path
-import pytest
 
 
 def test_is_url():
@@ -66,9 +65,22 @@ class TestEncode:
             assert isinstance(nc, bytes)
 
 
-@pytest.mark.parametrize("value,expected", [("LSJ_LL.zip", "application/zip"),
-                                            ("https://remote.org/thredds/dodsC/a.nc", "application/x-ogc-dods"),
-                                            ("https://remote.org/thredds/file/a.nc", "application/x-netcdf")])
-def test_guess_type(value, expected):
-    mime, enc = utils.guess_type(value)
-    assert mime == expected
+class TestGuessType:
+    def test_zip(self):
+        mime, enc = utils.guess_type("LSJ_LL.zip", ["application/gml+xml",
+                                                    "application/zip",
+                                                    "application/x-zipped-shp", ])
+        assert mime == "application/zip"
+
+        mime, enc = utils.guess_type("LSJ_LL.zip", ["application/gml+xml",
+                                                    "application/x-zipped-shp", ])
+        assert mime == "application/x-zipped-shp"
+
+    def test_nc(self):
+        mime, enc = utils.guess_type("https://remote.org/thredds/dodsC/a.nc", ["application/x-netcdf",
+                                                                               "application/x-ogc-dods"])
+        assert mime == "application/x-ogc-dods"
+
+        mime, enc = utils.guess_type("https://remote.org/thredds/file/a.nc", ["application/x-ogc-dods",
+                                                                              "application/x-netcdf"])
+        assert mime == "application/x-netcdf"
