@@ -1,6 +1,14 @@
 Change History
 **************
 
+0.6.7 (2020-03-10)
+==================
+
+Changes:
+
+* Fixed passing Path objects (#169)
+* Trying to guess mime type of inputs rather than taking the first value (#171)
+
 0.6.6 (2020-03-03)
 ==================
 

@@ -11,7 +11,7 @@ from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, C
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
-from birdy.utils import sanitize, fix_url, embed
+from birdy.utils import sanitize, fix_url, embed, guess_type
 from birdy.client import notebook
 from birdy.client.outputs import WPSResult
 
@@ -243,21 +243,35 @@ class WPSClient(object):
                 continue
 
             values = [arg, ] if not isinstance(arg, (list, tuple)) else arg
+            supported_mimetypes = [v.mimeType for v in input_param.supportedValues]
 
             for value in values:
+                #  if input_param.dataType == "ComplexData": seems simpler
                 if isinstance(input_param.defaultValue, ComplexData):
-                    encoding = input_param.defaultValue.encoding
-                    mimetype = input_param.defaultValue.mimeType
+
+                    # Guess the mimetype of the input value
+                    mimetype, encoding = guess_type(value)
+
+                    # If unrecognized, default to the first supported mimetype
+                    if mimetype is None:
+                        mimetype = supported_mimetypes[0]
+                    else:
+                        if mimetype not in supported_mimetypes:
+                            raise ValueError(f"mimetype {mimetype} not in supported mimetypes {supported_mimetypes}.")
+
+                    if encoding is None:
+                        encoding = input_param.defaultValue.encoding
 
                     if isinstance(value, ComplexData):
                         inp = value
 
+                    # Either embed the file content or just the reference.
                     else:
                         if utils.is_embedded_in_request(self._wps.url, value):
                             # If encoding is None, this will return the actual encoding used (utf-8 or base64).
                             value, encoding = embed(value, mimetype, encoding=encoding)
                         else:
-                            value = fix_url(value)
+                            value = fix_url(str(value))
 
                         inp = utils.to_owslib(value,
                                               data_type=input_param.dataType,
