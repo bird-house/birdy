@@ -33,11 +33,11 @@ You can try Birdy online using Binder (just click on the binder link below),
 or view the notebooks on NBViewer.
 
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/bird-house/birdy.git/v0.6.5?filepath=notebooks
+   :target: https://mybinder.org/v2/gh/bird-house/birdy.git/v0.6.6?filepath=notebooks
    :alt: Binder Launcher
 
 .. image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg
-   :target: https://nbviewer.jupyter.org/github/bird-house/birdy/tree/v0.6.5/notebooks/
+   :target: https://nbviewer.jupyter.org/github/bird-house/birdy/tree/v0.6.6/notebooks/
    :alt: NBViewer
    :height: 20
 

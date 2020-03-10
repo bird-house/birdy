@@ -1,6 +1,51 @@
 Change History
 **************
 
+0.6.6 (2020-03-03)
+==================
+
+Changes:
+
+* Fixed the docs (#150).
+* Added outputs to execute in CLI (#151).
+* Updated tests (#152).
+* Added offline tests (#153).
+* Updated conda links (#155).
+* Handle Python keywords (#158)
+* Fix emu (#159).
+* Updated demo notebook tests (#160).
+* Added ECMWF demo notebook (#162).
+* Added roocs wps demo notebook (#165).
+* Added missing files in MANIFEST.in for pypi install (#166).
+
+0.6.5 (2019-08-19)
+==================
+
+Changes:
+
+* Fix arguments ordering (#139).
+* Fix imports warning (#138).
+* Using nbsphinx (#142).
+* Fix pip install (#143).
+* Add custom authentication methods (#144).
+* Use oauth token (#145).
+* Skip Python 2.7 (#146).
+
+0.6.4 (2019-07-03)
+==================
+
+Changes:
+
+* Fix default converter to return bytes (#137).
+
+0.6.3 (2019-06-21)
+==================
+
+Changes:
+
+* Disabled segmented metalink downloads (#132).
+* Fix nested conversion (#135).
+
 0.6.2 (2019-06-06)
 ==================
 
