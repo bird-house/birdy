@@ -123,7 +123,8 @@ def _encode(content, mimetype, encoding):
 
 
 def guess_type(url, supported):
-    """Guess the mime type of the file link. If the mimetype is not recognized, default to the first supported value.
+    """Guess the mime type of the file link.
+    If the mimetype is not recognized, default to the first supported value.
 
 
     Parameters
@@ -148,11 +149,11 @@ def guess_type(url, supported):
     # -------------
 
     # netCDF
-    if mime == "application/x-netcdf" and "dodsC" in url:
+    if mime == "application/x-netcdf" and "dodsC" in url and "application/x-ogc-dods" in supported:
         mime = "application/x-ogc-dods"
 
+    # ZIP
     zips = ["application/zip", "application/x-zipped-shp"]
-
     if mime not in supported:
         if mime in zips and set(zips).intersection(supported):
             mime = set(zips).intersection(supported).pop()
