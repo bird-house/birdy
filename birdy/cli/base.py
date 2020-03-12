@@ -14,12 +14,6 @@ template_env = Environment(
     autoescape=True,
 )
 
-# Path to local commands folder (non wps process related)
-_local_command_folder = os.path.join(os.path.dirname(__file__), 'commands')
-
-# Adds commands from commands folder (non wps process related)
-_local_commands = ['language']
-
 
 class BirdyCLI(click.MultiCommand):
     """BirdyCLI is an implementation of :class:`click.MultiCommand`. It
@@ -36,8 +30,15 @@ class BirdyCLI(click.MultiCommand):
         self.verify = get_ssl_verify()
         self.caps_xml = caps_xml
         self.desc_xml = desc_xml
-        self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True)
+        self._wps = None
         self.commands = OrderedDict()
+
+    @property
+    def wps(self):
+        if self._wps is None:
+            language = self.context_settings['obj'].get('language')
+            self._wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True, language=language)
+        return self._wps
 
     def _update_commands(self):
         if not self.commands:
@@ -47,7 +48,6 @@ class BirdyCLI(click.MultiCommand):
                 raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
             except Exception:
                 raise ConnectionError("Web Processing Service not available.")
-
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
@@ -56,30 +56,18 @@ class BirdyCLI(click.MultiCommand):
                     help=BirdyCLI.format_command_help(process),
                     options=[])
 
-            for cmd in _local_commands:
-                self.commands[cmd] = dict()
-
     def list_commands(self, ctx):
-        ctx.obj = True
         self._update_commands()
         return list(self.commands.keys())
 
     def get_command(self, ctx, name):
-        if name in _local_commands:
-            ns = {}
-            fn = os.path.join(_local_command_folder, 'cmd_' + name + '.py')
-            with open(fn) as f:
-                code = compile(f.read(), fn, 'exec')
-                eval(code, ns, ns)
-            return ns['cli']
-        else:
-            self._update_commands()
-            cmd_templ = template_env.get_template('cmd.py.j2')
-            rendered_cmd = cmd_templ.render(self._get_command_info(name, ctx))
-            ns = {}
-            code = compile(rendered_cmd, filename='<string>', mode='exec')
-            eval(code, ns, ns)
-            return ns['cli']
+        self._update_commands()
+        cmd_templ = template_env.get_template('cmd.py.j2')
+        rendered_cmd = cmd_templ.render(self._get_command_info(name, ctx))
+        ns = {}
+        code = compile(rendered_cmd, filename='<string>', mode='exec')
+        eval(code, ns, ns)
+        return ns['cli']
 
     def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)

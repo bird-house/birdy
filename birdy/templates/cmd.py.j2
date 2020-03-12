@@ -31,7 +31,8 @@ def cli(ctx, **options):
     if send and cert:
         with open(cert, 'r') as fh:
             headers = {'X-Ssl-Client-Cert': quote(fh.read())}
-    wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers)
+    language = ctx.obj.get('language')
+    wps = WebProcessingService('{{ url }}', skip_caps=True, verify=verify, cert=cert, headers=headers, language=language)
     inputs = []
     for opt in options.keys():
         if not options[opt]:
