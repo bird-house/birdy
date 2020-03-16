@@ -30,9 +30,9 @@ def test_help():
     assert 'show-languages' in result.output
 
 
-def test_language_help():
+def test_show_languages():
     runner = CliRunner()
-    result = runner.invoke(cli, ['--languages'])
+    result = runner.invoke(cli, ['--show-languages'])
     assert result.exit_code == 0
     assert 'en-US' in result.output
 
