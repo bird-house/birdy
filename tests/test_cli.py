@@ -27,14 +27,14 @@ def test_help():
     assert 'hello' in result.output
     assert 'wordcount' in result.output
     assert 'language' in result.output
+    assert 'show-languages' in result.output
 
 
 def test_language_help():
     runner = CliRunner()
-    result = runner.invoke(cli, ['language',  '--help'])
+    result = runner.invoke(cli, ['--languages'])
     assert result.exit_code == 0
-    assert 'supported' in result.output
-    assert 'set' in result.output
+    assert 'en-US' in result.output
 
 
 @pytest.mark.online
