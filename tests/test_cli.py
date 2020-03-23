@@ -1,23 +1,14 @@
+from click.testing import CliRunner
 import pytest
 
-import click
-from click.testing import CliRunner
+import birdy.cli.run
 
-from birdy.cli.base import BirdyCLI
-from .common import (
-    URL_EMU,
-    EMU_CAPS_XML,
-    # EMU_DESC_XML,
-)
+from .common import EMU_CAPS_XML, URL_EMU
 
 
-@click.command(cls=BirdyCLI,
-               url=URL_EMU,
-               caps_xml=EMU_CAPS_XML,
-               # desc_xml=EMU_DESC_XML
-               )
-def cli():
-    pass
+cli = birdy.cli.run.cli
+cli.url = URL_EMU
+cli.caps_xml = EMU_CAPS_XML
 
 
 def test_help():
