@@ -78,7 +78,7 @@ class BirdyCLI(click.MultiCommand):
             if default:
                 help = "{}. Default: {}".format(help, default)
             cmd['options'].append(dict(
-                name=inp.identifier,
+                name=inp.identifier.replace(' ', '-'),
                 # default=BirdyCLI.get_param_default(inp),
                 help=help,
                 type=BirdyCLI.get_param_type(inp),
