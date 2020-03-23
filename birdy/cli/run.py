@@ -33,8 +33,12 @@ def _set_language(ctx, param, value):
 @click.option('--send', '-S', is_flag=True, help="Send client side certificate to WPS. Default: false")
 @click.option("--sync", '-s', is_flag=True, help="Execute process in sync mode. Default: async mode.")
 @click.option("--token", "-t", help="Token to access the WPS service.")
-@click.option("--language", "-l", expose_value=False, is_eager=True, callback=_set_language, help="Set the accepted language to send to the WPS service.")
-@click.option("--show-languages", "-L", expose_value=False, is_flag=True, is_eager=True, callback=_show_languages, help="Show a list of accepted languages for the WPS service.")
+@click.option(
+    "--language", "-l", expose_value=False, is_eager=True, callback=_set_language,
+    help="Set the accepted language to send to the WPS service.")
+@click.option(
+    "--show-languages", "-L", expose_value=False, is_flag=True, is_eager=True, callback=_show_languages,
+    help="Show a list of accepted languages for the WPS service.")
 @click.pass_context
 def cli(ctx, cert, send, sync, token):
     """
