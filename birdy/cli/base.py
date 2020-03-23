@@ -71,23 +71,21 @@ class BirdyCLI(click.MultiCommand):
 
     def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)
-        if ctx.obj is None or False:
-            pp = self.wps.describeprocess(name, xml=self.desc_xml)
-            for inp in pp.dataInputs:
-                help = inp.title or ''
-                default = BirdyCLI.get_param_default(inp)
-                if default:
-                    help = "{}. Default: {}".format(help, default)
-                cmd['options'].append(dict(
-                    name=inp.identifier,
-                    # default=BirdyCLI.get_param_default(inp),
-                    help=help,
-                    type=BirdyCLI.get_param_type(inp),
-                    multiple=inp.maxOccurs > 1))
-            outputs = []
-            for output in pp.processOutputs:
-                outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
-            ctx.obj = dict(outputs=outputs)
+        pp = self.wps.describeprocess(name, xml=self.desc_xml)
+        for inp in pp.dataInputs:
+            help = inp.title or ''
+            default = BirdyCLI.get_param_default(inp)
+            if default:
+                help = "{}. Default: {}".format(help, default)
+            cmd['options'].append(dict(
+                name=inp.identifier,
+                # default=BirdyCLI.get_param_default(inp),
+                help=help,
+                type=BirdyCLI.get_param_type(inp),
+                multiple=inp.maxOccurs > 1))
+        outputs = []
+        for output in pp.processOutputs:
+            outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
         return cmd
 
     @staticmethod
