@@ -46,8 +46,8 @@ class BirdyCLI(click.MultiCommand):
                 self.wps.getcapabilities(xml=self.caps_xml)
             except SSLError:
                 raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
-            except Exception:
-                raise ConnectionError("Web Processing Service not available.")
+            except Exception as e:
+                raise ConnectionError("Could not connect to Web Processing Service ({!r})".format(e))
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
