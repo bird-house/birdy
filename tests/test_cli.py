@@ -11,6 +11,7 @@ cli.url = URL_EMU
 cli.caps_xml = EMU_CAPS_XML
 
 
+@pytest.mark.online
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ['--help'])
@@ -21,6 +22,7 @@ def test_help():
     assert 'show-languages' in result.output
 
 
+@pytest.mark.online
 def test_show_languages():
     runner = CliRunner()
     result = runner.invoke(cli, ['--show-languages'])
