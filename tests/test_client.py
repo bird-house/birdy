@@ -46,19 +46,21 @@ def process():
     return owslib.wps.Process(xml)
 
 
-def test_emu_offline():
-    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
-    assert 'Hello' in wps.hello.__doc__
+def test_emu_offline(wps_offline):
+    assert 'Hello' in wps_offline.hello.__doc__
 
 
-def test_wps_supported_languages():
-    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
-    assert wps.languages.supported == ['en-US', 'fr-CA']
+def test_wps_supported_languages(wps_offline):
+    assert wps_offline.languages.supported == ['en-US', 'fr-CA']
 
 
 def test_wps_with_language_arg():
-    wps = WPSClient(URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, language='fr-CA')
+    wps = WPSClient(URL_EMU, language='fr-CA')
     assert wps.language == 'fr-CA'
+    p = wps._processes['translation']
+    assert p.title == "Processus traduit"
+    resp = wps.translation(10)
+    assert resp.processOutputs[0].title == "Sortie #1"
 
 
 @pytest.mark.online
