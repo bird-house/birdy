@@ -1,31 +1,33 @@
+from click.testing import CliRunner
 import pytest
 
-import click
-from click.testing import CliRunner
+import birdy.cli.run
 
-from birdy.cli.base import BirdyCLI
-from .common import (
-    URL_EMU,
-    EMU_CAPS_XML,
-    # EMU_DESC_XML,
-)
+from .common import EMU_CAPS_XML, URL_EMU
 
 
-@click.command(cls=BirdyCLI,
-               url=URL_EMU,
-               caps_xml=EMU_CAPS_XML,
-               # desc_xml=EMU_DESC_XML
-               )
-def cli():
-    pass
+cli = birdy.cli.run.cli
+cli.url = URL_EMU
+cli.caps_xml = EMU_CAPS_XML
 
 
+@pytest.mark.online
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ['--help'])
     assert result.exit_code == 0
     assert 'hello' in result.output
     assert 'wordcount' in result.output
+    assert 'language' in result.output
+    assert 'show-languages' in result.output
+
+
+@pytest.mark.online
+def test_show_languages():
+    runner = CliRunner()
+    result = runner.invoke(cli, ['--show-languages'])
+    assert result.exit_code == 0
+    assert 'en-US' in result.output
 
 
 @pytest.mark.online

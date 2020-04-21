@@ -30,8 +30,15 @@ class BirdyCLI(click.MultiCommand):
         self.verify = get_ssl_verify()
         self.caps_xml = caps_xml
         self.desc_xml = desc_xml
-        self.wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True)
+        self._wps = None
         self.commands = OrderedDict()
+
+    @property
+    def wps(self):
+        if self._wps is None:
+            language = self.context_settings['obj'].get('language')
+            self._wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True, language=language)
+        return self._wps
 
     def _update_commands(self):
         if not self.commands:
@@ -39,8 +46,8 @@ class BirdyCLI(click.MultiCommand):
                 self.wps.getcapabilities(xml=self.caps_xml)
             except SSLError:
                 raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
-            except Exception:
-                raise ConnectionError("Web Processing Service not available.")
+            except Exception as e:
+                raise ConnectionError("Could not connect to Web Processing Service ({!r})".format(e))
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
@@ -50,7 +57,6 @@ class BirdyCLI(click.MultiCommand):
                     options=[])
 
     def list_commands(self, ctx):
-        ctx.obj = True
         self._update_commands()
         return list(self.commands.keys())
 
@@ -65,23 +71,21 @@ class BirdyCLI(click.MultiCommand):
 
     def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)
-        if ctx.obj is None or False:
-            pp = self.wps.describeprocess(name, xml=self.desc_xml)
-            for inp in pp.dataInputs:
-                help = inp.title or ''
-                default = BirdyCLI.get_param_default(inp)
-                if default:
-                    help = "{}. Default: {}".format(help, default)
-                cmd['options'].append(dict(
-                    name=inp.identifier,
-                    # default=BirdyCLI.get_param_default(inp),
-                    help=help,
-                    type=BirdyCLI.get_param_type(inp),
-                    multiple=inp.maxOccurs > 1))
-            outputs = []
-            for output in pp.processOutputs:
-                outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
-            ctx.obj = dict(outputs=outputs)
+        pp = self.wps.describeprocess(name, xml=self.desc_xml)
+        for inp in pp.dataInputs:
+            help = inp.title or ''
+            default = BirdyCLI.get_param_default(inp)
+            if default:
+                help = "{}. Default: {}".format(help, default)
+            cmd['options'].append(dict(
+                name=inp.identifier.replace(' ', '-'),
+                # default=BirdyCLI.get_param_default(inp),
+                help=help,
+                type=BirdyCLI.get_param_type(inp),
+                multiple=inp.maxOccurs > 1))
+        outputs = []
+        for output in pp.processOutputs:
+            outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
         return cmd
 
     @staticmethod

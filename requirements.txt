@@ -1,7 +1,7 @@
 click
 jinja2
 lxml
-owslib>=0.18
+owslib>=0.19.2
 wrapt
 funcsigs
 boltons

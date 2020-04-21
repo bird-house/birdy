@@ -45,6 +45,7 @@ class WPSClient(object):
         version=WPS_DEFAULT_VERSION,
         caps_xml=None,
         desc_xml=None,
+        language=None,
     ):
         """
         Args:
@@ -63,6 +64,8 @@ class WPSClient(object):
             verbose (str): passed to :class:`owslib.wps.WebProcessingService`
             progress (bool): If True, enable interactive user mode.
             version (str): WPS version to use.
+            language (str): passed to :class:`owslib.wps.WebProcessingService`
+                ex: 'fr-CA', 'en_US'.
         """
         self._converters = converters
         self._interactive = progress
@@ -102,6 +105,7 @@ class WPSClient(object):
             verify=verify,
             cert=cert,
             skip_caps=True,
+            language=language
         )
 
         try:
@@ -124,6 +128,18 @@ class WPSClient(object):
             self._setup_logging()
 
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
+
+    @property
+    def language(self):
+        return self._wps.language
+
+    @language.setter
+    def language(self, value):
+        self._wps.language = value
+
+    @property
+    def languages(self):
+        return self._wps.languages
 
     def _get_process_description(self, processes=None, xml=None):
         """Return the description for each process.
