@@ -9,9 +9,9 @@ class WFSGeojsonLayer(object):
         # Connect to GeoServer WFS service.
         self._wfs = WebFeatureService(url, version=wfs_version)
         self._geojson = None
-        self._widget = None
+        self._widget = {}
 
-    def create_layer(self, layer_typename, layer_style=None, source_map=None):
+    def create_layer(self, layer_typename, layer_style=None, source_map=None, widget_name='widget', property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Paremeters
@@ -33,7 +33,11 @@ class WFSGeojsonLayer(object):
         data = self._wfs.getfeature(typename=layer_typename, bbox=computed_bbox, outputFormat='JSON')
         self._geojson = json.loads(data.getvalue().decode())
 
-        return GeoJSON(data=self._geojson, syle=layer_style)
+        layer = GeoJSON(data=self._geojson, syle=layer_style)
+
+        self.create_feature_property_widget(layer, source_map, widget_name, property)
+
+        return layer
 
     def get_coords(self, coords):
         """Return formatted coordinates, from ipylealet format to owslib.wfs format.
@@ -68,46 +72,41 @@ class WFSGeojsonLayer(object):
             print('Title:', layer.title)
             print('Boundaries:', layer.boundingBoxWGS84, '\n')
 
-    def get_properties(self, index=0):
+    def get_property_list(self, index=0):
         return self._geojson['features'][index]['properties']
 
-    def _set_widget(self, src_map, textbox):
-        if self._widget:
-            src_map.remove_control(self._widget)
-        self._widget = WidgetControl(widget=textbox, position='bottomright')
-        src_map.add_control(self._widget)
+    def _set_widget(self, widget_name, src_map, textbox, widget_position):
+        if widget_name in self._widget:
+            src_map.remove_control(self._widget[widget_name])
 
-    def get_feature_id(self, layer, src_map):
+        self._widget[widget_name] = WidgetControl(widget=textbox,
+                                                  position=widget_position,
+                                                  min_width=120,
+                                                  max_width=120)
+
+        src_map.add_control(self._widget[widget_name])
+
+    def create_feature_property_widget(self,
+                                       layer,
+                                       src_map,
+                                       widget_name='widget',
+                                       property=None,
+                                       widget_position='bottomright'):
+
         textbox = HTML('''
-            <h4>Properties</h4>
             Click on a feature
         ''')
         textbox.layout.margin = '0px 20px 20px 20px'
 
-        self._set_widget(src_map, textbox)
+        self._set_widget(widget_name, src_map, textbox, widget_position)
 
         def update_textbox(feature, **kwargs):
-            first_key = list(feature['properties'].keys())[0]
+            key = list(feature['properties'].keys())[0]
+            if property:
+                key = property
             textbox.value = '''
                 <h4>{}<h4>
                 <b style="font-size:10px">{}<b>
-            '''.format(first_key, feature['properties'][first_key])
-
-        layer.on_click(update_textbox)
-
-    def get_feature_property(self, layer, src_map, property):
-        textbox = HTML('''
-            <h4>Properties</h4>
-            Click on a feature
-        ''')
-        textbox.layout.margin = '0px 20px 20px 20px'
-
-        self._set_widget(src_map, textbox)
-
-        def update_textbox(feature, **kwargs):
-            textbox.value = '''
-                <h4>{}<h4>
-                <b style="font-size:10px">{}<b>
-            '''.format(property, feature['properties'][property])
+            '''.format(key, feature['properties'][key])
 
         layer.on_click(update_textbox)
