@@ -10,7 +10,7 @@ class WFSGeojsonLayer(object):
     This class is a small wrapper for ipylealet to facilitate the use of
     a WFS service, as well as provide some automation.
 
-    Acces to a WFS service is done through the owslib module and requires
+    Access to a WFS service is done through the owslib module and requires
     a geojson output capable WFS, which is then used to create an ipyleaflet
     GeoJSON layer.
 
@@ -75,7 +75,7 @@ class WFSGeojsonLayer(object):
         ----------
         layer_typename: string
           Typename of the layer to display. Listed as Layer_ID by get_layer_list().
-          Must include namespace and layer name, seperated by a colon.
+          Must include namespace and layer name, separated  by a colon.
 
           ex: public:canada_forest_layer
 
@@ -97,7 +97,7 @@ class WFSGeojsonLayer(object):
         data = self._wfs.getfeature(typename=layer_typename, bbox=automatic_bbox, outputFormat='JSON')
         self._geojson = json.loads(data.getvalue().decode())
 
-        layer = GeoJSON(data=self._geojson, syle=layer_style)
+        layer = GeoJSON(data=self._geojson, style=layer_style)
 
         self.create_feature_property_widget(layer, source_map, 'main_widget', property)
 
@@ -123,7 +123,7 @@ class WFSGeojsonLayer(object):
         Returns
         -------
         Dict
-          A dictionnary of the layer's properties
+          A dictionary  of the layer's properties
         """
         for feature in self._geojson['features']:
             # The id field is usually the first field. Since the name is
@@ -156,13 +156,13 @@ class WFSGeojsonLayer(object):
     def property_list(self):
         """Return a list containing the properties of the first feature.
 
-        Retrieves the available properties for use subsecant use
+        Retrieves the available properties for use subsequent use
         by the feature property widget
 
         Returns
         -------
         Dict
-          A dictionnary of the layer properties
+          A dictionary  of the layer properties
         """
         return self._geojson['features'][0]['properties']
 
