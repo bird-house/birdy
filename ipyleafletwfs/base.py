@@ -66,7 +66,7 @@ class WFSGeojsonLayer(object):
     # Layer creation function  #
     # # # # # # # # # # # # # # #
 
-    def create_layer(self, layer_typename, source_map, layer_style=None, property=None):
+    def create_layer(self, layer_typename, source_map, layer_style={}, property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
