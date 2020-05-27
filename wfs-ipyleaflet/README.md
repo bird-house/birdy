@@ -17,7 +17,8 @@ A new request (re-creating the layer) will be needed if the map view is moved ou
 
 The on_click method for GeoJSON layers causes a typeError when used in jupyter notebook. It has already been reported: https://github.com/jupyter-widgets/ipyleaflet/issues/373
 
-We get no such errors (at least visibly) when using the example notebook in vscode, but there appears to be no functionnality loss in jupyter
-notebook, appart from the visual disturbance.
+We get no such errors (at least visibly) when using the example notebook in vscode, but there appears to be no functionality loss in jupyter
+notebook, apart from the visual disturbance.
 
 The workaround found in the above linked issue has been applied here and therefore should not be visible.
+
