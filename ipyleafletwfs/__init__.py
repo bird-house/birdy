@@ -1,1 +1,1 @@
-from .base import WFSGeojsonLayer  # noqa: F401
+from .base import IpyleafletWFS  # noqa: F401

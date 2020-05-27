@@ -4,7 +4,7 @@ from owslib.wfs import WebFeatureService
 import json
 
 
-class WFSGeojsonLayer(object):
+class IpyleafletWFS(object):
     """Create a connection to a WFS service capable of geojson output.
 
     This class is a small wrapper for ipylealet to facilitate the use of
@@ -12,7 +12,9 @@ class WFSGeojsonLayer(object):
 
     Access to a WFS service is done through the owslib module and requires
     a geojson output capable WFS, which is then used to create an ipyleaflet
-    GeoJSON layer.
+    GeoJSON layer with the create_wfsgeojson_layer() function.
+
+    For now, only a single layer per instance is supported.
 
     Parameters:
     -----------
@@ -24,15 +26,28 @@ class WFSGeojsonLayer(object):
 
     Returns
     -------
-    WFSGeojsonLayer instance
+    IpyleafletWFS instance
       Instance from which the WFS layers can be created and then added to an
       ipyleaflet Map
     """
 
     def __init__(self, url, wfs_version='2.0.0'):
+        self._layer_typename = ''
+        self._layer = None
+        self._source_map = None
+        self._layerstyle = {}
+        self._property = None
         self._wfs = WebFeatureService(url, version=wfs_version)
         self._geojson = None
         self._widgets = {}
+
+        # _widgets structure is as follows
+        # { 'widget_name': {
+        #       'widget': widget instance,
+        #       'property_key': property_string,
+        #       'position': position_string,
+        #       },
+        # }
 
     # # # # # # # # # # #
     # Utility functions #
@@ -63,10 +78,10 @@ class WFSGeojsonLayer(object):
         return formatted_coordinates
 
     # # # # # # # # # # # # # # #
-    # Layer creation function  #
+    # Layer creation function   #
     # # # # # # # # # # # # # # #
 
-    def create_layer(self, layer_typename, source_map, layer_style={}, property=None):
+    def build_layer(self, layer_typename, source_map, layer_style={}, property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
@@ -80,28 +95,83 @@ class WFSGeojsonLayer(object):
           ex: public:canada_forest_layer
 
         source_map: Map instance
-            The map instance on which the layer is to be added
+          The map instance on which the layer is to be added
 
         layer_style: dictionnary
-            ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
+          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
 
-            ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
 
         property: string
+          The property key to be used by the widget. Use the property_list() function
+          to get a list of the available properties
+
 
         """
+        # Set parameters
+        self._layer_typename = layer_typename
+        self._source_map = source_map
+        if property is not None:
+            self._property = property
+        if layer_style is not None:
+            self._layerstyle = layer_style
 
-        automatic_bbox = self._get_coords(source_map.bounds)
+        # Calculate extent filter
+        automatic_bbox = self._get_coords(self._source_map.bounds)
 
         # Fetch and prepare data
-        data = self._wfs.getfeature(typename=layer_typename, bbox=automatic_bbox, outputFormat='JSON')
+        data = self._wfs.getfeature(typename=self._layer_typename, bbox=automatic_bbox, outputFormat='JSON')
         self._geojson = json.loads(data.getvalue().decode())
 
-        layer = GeoJSON(data=self._geojson, style=layer_style)
+        # Check if layer already exists
+        if self._layer:
+            self._source_map.remove_layer(self._layer)
 
-        self.create_feature_property_widget(layer, source_map, 'main_widget', property)
+        # Create layer, default widget and add to the map
+        self._layer = GeoJSON(data=self._geojson, style=layer_style)
+        self._source_map.add_layer(self._layer)
+        self.create_feature_property_widget(self._layer, self._source_map, 'main_widget', self._property)
 
-        return layer
+    def refresh_layer(self, layer_style=None, property=None):
+        """Refresh the wfs layer for the current map extent.
+
+        Also updates the existing widgets.
+
+        Can also be used to change the layer style and the default property widget
+
+        Parameters
+        ----------
+        layer_style: dictionnary
+          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
+          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+
+        property: string
+          The property key to be used by the widget. Use the property_list() function
+          to get a list of the available properties
+        """
+
+        self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
+
+        for widget in self._widgets:
+            self.create_feature_property_widget(layer=self._layer,
+                                                src_map=self._source_map,
+                                                widget_name=widget,
+                                                property=self._widgets[widget]['property_key'],
+                                                widget_position=self._widgets[widget]['position'])
+
+    def remove_layer(self):
+        """Remove layer instance and it's widgets from map
+        """
+        # Remove maps elements
+        self.clear_property_widgets
+        self._source_map.remove_layer(self._layer)
+
+        # Reset instance
+        self._layer = None
+        self._layer_typename = ''
+        self._layerstyle = {}
+        self._property = None
+        self._geojson = None
 
     # # # # # # # # # # # # # # # #
     # Layer information functions #
@@ -135,13 +205,13 @@ class WFSGeojsonLayer(object):
             if current_feature_id == feature_id:
                 return feature['properties']
 
-    @property
+    @ property
     def geojson(self):
         """Return the imported geojson data in a python object format.
         """
         return self._geojson
 
-    @property
+    @ property
     def layer_list(self):
         """Return a simple layer list available to the WFS service
 
@@ -152,7 +222,7 @@ class WFSGeojsonLayer(object):
         """
         return sorted(self._wfs.contents.keys())
 
-    @property
+    @ property
     def property_list(self):
         """Return a list containing the properties of the first feature.
 
@@ -166,20 +236,27 @@ class WFSGeojsonLayer(object):
         """
         return self._geojson['features'][0]['properties']
 
+    @property
+    def layer(self):
+        return self._layer
+
     # # # # # # # # # # # # # # # # #
     # Property visualization widget #
     # # # # # # # # # # # # # # # # #
 
-    def _set_widget(self, widget_name, src_map, textbox, widget_position):
+    def _set_widget(self, widget_name, property, src_map, textbox, widget_position):
         if widget_name in self._widgets:
-            src_map.remove_control(self._widgets[widget_name])
+            src_map.remove_control(self._widgets[widget_name]['widget'])
 
-        self._widgets[widget_name] = WidgetControl(widget=textbox,
-                                                   position=widget_position,
-                                                   min_width=120,
-                                                   max_width=120)
+        self._widgets[widget_name] = {}
+        self._widgets[widget_name]['property_key'] = property
+        self._widgets[widget_name]['position'] = widget_position
+        self._widgets[widget_name]['widget'] = WidgetControl(widget=textbox,
+                                                             position=widget_position,
+                                                             min_width=120,
+                                                             max_width=120)
 
-        src_map.add_control(self._widgets[widget_name])
+        src_map.add_control(self._widgets[widget_name]['widget'])
 
     def clear_property_widgets(self, src_map):
         """Remove all property widgets from a map.
@@ -193,7 +270,7 @@ class WFSGeojsonLayer(object):
           The map instance from which the widgets are to be removed
         """
         for widget in self._widgets:
-            src_map.remove_control(self._widgets[widget])
+            src_map.remove_control(self._widgets[widget]['widget'])
         self._widgets.clear()
 
     def create_feature_property_widget(self,
@@ -237,7 +314,7 @@ class WFSGeojsonLayer(object):
         ''')
         textbox.layout.margin = '20px 20px 20px 20px'
 
-        self._set_widget(widget_name, src_map, textbox, widget_position)
+        self._set_widget(widget_name, property, src_map, textbox, widget_position)
 
         def _update_textbox(properties=None, **kwargs):
             # The check for properties is necessary because of a bug in ipylealet.
