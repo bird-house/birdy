@@ -4,6 +4,37 @@ from owslib.wfs import WebFeatureService
 import json
 
 
+# # # # # # # # # # #
+# Utility functions #
+# # # # # # # # # # #
+
+
+def _map_extent_to_bbox_filter(source_map):
+    """Return formatted coordinates, from ipylealet format to owslib.wfs format.
+
+    This function takes the result of ipyleaflet's Map.bounds() function and formats it
+    so it can be used as a bbox filter in an owslib WFS request.
+
+    Parameters
+    ----------
+    source_map: Map instance
+        The map instance from which the extent will calculated
+
+    Returns
+    -------
+    Tuple
+        Coordinates formatted to WebFeatureService bounding box filter.
+    """
+    coords = source_map.bounds
+    lon1 = coords[0][1]
+    lat1 = coords[0][0]
+    lon2 = coords[1][1]
+    lat2 = coords[1][0]
+    formatted_coordinates = (lon1, lat1, lon2, lat2)
+
+    return formatted_coordinates
+
+
 class IpyleafletWFS(object):
     """Create a connection to a WFS service capable of geojson output.
 
@@ -49,37 +80,52 @@ class IpyleafletWFS(object):
         #       },
         # }
 
-    # # # # # # # # # # #
-    # Utility functions #
-    # # # # # # # # # # #
-
-    def _get_first_property_key(self, feature):
-        return list(feature['properties'].keys())[0]
-
-    def _get_coords(self, coords):
-        """Return formatted coordinates, from ipylealet format to owslib.wfs format.
-
-        Parameters
-        ----------
-        coords: Tuple
-          Coordinates as taken by the bounds method of an ipyleaflet Map.
-
-        Returns
-        -------
-        Tuple
-          Coordinates formatted to WebFeatureService bounding box filter.
-        """
-        lon1 = coords[0][1]
-        lat1 = coords[0][0]
-        lon2 = coords[1][1]
-        lat2 = coords[1][0]
-        formatted_coordinates = (lon1, lat1, lon2, lat2)
-
-        return formatted_coordinates
-
     # # # # # # # # # # # # # # #
     # Layer creation function   #
     # # # # # # # # # # # # # # #
+
+    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style={}):
+        """Create a static ipyleaflett GeoJSON layer from a WFS service
+
+        Simple wrapper for a WFS => GeoJSON layer, using owslib.
+
+        Will create a GeoJSON layer, filtered by the extent of the source_map parameter.
+        If no source map is given, it will not filter by extent, which can cause problems
+        with large layers
+
+        WFS service need to have geojson output.
+
+        Parameters
+        ----------
+        layer_typename: string
+          Typename of the layer to display. Listed as Layer_ID by get_layer_list().
+          Must include namespace and layer name, separated  by a colon.
+
+          ex: public:canada_forest_layer
+
+        source_map: Map instance
+          The map instance from which the extent will be used to filter the request
+
+        layer_style: dictionnary
+          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
+
+          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+
+        Returns
+        -------
+        GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
+        """
+        # Calculate extent filter
+        bbox_filter_coords = _map_extent_to_bbox_filter(source_map)
+
+        # Fetch and prepare data
+        data = self._wfs.getfeature(typename=layer_typename, bbox=bbox_filter_coords, outputFormat='JSON')
+        self._geojson = json.loads(data.getvalue().decode())
+
+        # Create layer, default widget and add to the map
+        layer = GeoJSON(data=self._geojson, style=layer_style)
+
+        return layer
 
     def build_layer(self, layer_typename, source_map, layer_style={}, property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
@@ -106,7 +152,6 @@ class IpyleafletWFS(object):
           The property key to be used by the widget. Use the property_list() function
           to get a list of the available properties
 
-
         """
         # Set parameters
         self._layer_typename = layer_typename
@@ -117,10 +162,10 @@ class IpyleafletWFS(object):
             self._layerstyle = layer_style
 
         # Calculate extent filter
-        automatic_bbox = self._get_coords(self._source_map.bounds)
+        bbox_filter_coords = _map_extent_to_bbox_filter(self._source_map)
 
         # Fetch and prepare data
-        data = self._wfs.getfeature(typename=self._layer_typename, bbox=automatic_bbox, outputFormat='JSON')
+        data = self._wfs.getfeature(typename=self._layer_typename, bbox=bbox_filter_coords, outputFormat='JSON')
         self._geojson = json.loads(data.getvalue().decode())
 
         # Check if layer already exists
@@ -202,7 +247,7 @@ class IpyleafletWFS(object):
             # The id field is usually the first field. Since the name is
             # always different, this is the only assumption that can be
             # made to automate this process.
-            first_key = self._get_first_property_key(feature)
+            first_key = list(feature['properties'].keys())[0]
             current_feature_id = feature['properties'][first_key]
 
             if current_feature_id == feature_id:
