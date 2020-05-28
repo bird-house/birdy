@@ -130,7 +130,7 @@ class IpyleafletWFS(object):
         # Create layer, default widget and add to the map
         self._layer = GeoJSON(data=self._geojson, style=layer_style)
         self._source_map.add_layer(self._layer)
-        self.create_feature_property_widget(self._layer, self._source_map, 'main_widget', self._property)
+        self.create_feature_property_widget('main_widget', self._property)
 
     def refresh_layer(self, layer_style=None, property=None):
         """Refresh the wfs layer for the current map extent.
@@ -149,29 +149,32 @@ class IpyleafletWFS(object):
           The property key to be used by the widget. Use the property_list() function
           to get a list of the available properties
         """
+        if self._layer:
+            self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
 
-        self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
-
-        for widget in self._widgets:
-            self.create_feature_property_widget(layer=self._layer,
-                                                src_map=self._source_map,
-                                                widget_name=widget,
-                                                property=self._widgets[widget]['property_key'],
-                                                widget_position=self._widgets[widget]['position'])
+            for widget in self._widgets:
+                self.create_feature_property_widget(widget_name=widget,
+                                                    property=self._widgets[widget]['property_key'],
+                                                    widget_position=self._widgets[widget]['position'])
+        else:
+            print('There is no layer to refresh')
 
     def remove_layer(self):
         """Remove layer instance and it's widgets from map
         """
-        # Remove maps elements
-        self.clear_property_widgets
-        self._source_map.remove_layer(self._layer)
+        if self._layer:
+            # Remove maps elements
+            self.clear_property_widgets()
+            self._source_map.remove_layer(self._layer)
 
-        # Reset instance
-        self._layer = None
-        self._layer_typename = ''
-        self._layerstyle = {}
-        self._property = None
-        self._geojson = None
+            # Reset instance
+            self._layer = None
+            self._layer_typename = ''
+            self._layerstyle = {}
+            self._property = None
+            self._geojson = None
+        else:
+            print('There is no layer to remove')
 
     # # # # # # # # # # # # # # # #
     # Layer information functions #
@@ -258,7 +261,7 @@ class IpyleafletWFS(object):
 
         src_map.add_control(self._widgets[widget_name]['widget'])
 
-    def clear_property_widgets(self, src_map):
+    def clear_property_widgets(self):
         """Remove all property widgets from a map.
 
         This function will remove the property widgets from a given map, without
@@ -270,21 +273,16 @@ class IpyleafletWFS(object):
           The map instance from which the widgets are to be removed
         """
         for widget in self._widgets:
-            src_map.remove_control(self._widgets[widget]['widget'])
+            self._source_map.remove_control(self._widgets[widget]['widget'])
         self._widgets.clear()
 
-    def create_feature_property_widget(self,
-                                       layer,
-                                       src_map,
-                                       widget_name,
-                                       property=None,
-                                       widget_position='bottomright'):
+    def create_feature_property_widget(self, widget_name, property=None, widget_position='bottomright'):
         """Create a visualization widget for a specific feature property
 
         Once the widget is created, click on a map feature to have the information
         appear in the corresponding box.
 
-        To replace the default widget that get created by the create_layer() function,
+        To replace the default widget that get created by the build_layer() function,
         set the  widget_name parameter to 'main_widget'
 
         Widgets create by this function are unique by their widget_name variable.
@@ -314,7 +312,7 @@ class IpyleafletWFS(object):
         ''')
         textbox.layout.margin = '20px 20px 20px 20px'
 
-        self._set_widget(widget_name, property, src_map, textbox, widget_position)
+        self._set_widget(widget_name, property, self._source_map, textbox, widget_position)
 
         def _update_textbox(properties=None, **kwargs):
             # The check for properties is necessary because of a bug in ipylealet.
@@ -331,4 +329,4 @@ class IpyleafletWFS(object):
                 <b style="font-size:10px">{}<b>
             '''.format(key, properties[key])
 
-        layer.on_click(_update_textbox)
+        self._layer.on_click(_update_textbox)
