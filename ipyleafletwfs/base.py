@@ -1,5 +1,5 @@
 from ipyleaflet import GeoJSON, WidgetControl
-from ipywidgets import HTML
+from ipywidgets import HTML, Button
 from owslib.wfs import WebFeatureService
 import json
 
@@ -63,16 +63,17 @@ class IpyleafletWFS(object):
     """
 
     def __init__(self, url, wfs_version='2.0.0'):
-        self._layer_typename = ''
+        self._geojson = None
         self._layer = None
-        self._source_map = None
+        self._layer_typename = ''
         self._layerstyle = {}
         self._property = None
+        self._property_widgets = {}
+        self._refresh_widget = None
+        self._source_map = None
         self._wfs = WebFeatureService(url, version=wfs_version)
-        self._geojson = None
-        self._widgets = {}
 
-        # _widgets structure is as follows
+        # _property_widgets structure is as follows
         # { 'widget_name': {
         #       'widget': widget instance,
         #       'property_key': property_string,
@@ -83,49 +84,6 @@ class IpyleafletWFS(object):
     # # # # # # # # # # # # # # #
     # Layer creation function   #
     # # # # # # # # # # # # # # #
-
-    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style={}):
-        """Create a static ipyleaflett GeoJSON layer from a WFS service
-
-        Simple wrapper for a WFS => GeoJSON layer, using owslib.
-
-        Will create a GeoJSON layer, filtered by the extent of the source_map parameter.
-        If no source map is given, it will not filter by extent, which can cause problems
-        with large layers
-
-        WFS service need to have geojson output.
-
-        Parameters
-        ----------
-        layer_typename: string
-          Typename of the layer to display. Listed as Layer_ID by get_layer_list().
-          Must include namespace and layer name, separated  by a colon.
-
-          ex: public:canada_forest_layer
-
-        source_map: Map instance
-          The map instance from which the extent will be used to filter the request
-
-        layer_style: dictionnary
-          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
-
-          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
-
-        Returns
-        -------
-        GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
-        """
-        # Calculate extent filter
-        bbox_filter_coords = _map_extent_to_bbox_filter(source_map)
-
-        # Fetch and prepare data
-        data = self._wfs.getfeature(typename=layer_typename, bbox=bbox_filter_coords, outputFormat='JSON')
-        self._geojson = json.loads(data.getvalue().decode())
-
-        # Create layer, default widget and add to the map
-        layer = GeoJSON(data=self._geojson, style=layer_style)
-
-        return layer
 
     def build_layer(self, layer_typename, source_map, layer_style={}, property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
@@ -172,10 +130,58 @@ class IpyleafletWFS(object):
         if self._layer:
             self._source_map.remove_layer(self._layer)
 
-        # Create layer, default widget and add to the map
+        # Create layer and add to the map
         self._layer = GeoJSON(data=self._geojson, style=layer_style)
         self._source_map.add_layer(self._layer)
+
+        # Create default property widget
         self.create_feature_property_widget('main_widget', self._property)
+
+        # Create refresh button
+        self._create_refresh_widget()
+
+    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style={}):
+        """Create a static ipyleaflett GeoJSON layer from a WFS service
+
+        Simple wrapper for a WFS => GeoJSON layer, using owslib.
+
+        Will create a GeoJSON layer, filtered by the extent of the source_map parameter.
+        If no source map is given, it will not filter by extent, which can cause problems
+        with large layers
+
+        WFS service need to have geojson output.
+
+        Parameters
+        ----------
+        layer_typename: string
+          Typename of the layer to display. Listed as Layer_ID by get_layer_list().
+          Must include namespace and layer name, separated  by a colon.
+
+          ex: public:canada_forest_layer
+
+        source_map: Map instance
+          The map instance from which the extent will be used to filter the request
+
+        layer_style: dictionnary
+          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
+
+          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+
+        Returns
+        -------
+        GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
+        """
+        # Calculate extent filter
+        bbox_filter_coords = _map_extent_to_bbox_filter(source_map)
+
+        # Fetch and prepare data
+        data = self._wfs.getfeature(typename=layer_typename, bbox=bbox_filter_coords, outputFormat='JSON')
+        self._geojson = json.loads(data.getvalue().decode())
+
+        # Create layer, default widget and add to the map
+        layer = GeoJSON(data=self._geojson, style=layer_style)
+
+        return layer
 
     def refresh_layer(self, layer_style=None, property=None):
         """Refresh the wfs layer for the current map extent.
@@ -197,10 +203,10 @@ class IpyleafletWFS(object):
         if self._layer:
             self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
 
-            for widget in self._widgets:
+            for widget in self._property_widgets:
                 self.create_feature_property_widget(widget_name=widget,
-                                                    property=self._widgets[widget]['property_key'],
-                                                    widget_position=self._widgets[widget]['position'])
+                                                    property=self._property_widgets[widget]['property_key'],
+                                                    widget_position=self._property_widgets[widget]['position'])
         else:
             print('There is no layer to refresh')
 
@@ -210,6 +216,7 @@ class IpyleafletWFS(object):
         if self._layer:
             # Remove maps elements
             self.clear_property_widgets()
+            self._source_map.remove_control(self._refresh_widget)
             self._source_map.remove_layer(self._layer)
 
             # Reset instance
@@ -218,6 +225,7 @@ class IpyleafletWFS(object):
             self._layerstyle = {}
             self._property = None
             self._geojson = None
+            self._refresh_widget = None
         else:
             print('There is no layer to remove')
 
@@ -288,23 +296,30 @@ class IpyleafletWFS(object):
     def layer(self):
         return self._layer
 
-    # # # # # # # # # # # # # # # # #
-    # Property visualization widget #
-    # # # # # # # # # # # # # # # # #
+    # # # # # # # # # #
+    # Widget creation #
+    # # # # # # # # # #
 
     def _set_widget(self, widget_name, property, src_map, textbox, widget_position):
-        if widget_name in self._widgets:
-            src_map.remove_control(self._widgets[widget_name]['widget'])
+        if widget_name in self._property_widgets:
+            src_map.remove_control(self._property_widgets[widget_name]['widget'])
 
-        self._widgets[widget_name] = {}
-        self._widgets[widget_name]['property_key'] = property
-        self._widgets[widget_name]['position'] = widget_position
-        self._widgets[widget_name]['widget'] = WidgetControl(widget=textbox,
-                                                             position=widget_position,
-                                                             min_width=120,
-                                                             max_width=120)
+        self._property_widgets[widget_name] = {}
+        self._property_widgets[widget_name]['property_key'] = property
+        self._property_widgets[widget_name]['position'] = widget_position
+        self._property_widgets[widget_name]['widget'] = WidgetControl(widget=textbox,
+                                                                      position=widget_position,
+                                                                      min_width=120,
+                                                                      max_width=120)
 
-        src_map.add_control(self._widgets[widget_name]['widget'])
+        src_map.add_control(self._property_widgets[widget_name]['widget'])
+
+    def _create_refresh_widget(self):
+        if self._refresh_widget is None:
+            button = Button(description="Refresh WFS layer")
+            button.on_click(self.refresh_layer)
+            self._refresh_widget = WidgetControl(widget=button, position='topright')
+            self._source_map.add_control(self._refresh_widget)
 
     def clear_property_widgets(self):
         """Remove all property widgets from a map.
@@ -317,9 +332,9 @@ class IpyleafletWFS(object):
         src_map: Map instance
           The map instance from which the widgets are to be removed
         """
-        for widget in self._widgets:
-            self._source_map.remove_control(self._widgets[widget]['widget'])
-        self._widgets.clear()
+        for widget in self._property_widgets:
+            self._source_map.remove_control(self._property_widgets[widget]['widget'])
+        self._property_widgets.clear()
 
     def create_feature_property_widget(self, widget_name, property=None, widget_position='bottomright'):
         """Create a visualization widget for a specific feature property
@@ -345,7 +360,8 @@ class IpyleafletWFS(object):
 
         property: string
           The property key to be used by the widget. Use the property_list() function
-          to get a list of the available properties
+          to get a list of the available properties. If left empty, it will default to
+          the first property attribute in the list.
 
         widget_position: string
           Position on the map for the widget. Choose between ‘bottomleft’, ‘bottomright’, ‘topleft’, or ‘topright’
