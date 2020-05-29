@@ -105,16 +105,16 @@ class IpyleafletWFS(object):
           ex: public:canada_forest_layer
 
         source_map: Map instance
-          The map instance on which the layer is to be added
+          The map instance on which the layer is to be added.
 
         layer_style: dictionnary
-          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
-
-          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+          ipyleaflet GeoJSON style format, for example
+          `{ 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }`.
+          See ipyleaflet documentation for more information.
 
         feature_property: string
           The property key to be used by the widget. Use the property_list() function
-          to get a list of the available properties
+          to get a list of the available properties.
 
         """
         # Check if layer already exists
@@ -151,13 +151,13 @@ class IpyleafletWFS(object):
         self._create_refresh_widget()
 
     def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style=None):
-        """Create a static ipyleaflett GeoJSON layer from a WFS service
+        """Create a static ipyleaflett GeoJSON layer from a WFS service.
 
         Simple wrapper for a WFS => GeoJSON layer, using owslib.
 
         Will create a GeoJSON layer, filtered by the extent of the source_map parameter.
         If no source map is given, it will not filter by extent, which can cause problems
-        with large layers
+        with large layers.
 
         WFS service need to have geojson output.
 
@@ -170,16 +170,16 @@ class IpyleafletWFS(object):
           ex: public:canada_forest_layer
 
         source_map: Map instance
-          The map instance from which the extent will be used to filter the request
+          The map instance from which the extent will be used to filter the request.
 
         layer_style: dictionnary
-          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
-
-          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
+          ipyleaflet GeoJSON style format, for example
+          `{ 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }`.
+          See ipyleaflet documentation for more information.
 
         Returns
         -------
-        GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
+        GeoJSON layer: an instance of an ipyleaflet GeoJSON layer.
         """
 
         style = layer_style
@@ -219,7 +219,7 @@ class IpyleafletWFS(object):
             print('There is no layer to refresh')
 
     def remove_layer(self):
-        """Remove layer instance and it's widgets from map
+        """Remove layer instance and it's widgets from map.
         """
         if self._layer:
             # Remove maps elements
@@ -242,7 +242,7 @@ class IpyleafletWFS(object):
     # # # # # # # # # # # # # # # #
 
     def feature_properties_by_id(self, feature_id):
-        """Return the properties of a feature
+        """Return the properties of a feature.
 
         The id field is usually the first field. Since the name is
         always different, this is the only assumption that can be
@@ -277,7 +277,7 @@ class IpyleafletWFS(object):
 
     @ property
     def layer_list(self):
-        """Return a simple layer list available to the WFS service
+        """Return a simple layer list available to the WFS service.
 
         Returns
         -------
@@ -291,12 +291,12 @@ class IpyleafletWFS(object):
         """Return a list containing the properties of the first feature.
 
         Retrieves the available properties for use subsequent use
-        by the feature property widget
+        by the feature property widget.
 
         Returns
         -------
         Dict
-          A dictionary  of the layer properties
+          A dictionary  of the layer properties.
         """
         return self._geojson['features'][0]['properties']
 
@@ -333,33 +333,33 @@ class IpyleafletWFS(object):
         """Remove all property widgets from a map.
 
         This function will remove the property widgets from a given map, without
-        affecting other widgets
+        affecting other widgets.
 
         Parameters
         ----------
         src_map: Map instance
-          The map instance from which the widgets are to be removed
+          The map instance from which the widgets are to be removed.
         """
         for widget in self._property_widgets:
             self._source_map.remove_control(self._property_widgets[widget]['widget'])
         self._property_widgets = None
 
     def create_feature_property_widget(self, widget_name, feature_property=None, widget_position='bottomright'):
-        """Create a visualization widget for a specific feature property
+        """Create a visualization widget for a specific feature property.
 
-        Will create a widget for the layer and source map used to create
+        Will create a widget for the layer and source map.
         Once the widget is created, click on a map feature to have the information
         appear in the corresponding box.
 
         To replace the default widget that get created by the build_layer() function,
-        set the  widget_name parameter to 'main_widget'
+        set the  widget_name parameter to 'main_widget'.
 
         Widgets create by this function are unique by their widget_name variable.
 
         Parameters
         ----------
         widget_name: string
-          Name of the widget. Must be unique or will overwrite existing widget
+          Name of the widget. Must be unique or will overwrite existing widget.
 
         feature_property: string
           The property key to be used by the widget. Use the property_list() function
@@ -367,7 +367,7 @@ class IpyleafletWFS(object):
           the first property attribute in the list.
 
         widget_position: string
-          Position on the map for the widget. Choose between ‘bottomleft’, ‘bottomright’, ‘topleft’, or ‘topright’
+          Position on the map for the widget. Choose between ‘bottomleft’, ‘bottomright’, ‘topleft’, or ‘topright’.
 
         """
 
