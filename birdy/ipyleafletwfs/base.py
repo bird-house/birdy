@@ -196,7 +196,7 @@ class IpyleafletWFS(object):
 
         return layer
 
-    def _refresh_layer(self, layer_style=None, property=None):
+    def _refresh_layer(self, placeholder=None):
         """Refresh the wfs layer for the current map extent.
 
         Also updates the existing widgets.
@@ -205,13 +205,8 @@ class IpyleafletWFS(object):
 
         Parameters
         ----------
-        layer_style: dictionnary
-          ipyleaflet GeoJSON style format. See ipyleaflet documentation for more information
-          ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
-
-        property: string
-          The property key to be used by the widget. Use the property_list() function
-          to get a list of the available properties
+        placeholder: string
+          Parameter is only there so that button.on_click() will work properly.
         """
         if self._layer:
             self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
