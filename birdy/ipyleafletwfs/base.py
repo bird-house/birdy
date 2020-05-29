@@ -45,7 +45,11 @@ class IpyleafletWFS(object):
     a geojson output capable WFS, which is then used to create an ipyleaflet
     GeoJSON layer with the create_wfsgeojson_layer() function.
 
-    For now, only a single layer per instance is supported.
+    For now, the automation done through build_layer() supports only a single
+    layer per instance is supported.
+
+    For multiple layers, used different instances of IpylealetWFS and Ipyleaflet.Map()
+    or use the create_wfsgeojson_layer() function to build your own custom map.
 
     Parameters:
     -----------
@@ -58,8 +62,7 @@ class IpyleafletWFS(object):
     Returns
     -------
     IpyleafletWFS instance
-      Instance from which the WFS layers can be created and then added to an
-      ipyleaflet Map
+      Instance from which the WFS layers can be created.
     """
 
     def __init__(self, url, wfs_version='2.0.0'):
@@ -89,6 +92,8 @@ class IpyleafletWFS(object):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
+
+        Running this function multiple times will overwrite the previous layer and widgets.
 
         Parameters
         ----------
@@ -339,6 +344,7 @@ class IpyleafletWFS(object):
     def create_feature_property_widget(self, widget_name, property=None, widget_position='bottomright'):
         """Create a visualization widget for a specific feature property
 
+        Will create a widget for the layer and source map used to create
         Once the widget is created, click on a map feature to have the information
         appear in the corresponding box.
 
@@ -349,12 +355,6 @@ class IpyleafletWFS(object):
 
         Parameters
         ----------
-        layer: WFS Layer
-          A WFS layer created by this module, or any ipyleaflet GeoJSON layer
-
-        src_map: Map instance
-          The map instance used in the current notebook
-
         widget_name: string
           Name of the widget. Must be unique or will overwrite existing widget
 
