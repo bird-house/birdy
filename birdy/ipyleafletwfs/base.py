@@ -70,7 +70,7 @@ class IpyleafletWFS(object):
         self._geojson = None
         self._layer = None
         self._layer_typename = ''
-        self._layerstyle = {}
+        self._layerstyle = None
         self._property = None
         self._property_widgets = {}
         self._refresh_widget = None
@@ -89,7 +89,7 @@ class IpyleafletWFS(object):
     # Layer creation function   #
     # # # # # # # # # # # # # # #
 
-    def build_layer(self, layer_typename, source_map, layer_style={}, property=None):
+    def build_layer(self, layer_typename, source_map, layer_style=None, property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
@@ -128,6 +128,8 @@ class IpyleafletWFS(object):
             self._property = property
         if layer_style is not None:
             self._layerstyle = layer_style
+        else:
+            self._layerstyle = {}
 
         # Calculate extent filter
         bbox_filter_coords = _map_extent_to_bbox_filter(self._source_map)
@@ -146,7 +148,7 @@ class IpyleafletWFS(object):
         # Create refresh button
         self._create_refresh_widget()
 
-    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style={}):
+    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style=None):
         """Create a static ipyleaflett GeoJSON layer from a WFS service
 
         Simple wrapper for a WFS => GeoJSON layer, using owslib.
@@ -177,6 +179,12 @@ class IpyleafletWFS(object):
         -------
         GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
         """
+
+        if layer_style is None:
+            style = {}
+        else:
+            style = layer_style
+
         # Calculate extent filter
         bbox_filter_coords = _map_extent_to_bbox_filter(source_map)
 
@@ -185,7 +193,7 @@ class IpyleafletWFS(object):
         self._geojson = json.loads(data.getvalue().decode())
 
         # Create layer, default widget and add to the map
-        layer = GeoJSON(data=self._geojson, style=layer_style)
+        layer = GeoJSON(data=self._geojson, style=style)
 
         return layer
 
