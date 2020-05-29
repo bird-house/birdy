@@ -72,7 +72,7 @@ class IpyleafletWFS(object):
         self._layer_typename = ''
         self._layerstyle = {}
         self._property = None
-        self._property_widgets = {}
+        self._property_widgets = None
         self._refresh_widget = None
         self._source_map = None
         self._wfs = WebFeatureService(url, version=wfs_version)
@@ -89,7 +89,7 @@ class IpyleafletWFS(object):
     # Layer creation function   #
     # # # # # # # # # # # # # # #
 
-    def build_layer(self, layer_typename, source_map, layer_style=None, property=None):
+    def build_layer(self, layer_typename, source_map, layer_style=None, feature_property=None):
         """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
@@ -112,7 +112,7 @@ class IpyleafletWFS(object):
 
           ex: { 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }
 
-        property: string
+        feature_property: string
           The property key to be used by the widget. Use the property_list() function
           to get a list of the available properties
 
@@ -122,8 +122,8 @@ class IpyleafletWFS(object):
             self._source_map.remove_layer(self._layer)
 
         # Filter for None values
-        if property is not None:
-            self._property = property
+        if feature_property is not None:
+            self._property = feature_property
         if layer_style is not None:
             self._layerstyle = layer_style
 
@@ -143,7 +143,9 @@ class IpyleafletWFS(object):
         self._source_map.add_layer(self._layer)
 
         # Create default property widget
-        self.create_feature_property_widget('main_widget', self._property)
+        if self._property_widgets is None:
+            self._property_widgets = {}
+            self.create_feature_property_widget('main_widget', self._property)
 
         # Create refresh button
         self._create_refresh_widget()
@@ -201,8 +203,6 @@ class IpyleafletWFS(object):
 
         Also updates the existing widgets.
 
-        Can also be used to change the layer style and the default property widget
-
         Parameters
         ----------
         placeholder: string
@@ -210,11 +210,11 @@ class IpyleafletWFS(object):
         """
         if self._layer:
             self.build_layer(self._layer_typename, self._source_map, self._layerstyle, self._property)
-
             for widget in self._property_widgets:
                 self.create_feature_property_widget(widget_name=widget,
-                                                    property=self._property_widgets[widget]['property_key'],
+                                                    feature_property=self._property_widgets[widget]['property_key'],
                                                     widget_position=self._property_widgets[widget]['position'])
+
         else:
             print('There is no layer to refresh')
 
@@ -308,12 +308,12 @@ class IpyleafletWFS(object):
     # Widget creation #
     # # # # # # # # # #
 
-    def _set_widget(self, widget_name, property, src_map, textbox, widget_position):
+    def _set_widget(self, widget_name, feature_property, src_map, textbox, widget_position):
         if widget_name in self._property_widgets:
             src_map.remove_control(self._property_widgets[widget_name]['widget'])
 
         self._property_widgets[widget_name] = {}
-        self._property_widgets[widget_name]['property_key'] = property
+        self._property_widgets[widget_name]['property_key'] = feature_property
         self._property_widgets[widget_name]['position'] = widget_position
         self._property_widgets[widget_name]['widget'] = WidgetControl(widget=textbox,
                                                                       position=widget_position,
@@ -342,9 +342,9 @@ class IpyleafletWFS(object):
         """
         for widget in self._property_widgets:
             self._source_map.remove_control(self._property_widgets[widget]['widget'])
-        self._property_widgets.clear()
+        self._property_widgets = None
 
-    def create_feature_property_widget(self, widget_name, property=None, widget_position='bottomright'):
+    def create_feature_property_widget(self, widget_name, feature_property=None, widget_position='bottomright'):
         """Create a visualization widget for a specific feature property
 
         Will create a widget for the layer and source map used to create
@@ -361,7 +361,7 @@ class IpyleafletWFS(object):
         widget_name: string
           Name of the widget. Must be unique or will overwrite existing widget
 
-        property: string
+        feature_property: string
           The property key to be used by the widget. Use the property_list() function
           to get a list of the available properties. If left empty, it will default to
           the first property attribute in the list.
@@ -376,7 +376,7 @@ class IpyleafletWFS(object):
         ''')
         textbox.layout.margin = '20px 20px 20px 20px'
 
-        self._set_widget(widget_name, property, self._source_map, textbox, widget_position)
+        self._set_widget(widget_name, feature_property, self._source_map, textbox, widget_position)
 
         def _update_textbox(properties=None, **kwargs):
             # The check for properties is necessary because of a bug in ipylealet.
@@ -386,8 +386,8 @@ class IpyleafletWFS(object):
                 return
 
             key = list(properties.keys())[0]
-            if property:
-                key = property
+            if feature_property:
+                key = feature_property
             textbox.value = '''
                 <h4>{}<h4>
                 <b style="font-size:10px">{}<b>
