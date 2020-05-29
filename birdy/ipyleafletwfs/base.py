@@ -41,15 +41,16 @@ class IpyleafletWFS(object):
     This class is a small wrapper for ipylealet to facilitate the use of
     a WFS service, as well as provide some automation.
 
-    Access to a WFS service is done through the owslib module and requires
-    a geojson output capable WFS, which is then used to create an ipyleaflet
-    GeoJSON layer with the create_wfsgeojson_layer() function.
+    Request to the WFS service is done through the owslib module and requires
+    a geojson output capable WFS. The geojson data is filtered for the map extent
+    and loaded as an ipyleaflet GeoJSON layer.
 
-    For now, the automation done through build_layer() supports only a single
+    The automation done through build_layer() supports only a single
     layer per instance is supported.
 
     For multiple layers, used different instances of IpylealetWFS and Ipyleaflet.Map()
-    or use the create_wfsgeojson_layer() function to build your own custom map.
+    or use the create_wfsgeojson_layer() function to build your own custom map and widgets
+    with ipyleaflet.
 
     Parameters:
     -----------
@@ -116,6 +117,10 @@ class IpyleafletWFS(object):
           to get a list of the available properties
 
         """
+        # Check if layer already exists
+        if self._layer:
+            self._source_map.remove_layer(self._layer)
+
         # Set parameters
         self._layer_typename = layer_typename
         self._source_map = source_map
@@ -130,10 +135,6 @@ class IpyleafletWFS(object):
         # Fetch and prepare data
         data = self._wfs.getfeature(typename=self._layer_typename, bbox=bbox_filter_coords, outputFormat='JSON')
         self._geojson = json.loads(data.getvalue().decode())
-
-        # Check if layer already exists
-        if self._layer:
-            self._source_map.remove_layer(self._layer)
 
         # Create layer and add to the map
         self._layer = GeoJSON(data=self._geojson, style=layer_style)
@@ -188,7 +189,7 @@ class IpyleafletWFS(object):
 
         return layer
 
-    def refresh_layer(self, layer_style=None, property=None):
+    def _refresh_layer(self, layer_style=None, property=None):
         """Refresh the wfs layer for the current map extent.
 
         Also updates the existing widgets.
@@ -258,8 +259,8 @@ class IpyleafletWFS(object):
         """
         for feature in self._geojson['features']:
             # The id field is usually the first field. Since the name is
-            # always different, this is the only assumption that can be
-            # made to automate this process.
+            # always different, this is the only assumption I could make
+            # to automate this process.
             first_key = list(feature['properties'].keys())[0]
             current_feature_id = feature['properties'][first_key]
 
@@ -322,7 +323,7 @@ class IpyleafletWFS(object):
     def _create_refresh_widget(self):
         if self._refresh_widget is None:
             button = Button(description="Refresh WFS layer")
-            button.on_click(self.refresh_layer)
+            button.on_click(self._refresh_layer)
             self._refresh_widget = WidgetControl(widget=button, position='topright')
             self._source_map.add_control(self._refresh_widget)
 
