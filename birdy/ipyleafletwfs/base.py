@@ -70,7 +70,7 @@ class IpyleafletWFS(object):
         self._geojson = None
         self._layer = None
         self._layer_typename = ''
-        self._layerstyle = None
+        self._layerstyle = {}
         self._property = None
         self._property_widgets = {}
         self._refresh_widget = None
@@ -121,15 +121,15 @@ class IpyleafletWFS(object):
         if self._layer:
             self._source_map.remove_layer(self._layer)
 
-        # Set parameters
-        self._layer_typename = layer_typename
-        self._source_map = source_map
+        # Filter for None values
         if property is not None:
             self._property = property
         if layer_style is not None:
             self._layerstyle = layer_style
-        else:
-            self._layerstyle = {}
+
+        # Set parameters
+        self._layer_typename = layer_typename
+        self._source_map = source_map
 
         # Calculate extent filter
         bbox_filter_coords = _map_extent_to_bbox_filter(self._source_map)
@@ -139,7 +139,7 @@ class IpyleafletWFS(object):
         self._geojson = json.loads(data.getvalue().decode())
 
         # Create layer and add to the map
-        self._layer = GeoJSON(data=self._geojson, style=layer_style)
+        self._layer = GeoJSON(data=self._geojson, style=self._layerstyle)
         self._source_map.add_layer(self._layer)
 
         # Create default property widget
@@ -180,10 +180,9 @@ class IpyleafletWFS(object):
         GeoJSON layer: an instance of an ipyleaflet GeoJSON layer
         """
 
+        style = layer_style
         if layer_style is None:
             style = {}
-        else:
-            style = layer_style
 
         # Calculate extent filter
         bbox_filter_coords = _map_extent_to_bbox_filter(source_map)
