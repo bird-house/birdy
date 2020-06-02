@@ -340,9 +340,10 @@ class IpyleafletWFS(object):
         src_map: Map instance
           The map instance from which the widgets are to be removed.
         """
-        for widget in self._property_widgets:
-            self._source_map.remove_control(self._property_widgets[widget]['widget'])
-        self._property_widgets = None
+        if self._property_widgets:
+            for widget in self._property_widgets:
+                self._source_map.remove_control(self._property_widgets[widget]['widget'])
+            self._property_widgets = None
 
     def create_feature_property_widget(self, widget_name, feature_property=None, widget_position='bottomright'):
         """Create a visualization widget for a specific feature property.
