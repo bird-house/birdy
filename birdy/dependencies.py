@@ -26,3 +26,9 @@ try:
 except ImportError:
     IPython = None
     warnings.warn('IPython is not supported. Please install *ipython*.', IPythonWarning)
+
+try:
+    import ipyleaflet
+except ImportError:
+    ipyleaflet = None
+    warnings.warn('Ipyleaflet is not supported. Please install *ipyleaflet*.', IPythonWarning)

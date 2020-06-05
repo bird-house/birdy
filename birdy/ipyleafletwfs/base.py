@@ -1,8 +1,10 @@
-from ipyleaflet import GeoJSON, WidgetControl
-from ipywidgets import HTML, Button
+from birdy.dependencies import ipyleaflet as ipyl
+from birdy.dependencies import ipywidgets as ipyw
 from owslib.wfs import WebFeatureService
 import json
 
+ipyl_not_installed = 'Ipyleaflet is not supported. Please install *ipyleaflet*.'
+ipyw_not_installed = 'Ipywidgets is not supported. Please install *ipywidgets*.'
 
 # # # # # # # # # # #
 # Utility functions #
@@ -77,6 +79,10 @@ class IpyleafletWFS(object):
         self._source_map = None
         self._wfs = WebFeatureService(url, version=wfs_version)
 
+        # Check if dependency is installed
+        if ipyl is None:
+            print(ipyl_not_installed)
+
         # _property_widgets structure is as follows
         # { 'widget_name': {
         #       'widget': widget instance,
@@ -117,6 +123,11 @@ class IpyleafletWFS(object):
           to get a list of the available properties.
 
         """
+        # Check if dependency is installed
+        if ipyl is None:
+            print(ipyl_not_installed)
+            return
+
         # Check if layer already exists
         if self._layer:
             self._source_map.remove_layer(self._layer)
@@ -139,7 +150,7 @@ class IpyleafletWFS(object):
         self._geojson = json.loads(data.getvalue().decode())
 
         # Create layer and add to the map
-        self._layer = GeoJSON(data=self._geojson, style=self._layerstyle)
+        self._layer = ipyl.GeoJSON(data=self._geojson, style=self._layerstyle)
         self._source_map.add_layer(self._layer)
 
         # Create default property widget
@@ -181,6 +192,10 @@ class IpyleafletWFS(object):
         -------
         GeoJSON layer: an instance of an ipyleaflet GeoJSON layer.
         """
+        # Check if dependency is installed
+        if ipyl is None:
+            print(ipyl_not_installed)
+            return
 
         style = layer_style
         if layer_style is None:
@@ -194,7 +209,7 @@ class IpyleafletWFS(object):
         self._geojson = json.loads(data.getvalue().decode())
 
         # Create layer, default widget and add to the map
-        layer = GeoJSON(data=self._geojson, style=style)
+        layer = ipyl.GeoJSON(data=self._geojson, style=style)
 
         return layer
 
@@ -315,18 +330,22 @@ class IpyleafletWFS(object):
         self._property_widgets[widget_name] = {}
         self._property_widgets[widget_name]['property_key'] = feature_property
         self._property_widgets[widget_name]['position'] = widget_position
-        self._property_widgets[widget_name]['widget'] = WidgetControl(widget=textbox,
-                                                                      position=widget_position,
-                                                                      min_width=120,
-                                                                      max_width=120)
+        self._property_widgets[widget_name]['widget'] = ipyl.WidgetControl(widget=textbox,
+                                                                           position=widget_position,
+                                                                           min_width=120,
+                                                                           max_width=120)
 
         src_map.add_control(self._property_widgets[widget_name]['widget'])
 
     def _create_refresh_widget(self):
+        if ipyw is None:
+            print(ipyw_not_installed)
+            return
+
         if self._refresh_widget is None:
-            button = Button(description="Refresh WFS layer")
+            button = ipyw.Button(description="Refresh WFS layer")
             button.on_click(self._refresh_layer)
-            self._refresh_widget = WidgetControl(widget=button, position='topright')
+            self._refresh_widget = ipyl.WidgetControl(widget=button, position='topright')
             self._source_map.add_control(self._refresh_widget)
 
     def clear_property_widgets(self):
@@ -372,7 +391,7 @@ class IpyleafletWFS(object):
 
         """
 
-        textbox = HTML('''
+        textbox = ipyw.HTML('''
             Click on a feature
         ''')
         textbox.layout.margin = '20px 20px 20px 20px'

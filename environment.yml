@@ -27,4 +27,3 @@ dependencies:
   - sphinx
   - nbsphinx
   - nbconvert
-  - ipyleaflet

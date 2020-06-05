@@ -6,4 +6,4 @@ wrapt
 funcsigs
 boltons
 requests
-ipyleaflet
+

@@ -4,6 +4,12 @@ This module facilitates the use of a WFS service through the ipyleaflet module i
 
 It uses owslib to get a geojson out of a WFS service, and then creates an ipyleaflet GeoJSON layer with it.
 
+## Dependencies
+
+Ipyleaflet and Ipywidgets dependencies are included in the requirements_extra.txt, at the root of this repository. To install:
+
+    $ pip install -r requirements_extra.txt
+
 ## Use
 
 This module is to be used inside a jupyter notebook, either with a standard server or through vscode/pycharm.
