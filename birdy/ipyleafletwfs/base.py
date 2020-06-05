@@ -150,7 +150,13 @@ class IpyleafletWFS(object):
         self._geojson = json.loads(data.getvalue().decode())
 
         # Create layer and add to the map
-        self._layer = ipyl.GeoJSON(data=self._geojson, style=self._layerstyle)
+        self._layer = ipyl.GeoJSON(data=self._geojson,
+                                   style=self._layerstyle,
+                                   hover_style={'color': 'yellow',
+                                                'dashArray': '0',
+                                                'fillOpacity': 0.5,
+                                                'fillColor': 'yellow'})
+
         self._source_map.add_layer(self._layer)
 
         # Create default property widget
