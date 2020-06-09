@@ -15,7 +15,7 @@ from .exceptions import IPythonWarning
 # but we currently don't know how to handle this (see #89 and #138).
 warnings.filterwarnings('ignore', category=IPythonWarning)
 
-try:
+try: 
     import ipywidgets
 except ImportError:
     ipywidgets = None
@@ -26,3 +26,9 @@ try:
 except ImportError:
     IPython = None
     warnings.warn('IPython is not supported. Please install *ipython*.', IPythonWarning)
+
+try:
+    import ipyleaflet
+except ImportError:
+    ipyleaflet = None
+    warnings.warn('Ipyleaflet is not supported. Please install *ipyleaflet*.', IPythonWarning)
