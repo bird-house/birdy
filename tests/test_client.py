@@ -53,6 +53,7 @@ def test_wps_supported_languages(wps_offline):
     assert wps_offline.languages.supported == ['en-US', 'fr-CA']
 
 
+@pytest.mark.online
 def test_wps_with_language_arg():
     wps = WPSClient(URL_EMU, language='fr-CA')
     assert wps.language == 'fr-CA'
