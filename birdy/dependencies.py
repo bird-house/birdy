@@ -15,7 +15,7 @@ from .exceptions import IPythonWarning
 # but we currently don't know how to handle this (see #89 and #138).
 warnings.filterwarnings('ignore', category=IPythonWarning)
 
-try: 
+try:
     import ipywidgets
 except ImportError:
     ipywidgets = None

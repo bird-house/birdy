@@ -8,7 +8,7 @@ import keyword
 
 # These mimetypes will be encoded in base64 when embedded in requests.
 # I'm sure there is a more elegant solution than this... https://pypi.org/project/binaryornot/ ?
-BINARY_MIMETYPES = ["application/vnd.geo+json",
+BINARY_MIMETYPES = ["application/geo+json",
                     "application/x-zipped-shp",
                     "application/vnd.google-earth.kmz",
                     "image/tiff; subtype=geotiff",
