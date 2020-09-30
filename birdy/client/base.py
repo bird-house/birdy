@@ -46,6 +46,7 @@ class WPSClient(object):
         caps_xml=None,
         desc_xml=None,
         language=None,
+        output_format=None,
     ):
         """
         Args:
@@ -73,6 +74,7 @@ class WPSClient(object):
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
+        self._output_format = output_format
 
         if not verify:
             import urllib3
@@ -140,6 +142,15 @@ class WPSClient(object):
     @property
     def languages(self):
         return self._wps.languages
+
+    @property
+    def output_format(self):
+        return self._output_format
+
+    @output_format.setter
+    def output_format(self, formats=None):
+        self._output_format = formats
+
 
     def _get_process_description(self, processes=None, xml=None):
         """Return the description for each process.
@@ -297,10 +308,13 @@ class WPSClient(object):
     def _execute(self, pid, **kwargs):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
-        wps_outputs = [
-            (o.identifier, "ComplexData" in o.dataType)
-            for o in list(self._outputs[pid].values())
-        ]
+
+        wps_outputs = self.output_format
+        if not wps_outputs:
+            wps_outputs = [
+                (o.identifier, "ComplexData" in o.dataType)
+                for o in list(self._outputs[pid].values())
+            ]
 
         mode = self._mode if self._processes[pid].storeSupported else SYNC
 
