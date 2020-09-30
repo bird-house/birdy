@@ -30,6 +30,7 @@ def _set_language(ctx, param, value):
                url="http://localhost:5000/wps")
 @click.version_option()
 @click.option('--cert', help="Client side certificate containing both certificate and private key.")
+@click.option('--output', help="Output format", nargs=2)
 @click.option('--send', '-S', is_flag=True, help="Send client side certificate to WPS. Default: false")
 @click.option("--sync", '-s', is_flag=True, help="Execute process in sync mode. Default: async mode.")
 @click.option("--token", "-t", help="Token to access the WPS service.")
@@ -40,7 +41,7 @@ def _set_language(ctx, param, value):
     "--show-languages", "-L", expose_value=False, is_flag=True, is_eager=True, callback=_show_languages,
     help="Show a list of accepted languages for the WPS service.")
 @click.pass_context
-def cli(ctx, cert, send, sync, token):
+def cli(ctx, cert, output, send, sync, token):
     """
     Birdy is a command line client for Web Processing Services.
 
@@ -53,3 +54,4 @@ def cli(ctx, cert, send, sync, token):
     ctx.obj['send'] = send
     ctx.obj['sync'] = sync
     ctx.obj['token'] = token
+    ctx.obj['output'] = output
