@@ -46,7 +46,7 @@ class WPSClient(object):
         caps_xml=None,
         desc_xml=None,
         language=None,
-        output_format=None,
+        output_formats=None,
     ):
         """
         Args:
@@ -67,6 +67,9 @@ class WPSClient(object):
             version (str): WPS version to use.
             language (str): passed to :class:`owslib.wps.WebProcessingService`
                 ex: 'fr-CA', 'en_US'.
+            output_formats: List of tuples, ex -> [(output_identifier, as_ref, mime_type)], for wps.execute
+                Used to override the values that will be used by the processes.
+                see : https://github.com/geopython/OWSLib/blob/master/owslib/wps.py#L318
         """
         self._converters = converters
         self._interactive = progress
@@ -74,7 +77,7 @@ class WPSClient(object):
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
-        self._output_format = output_format
+        self._output_formats = output_formats
 
         if not verify:
             import urllib3
@@ -145,11 +148,43 @@ class WPSClient(object):
 
     @property
     def output_format(self):
-        return self._output_format
+        """Returns the modified output formats that will be used as the 'output' 
+        argument of the execute process call (see owslib.wps.WebProcessingService). 
+
+        If return is None, the default values for each process are in effect.
+
+        Returns
+        -------
+        List
+            List of tuples (output_identifier, as_ref, mime_type)
+        """
+
+        return self._output_formats
 
     @output_format.setter
-    def output_format(self, formats=None):
-        self._output_format = formats
+    def output_format(self, outputs):
+        """Set ouput formats for processes. These will fed to the 'output' argument of the execute 
+        process call (see owslib.wps.WebProcessingService) and will be used for all processes 
+        until reset with reset_outputs.
+
+        ex: cli.output_format = [('netcdf', True), ('output', None, 'application/json')]
+            Where only output_indentifier and as_ref are defined for netcdf, and
+            the 'output' identifier uses default process `as_ref` value and specifies
+            the mime type.
+
+        Parameters
+        ----------
+        outputs: List
+                list of tuples (output_identifier, as_ref, mime_type)
+                `output_identifier` : String, name of the output
+                `as_ref` : True (as reference), False (embedded in response) or None (use service default).
+                `mime_type` : Mime type (string) or None (use service default)
+        """
+        self._output_formats = outputs
+
+    def reset_outputs(self):
+        """Reset output formats so Birdy uses the default values for each process"""
+        self._output_formats = None
 
 
     def _get_process_description(self, processes=None, xml=None):
@@ -309,13 +344,13 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = self.output_format
+        wps_outputs = self._output_formats
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)
                 for o in list(self._outputs[pid].values())
             ]
-
+            
         mode = self._mode if self._processes[pid].storeSupported else SYNC
 
         try:
