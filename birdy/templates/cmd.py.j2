@@ -47,9 +47,7 @@ def cli(ctx, **options):
     else:
         mode = ASYNC
     try:
-        outputs = ctx.obj.get('outputs')
-        formats = [outputs] if outputs else None 
-        execution = wps.execute('{{ name }}', inputs=inputs, output=formats, mode=mode)
+        execution = wps.execute('{{ name }}', inputs=inputs, output=ctx.obj.get('outputs'), mode=mode)
         monitor(execution)
     except SSLError:
         raise ConnectionError('SSL verification of server certificate failed.')
