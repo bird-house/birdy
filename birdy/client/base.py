@@ -163,13 +163,13 @@ class WPSClient(object):
 
     @output_format.setter
     def output_format(self, outputs):
-        """Set ouput formats for processes. These will fed to the 'output' argument of the execute 
+        """Set ouput formats for processes. These will be fed to the 'output' argument of the execute 
         process call (see owslib.wps.WebProcessingService) and will be used for all processes 
         until reset with reset_outputs.
 
         ex: cli.output_format = [('netcdf', True), ('output', None, 'application/json')]
             Where only output_indentifier and as_ref are defined for netcdf, and
-            the 'output' identifier uses default process `as_ref` value and specifies
+            the 'output' identifier uses the default process `as_ref` value and specifies
             the mime type.
 
         Parameters
@@ -350,7 +350,7 @@ class WPSClient(object):
                 (o.identifier, "ComplexData" in o.dataType)
                 for o in list(self._outputs[pid].values())
             ]
-            
+
         mode = self._mode if self._processes[pid].storeSupported else SYNC
 
         try:
