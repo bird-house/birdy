@@ -38,7 +38,6 @@ def _format_outputs(ctx, param, output_obj):
             as_ref = False
         mimetype = mime if mime.lower() != "none" else None
         formatted_output = [(output, as_ref, mimetype)]
-        print(formatted_output)
         CONTEXT_OBJ['outputs'] = formatted_output
 
 
