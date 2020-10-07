@@ -12,15 +12,19 @@ from birdy.exceptions import ConnectionError
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 
-
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.version_option(version="{{ version }}")
 {% for option in options %}
 @click.option('--{{ option.name }}', help='{{ option.help }}',
               type={{ option.type }}, multiple={{ option.multiple }})
 {% endfor %}
+@click.option('--output_formats', nargs=3,
+                           multiple=True,
+                           help="Modify output format (optional). Takes three arguments, output name, "
+                                "as_reference (True, False, or None for process default), and mimetype"
+                                "(None for process default).")
 @click.pass_context
-def cli(ctx, **options):
+def cli(ctx, output_formats, **options):
     """{{ help }}"""
     headers = {}
     if 'token' in ctx.obj:
@@ -42,12 +46,26 @@ def cli(ctx, **options):
             inputs.append(("{}".format(opt), options[opt]))
         else:
             inputs.append(("{}".format(opt), "{}".format(options[opt])))
+    formated_outputs = None
+    if output_formats:
+        formated_outputs = []
+        for format in output_formats:
+            output = format[0]
+            ref = format[1].lower()
+            mime = format[2]
+            as_ref = None
+            if ref == "true":
+                as_ref = True
+            elif ref == "false":
+                as_ref = False
+            mimetype = mime if mime.lower() != "none" else None
+            formated_outputs.append((output, as_ref, mimetype))
     if ctx.obj.get('sync', False):
         mode = SYNC
     else:
         mode = ASYNC
     try:
-        execution = wps.execute('{{ name }}', inputs=inputs, output=ctx.obj.get('outputs'), mode=mode)
+        execution = wps.execute('{{ name }}', inputs=inputs, output=formated_outputs, mode=mode)
         monitor(execution)
     except SSLError:
         raise ConnectionError('SSL verification of server certificate failed.')
