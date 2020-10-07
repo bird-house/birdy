@@ -66,9 +66,6 @@ class WPSClient(object):
             version (str): WPS version to use.
             language (str): passed to :class:`owslib.wps.WebProcessingService`
                 ex: 'fr-CA', 'en_US'.
-            output_formats: List of tuples, ex -> [(output_identifier, as_ref, mime_type)], for wps.execute
-                Used to override the values that will be used by the processes.
-                see : https://github.com/geopython/OWSLib/blob/master/owslib/wps.py#L318
         """
         self._converters = converters
         self._interactive = progress
