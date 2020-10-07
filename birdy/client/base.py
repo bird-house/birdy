@@ -46,7 +46,6 @@ class WPSClient(object):
         caps_xml=None,
         desc_xml=None,
         language=None,
-        output_formats=None,
     ):
         """
         Args:
@@ -77,7 +76,6 @@ class WPSClient(object):
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
-        self._output_formats = output_formats
 
         if not verify:
             import urllib3
@@ -145,47 +143,6 @@ class WPSClient(object):
     @property
     def languages(self):
         return self._wps.languages
-
-    @property
-    def output_format(self):
-        """Returns the modified output formats that will be used as the 'output' 
-        argument of the execute process call (see owslib.wps.WebProcessingService). 
-
-        If return is None, the default values for each process are in effect.
-
-        Returns
-        -------
-        List
-            List of tuples (output_identifier, as_ref, mime_type)
-        """
-
-        return self._output_formats
-
-    @output_format.setter
-    def output_format(self, outputs):
-        """Set ouput formats for processes. These will be fed to the 'output' argument of the execute 
-        process call (see owslib.wps.WebProcessingService) and will be used for all processes 
-        until reset with reset_outputs.
-
-        ex: cli.output_format = [('netcdf', True), ('output', None, 'application/json')]
-            Where only output_indentifier and as_ref are defined for netcdf, and
-            the 'output' identifier uses the default process `as_ref` value and specifies
-            the mime type.
-
-        Parameters
-        ----------
-        outputs: List
-                list of tuples (output_identifier, as_ref, mime_type)
-                `output_identifier` : String, name of the output
-                `as_ref` : True (as reference), False (embedded in response) or None (use service default).
-                `mime_type` : Mime type (string) or None (use service default)
-        """
-        self._output_formats = outputs
-
-    def reset_outputs(self):
-        """Reset output formats so Birdy uses the default values for each process"""
-        self._output_formats = None
-
 
     def _get_process_description(self, processes=None, xml=None):
         """Return the description for each process.
@@ -257,6 +214,10 @@ class WPSClient(object):
         # A tuple containing default argument values for those arguments that have defaults,
         # or None if no arguments have a default value.
         defaults = []
+        # Set generic 'output_formats' input
+        input_names.append("output_formats")
+        defaults.append(None)
+        # Set process inputs
         for inpt in required_inputs_first:
             input_names.append(sanitize(inpt.identifier))
             if inpt.minOccurs == 0 or inpt.defaultValue is not None:
@@ -344,7 +305,7 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = self._output_formats
+        wps_outputs = kwargs['output_formats']
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)
