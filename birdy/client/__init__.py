@@ -79,6 +79,45 @@ requests-magpie_ module::
     >>> auth = MagpieAuth('https://www.example.com/magpie', 'user', 'pass')
     >>> wps = WPSClient('http://www.example.com/wps', auth=auth)
 
+Output format
+-------------
+
+Birdy automatically manages process output to reflect it's default values or 
+Birdy's own defaults.
+
+However, it's possible to customize the output of a process. Each process has an input
+named ``output_formats`, that takes a dictionary as a parameter::
+
+    # example format = {
+    #     'output_identifier': {
+    #         'as_ref': <True, False or None>
+    #         'mimetype': <MIME type as a string or None>,
+    #     },
+    # }
+
+    # A dictionary defining netcdf and json outputs
+    >>> custom_format = {
+    >>>     'netcdf': {
+    >>>         'as_ref': True,
+    >>>         'mimetype': 'application/json',
+    >>>     },
+    >>>     'json': {
+    >>>         'as_ref': False,
+    >>>         'mimetype': None
+    >>>     }
+    >>> }
+
+Utility functions can also be used to create this dictionary::
+
+    >>> custom_format = create_output_dictionary('netcdf', True, 'application/json')
+    >>> add_output_format(custom_format, 'json', False, None)
+
+The created dictionary can then be used with a process::
+
+    >>> cli = WPSClient("http://localhost:5000")
+    >>> z = cli.output_formats(output_formats=custom_format).get()
+    >>> z
+
 .. _requests Authentication: https://2.python-requests.org/en/master/user/authentication/
 .. _magpie: https://github.com/ouranosinc/magpie
 .. _requests-magpie: https://github.com/ouranosinc/requests-magpie
