@@ -277,3 +277,53 @@ def extend_instance(obj, cls):
     base_cls = obj.__class__
     base_cls_name = obj.__class__.__name__
     obj.__class__ = type(base_cls_name, (cls, base_cls), {})
+
+
+def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetype=None):
+    """Add an output format to an already existing dictionary.
+
+    Parameters
+    ----------
+    output_dictionary: dict
+        The dictionary (created with create_output_dictionary()) to which this
+        output format will be added.
+    output_identifier: str
+        Identifier of the output.
+    as_ref: True, False or None
+        Determines if this output will be returned as a reference or not.
+        None for process default.
+    mimetype: str or None
+        If the process supports multiple MIME types, it can be specified with this argument.
+        None for process default.
+    """
+    output_dictionary[output_identifier] = {
+        'as_ref': as_ref,
+        'mimetype': mimetype,
+    }
+
+
+def create_output_dictionary(output_identifier, as_ref=None, mimetype=None):
+    """Create an output format dictionary.
+
+    Parameters
+    ----------
+    output_identifier: str
+        Identifier of the output.
+    as_ref: True, False or None
+        Determines if this output will be returned as a reference or not.
+        None for process default.
+    mimetype: str or None
+        If the process supports multiple MIME types, it can be specified with this argument.
+        None for process default.
+
+    Returns
+    -------
+    output_dictionary: dict
+    """
+    output_dictionary = {
+        output_identifier: {
+            'as_ref': as_ref,
+            'mimetype': mimetype,
+        }
+    }
+    return output_dictionary

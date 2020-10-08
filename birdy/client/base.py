@@ -298,11 +298,21 @@ class WPSClient(object):
 
         return wps_inputs
 
+    def _parse_output_formats(self, outputs):
+        """Parse an output format dictionary into a list of tuples, as required by wps.execute()."""
+        if outputs:
+            output_dict = []
+            for key, values in outputs.items():
+                output_dict.append((key, values["as_ref"], values["mimetype"]))
+            return output_dict
+        else:
+            return None
+
     def _execute(self, pid, **kwargs):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = kwargs['output_formats']
+        wps_outputs = self._parse_output_formats(kwargs['output_formats'])
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)
