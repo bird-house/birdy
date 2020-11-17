@@ -211,6 +211,10 @@ class WPSClient(object):
         # A tuple containing default argument values for those arguments that have defaults,
         # or None if no arguments have a default value.
         defaults = []
+        # Set generic 'output_formats' input
+        input_names.append("output_formats")
+        defaults.append(None)
+        # Set process inputs
         for inpt in required_inputs_first:
             input_names.append(sanitize(inpt.identifier))
             if inpt.minOccurs == 0 or inpt.defaultValue is not None:
@@ -294,13 +298,26 @@ class WPSClient(object):
 
         return wps_inputs
 
+    def _parse_output_formats(self, outputs):
+        """Parse an output format dictionary into a list of tuples, as required by wps.execute()."""
+        if outputs:
+            output_dict = []
+            for key, values in outputs.items():
+                output_dict.append((key, values["as_ref"], values["mimetype"]))
+            return output_dict
+        else:
+            return None
+
     def _execute(self, pid, **kwargs):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
-        wps_outputs = [
-            (o.identifier, "ComplexData" in o.dataType)
-            for o in list(self._outputs[pid].values())
-        ]
+
+        wps_outputs = self._parse_output_formats(kwargs['output_formats'])
+        if not wps_outputs:
+            wps_outputs = [
+                (o.identifier, "ComplexData" in o.dataType)
+                for o in list(self._outputs[pid].values())
+            ]
 
         mode = self._mode if self._processes[pid].storeSupported else SYNC
 
