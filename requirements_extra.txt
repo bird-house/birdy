@@ -3,5 +3,4 @@ ipyleaflet
 ipywidgets
 ipython
 geojson
-# pymetalink
-https://github.com/metalink-dev/pymetalink/archive/master.zip
+pymetalink

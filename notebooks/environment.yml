@@ -9,5 +9,4 @@ dependencies:
   - ipywidgets
   - nodejs
   - pip:
-    - -e git+https://github.com/metalink-dev/pymetalink.git@master#egg=metalink
-    - -e git+https://github.com/bird-house/OWSLib-esgfwps.git@master#egg=owslib-esgfwps
+    - pymetalink
