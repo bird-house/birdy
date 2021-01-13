@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest import mock
 import owslib.wps
 import pytest
+
 # from owslib import crs
 
 from birdy.client import converters, nb_form
@@ -21,9 +22,9 @@ from .common import (
 
 
 # 52 north WPS
-url_52n = 'http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities'  # noqa: E501
+url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501
 # flyingpigeon WPS at Ouranos
-url_fly = 'https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps'
+url_fly = "https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps"
 
 
 @pytest.fixture(scope="module")
@@ -40,24 +41,24 @@ def wps_offline():
 def process():
     """Return an owslib.Process instance taken from Finch.subset_gridpoint."""
     reader = owslib.wps.WPSDescribeProcessReader()
-    root = reader.readFromString(open(resource_file('process_description.xml')).read())
-    xml = root.findall('ProcessDescription')[0]
+    root = reader.readFromString(open(resource_file("process_description.xml")).read())
+    xml = root.findall("ProcessDescription")[0]
     return owslib.wps.Process(xml)
 
 
 def test_emu_offline(wps_offline):
-    assert 'Hello' in wps_offline.hello.__doc__
+    assert "Hello" in wps_offline.hello.__doc__
 
 
 def test_wps_supported_languages(wps_offline):
-    assert wps_offline.languages.supported == ['en-US', 'fr-CA']
+    assert wps_offline.languages.supported == ["en-US", "fr-CA"]
 
 
 @pytest.mark.online
 def test_wps_with_language_arg():
-    wps = WPSClient(URL_EMU, language='fr-CA')
-    assert wps.language == 'fr-CA'
-    p = wps._processes['translation']
+    wps = WPSClient(URL_EMU, language="fr-CA")
+    assert wps.language == "fr-CA"
+    p = wps._processes["translation"]
     assert p.title == "Processus traduit"
     resp = wps.translation(10)
     assert resp.processOutputs[0].title == "Sortie #1"
@@ -73,18 +74,21 @@ def test_52north():
 @pytest.mark.online
 def test_52north_simple():
     """Check only a few 52north processes."""
-    WPSClient(url_52n, processes=[
-        'org.n52.wps.server.algorithm.r.AnnotationValidation',
-        'org.n52.wps.server.r.uncertweb.make-realizations',
-    ])
+    WPSClient(
+        url_52n,
+        processes=[
+            "org.n52.wps.server.algorithm.r.AnnotationValidation",
+            "org.n52.wps.server.r.uncertweb.make-realizations",
+        ],
+    )
 
 
 def test_52north_offline():
     """Check offline 52north processes."""
     WPSClient(
         url_52n,
-        caps_xml=open(resource_file('wps_52n_caps.xml'), 'rb').read(),
-        desc_xml=open(resource_file('wps_52n_desc.xml'), 'rb').read(),
+        caps_xml=open(resource_file("wps_52n_caps.xml"), "rb").read(),
+        desc_xml=open(resource_file("wps_52n_desc.xml"), "rb").read(),
     )
 
 
@@ -96,16 +100,18 @@ def test_flyingpigeon():
 def test_flyingpigeon_offline():
     WPSClient(
         url_fly,
-        caps_xml=open(resource_file('wps_fly_caps.xml'), 'rb').read(),
-        desc_xml=open(resource_file('wps_fly_desc.xml'), 'rb').read(),
+        caps_xml=open(resource_file("wps_fly_caps.xml"), "rb").read(),
+        desc_xml=open(resource_file("wps_fly_desc.xml"), "rb").read(),
     )
 
 
 @pytest.mark.online
 def test_wps_client_backward_compability():
     from birdy import BirdyClient
+
     BirdyClient(url=URL_EMU)
     from birdy import import_wps
+
     import_wps(url=URL_EMU)
 
 
@@ -123,7 +129,9 @@ def test_wps_client_single_output(wps):
 
 def test_wps_nb_form(wps_offline):
     for pid in list(wps_offline._processes.keys()):
-        if pid in ['bbox', ]:  # Unsupported
+        if pid in [
+            "bbox",
+        ]:  # Unsupported
             continue
         nb_form(wps_offline, pid)
 
@@ -141,9 +149,9 @@ def test_wps_client_dummy_process(wps):
 
 @pytest.mark.online
 def test_wps_wordcounter(wps):
-    fn = '/tmp/text.txt'
-    with open(fn, 'w') as f:
-        f.write('Just an example')
+    fn = "/tmp/text.txt"
+    with open(fn, "w") as f:
+        f.write("Just an example")
     out = wps.wordcounter(text=fn).get(asobj=True)
     assert len(out.output) == 3
 
@@ -198,16 +206,16 @@ def test_process_subset_names():
 def test_asobj(wps):
     resp = wps.ncmeta(dataset=resource_file("dummy.nc"))
     out = resp.get(asobj=True)
-    assert 'URL' in out.output  # Part of expected text file content.
+    assert "URL" in out.output  # Part of expected text file content.
 
-    resp = wps.ncmeta(dataset='file://' + resource_file("dummy.nc"))
+    resp = wps.ncmeta(dataset="file://" + resource_file("dummy.nc"))
     out = resp.get(asobj=True)
-    assert 'URL' in out.output
+    assert "URL" in out.output
 
-    with open(resource_file("dummy.nc"), 'rb') as fp:
+    with open(resource_file("dummy.nc"), "rb") as fp:
         resp = wps.ncmeta(dataset=fp)
         out = resp.get(asobj=True)
-        assert 'URL' in out.output
+        assert "URL" in out.output
 
     # If the converter is missing, we should still get the data as bytes.
     resp._converters = []
@@ -218,7 +226,8 @@ def test_asobj(wps):
 @pytest.mark.online
 def test_asobj_non_pythonic_id(wps):
     import json
-    d = {'a': 1}
+
+    d = {"a": 1}
     resp = wps.non_py_id(input_1=1, input_2=json.dumps(d))
     out = resp.get(asobj=True)
     assert out.output_1 == 2
@@ -231,34 +240,35 @@ def test_esgfapi(wps):
 
     uri = resource_file("test.nc")
 
-    variable = Variable(var_name='meantemp', uri=uri, name='test')
-    domain = Domain([Dimension('time', 0, 10, crs='indices')])
+    variable = Variable(var_name="meantemp", uri=uri, name="test")
+    domain = Domain([Dimension("time", 0, 10, crs="indices")])
 
     resp = wps.emu_subset(variable=variable, domain=domain)
     out = resp.get(asobj=True)
-    assert 'netcdf' in out.ncdump
+    assert "netcdf" in out.ncdump
 
 
 @pytest.mark.online
 def test_inputs(wps):
     import netCDF4 as nc
+
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
     datetime_ = datetime.datetime.now()
     result = wps.inout(
         string="test string",
         int=3,
-        float=(3.5, 1.),
+        float=(3.5, 1.0),
         boolean=True,
-        angle=67.,
+        angle=67.0,
         time=time_.isoformat(),
         date=date_.isoformat(),
         datetime=datetime_.isoformat(sep=" "),
         string_choice="rock",
         string_multiple_choice="sitting duck",
         int_range=5,
-        any_value='7',
-        ref_value='Scots',
+        any_value="7",
+        ref_value="Scots",
         text="some unsafe text &<",
         dataset="file://" + resource_file("dummy.nc"),
     )
@@ -267,15 +277,15 @@ def test_inputs(wps):
         3,
         4.5,
         True,
-        67.,
+        67.0,
         time_,
         date_,
         datetime_,
         "rock",
         "sitting duck",
         5,
-        '7',
-        'Scots',
+        "7",
+        "Scots",
         "some unsafe text &<",
     )
     assert expected == result.get(asobj=True)[:-2]
@@ -297,7 +307,11 @@ def test_netcdf():
 
     # Xarray is the default converter. Use netCDF4 here.
     if nc.getlibversion() > "4.5":
-        m = WPSClient(url=URL_EMU, processes=["output_formats"], converters=[Netcdf4Converter, JSONConverter])
+        m = WPSClient(
+            url=URL_EMU,
+            processes=["output_formats"],
+            converters=[Netcdf4Converter, JSONConverter],
+        )
         ncdata, jsondata = m.output_formats().get(asobj=True)
         assert isinstance(ncdata, nc.Dataset)
         ncdata.close()
@@ -306,8 +320,9 @@ def test_netcdf():
 
 @pytest.mark.online
 def test_xarray_converter(wps):
-    pytest.importorskip('xarray')
+    pytest.importorskip("xarray")
     import xarray as xr
+
     ncdata, jsondata = wps.output_formats().get(asobj=True)
     assert isinstance(ncdata, xr.Dataset)
 
@@ -367,13 +382,13 @@ def count_class_methods(class_):
 def test_jsonconverter():
     d = {"a": 1}
     s = json.dumps(d)
-    b = bytes(s, 'utf8')
+    b = bytes(s, "utf8")
 
-    fs = tempfile.NamedTemporaryFile(mode='w')
+    fs = tempfile.NamedTemporaryFile(mode="w")
     fs.write(s)
     fs.file.seek(0)
 
-    fb = tempfile.NamedTemporaryFile(mode='w+b')
+    fb = tempfile.NamedTemporaryFile(mode="w+b")
     fb.write(b)
     fb.file.seek(0)
 
@@ -389,50 +404,54 @@ def test_jsonconverter():
 
 def test_zipconverter():
     import zipfile
-    f = tempfile.mktemp(suffix='.zip')
-    zf = zipfile.ZipFile(f, mode='w')
 
-    a = tempfile.NamedTemporaryFile(mode='w', suffix='.json')
+    f = tempfile.mktemp(suffix=".zip")
+    zf = zipfile.ZipFile(f, mode="w")
+
+    a = tempfile.NamedTemporaryFile(mode="w", suffix=".json")
     a.write(json.dumps({"a": 1}))
     a.seek(0)
 
-    b = tempfile.NamedTemporaryFile(mode='w', suffix='.csv')
-    b.write('a, b, c\n1, 2, 3')
+    b = tempfile.NamedTemporaryFile(mode="w", suffix=".csv")
+    b.write("a, b, c\n1, 2, 3")
     b.seek(0)
 
     zf.write(a.name, arcname=os.path.split(a.name)[1])
     zf.write(b.name, arcname=os.path.split(b.name)[1])
     zf.close()
 
-    [oa, ob] = converters.convert(f, path='/tmp')
+    [oa, ob] = converters.convert(f, path="/tmp")
     assert oa == {"a": 1}
     assert len(ob.splitlines()) == 2
 
 
 def test_jpeg_imageconverter():
     "Since the format is not supported, bytes will be returned."
-    fn = tempfile.mktemp(suffix='.jpeg')
-    with open(fn, 'w') as f:
-        f.write('jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000')
+    fn = tempfile.mktemp(suffix=".jpeg")
+    with open(fn, "w") as f:
+        f.write(
+            "jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000"
+        )
 
-    b = converters.convert(fn, path='/tmp')
+    b = converters.convert(fn, path="/tmp")
     assert isinstance(b, bytes)
 
 
-class TestIsEmbedded():
-    remote = 'http://remote.org'
-    local = 'http://localhost:5000'
-    fn = resource_file('dummy.nc')
-    path = Path(resource_file('dummy.nc'))
-    uri = 'file://' + fn
-    url = 'http://some.random.site/test.txt'
+class TestIsEmbedded:
+    remote = "http://remote.org"
+    local = "http://localhost:5000"
+    fn = resource_file("dummy.nc")
+    path = Path(resource_file("dummy.nc"))
+    uri = "file://" + fn
+    url = "http://some.random.site/test.txt"
 
     def test_string(self):
-        assert is_embedded_in_request(self.remote, 'just a string')
-        assert is_embedded_in_request(self.local, 'just a string')
+        assert is_embedded_in_request(self.remote, "just a string")
+        assert is_embedded_in_request(self.local, "just a string")
 
     def test_file_like(self):
         import io
+
         f = io.StringIO()
         f.write("just a string")
         f.seek(0)

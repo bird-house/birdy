@@ -77,12 +77,13 @@ class GenericConverter(BaseConverter):
 
 class TextConverter(BaseConverter):
     mimetype = "text/plain"
-    extensions = ['txt', 'csv', 'md', 'rst']
+    extensions = ["txt", "csv", "md", "rst"]
     priority = 1
 
     def convert(self):
         """Return text content."""
-        return self.file.read_text(encoding='utf8')
+        return self.file.read_text(encoding="utf8")
+
 
 # class HTMLConverter(BaseConverter):
 #     """Create HTML cell in notebook."""
@@ -102,7 +103,9 @@ class TextConverter(BaseConverter):
 
 class JSONConverter(BaseConverter):
     mimetype = "application/json"
-    extensions = ['json', ]
+    extensions = [
+        "json",
+    ]
     priority = 1
 
     def convert(self):
@@ -111,13 +114,16 @@ class JSONConverter(BaseConverter):
             data:
         """
         import json
+
         with open(self.file) as f:
             return json.load(f)
 
 
 class GeoJSONConverter(BaseConverter):
     mimetype = "application/vnd.geo+json"
-    extensions = ['geojson', ]
+    extensions = [
+        "geojson",
+    ]
     priority = 1
 
     def check_dependencies(self):
@@ -125,13 +131,16 @@ class GeoJSONConverter(BaseConverter):
 
     def convert(self):
         import geojson
+
         with open(self.file) as f:
             return geojson.load(f)
 
 
 class MetalinkConverter(BaseConverter):
     mimetype = "application/metalink+xml; version=3.0"
-    extensions = ['metalink', ]
+    extensions = [
+        "metalink",
+    ]
     nested = True
     priority = 1
 
@@ -140,18 +149,23 @@ class MetalinkConverter(BaseConverter):
 
     def convert(self):
         import metalink.download as md
+
         files = md.get(self.url, path=self.path, segmented=False)
         return files
 
 
 class Meta4Converter(MetalinkConverter):
     mimetype = "application/metalink+xml; version=4.0"
-    extensions = ['meta4', ]
+    extensions = [
+        "meta4",
+    ]
 
 
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
-    extensions = ['nc', ]
+    extensions = [
+        "nc",
+    ]
     priority = 1
 
     def check_dependencies(self):
@@ -179,15 +193,18 @@ class Netcdf4Converter(BaseConverter):
 
 class XarrayConverter(BaseConverter):
     mimetype = "application/x-netcdf"
-    extensions = ['nc', ]
+    extensions = [
+        "nc",
+    ]
     priority = 2
 
     def check_dependencies(self):
         Netcdf4Converter.check_dependencies(self)
-        self._check_import('xarray')
+        self._check_import("xarray")
 
     def convert(self):
         import xarray as xr
+
         try:
             # try OpenDAP url
             return xr.open_dataset(self.url)
@@ -225,8 +242,10 @@ class ShpOgrConverter(BaseConverter):
 
 # TODO: Add test for this.
 class ImageConverter(BaseConverter):
-    mimetype = 'image/png'
-    extensions = ['png', ]
+    mimetype = "image/png"
+    extensions = [
+        "png",
+    ]
     priority = 1
 
     def check_dependencies(self):
@@ -234,17 +253,21 @@ class ImageConverter(BaseConverter):
 
     def convert(self):
         from birdy.dependencies import IPython
+
         return IPython.display.Image(self.url)
 
 
 class ZipConverter(BaseConverter):
-    mimetype = 'application/zip'
-    extensions = ['zip', ]
+    mimetype = "application/zip"
+    extensions = [
+        "zip",
+    ]
     nested = True
     priority = 1
 
     def convert(self):
         import zipfile
+
         with zipfile.ZipFile(self.file) as z:
             z.extractall(path=self.path)
             return [str(Path(self.path) / fn) for fn in z.namelist()]
@@ -266,7 +289,7 @@ def find_converter(obj, converters):
     """Find converters for a WPS output or a file on disk."""
     if isinstance(obj, Output):
         mimetype = obj.mimeType
-        extension = Path(obj.fileName or '').suffix[1:]
+        extension = Path(obj.fileName or "").suffix[1:]
     elif isinstance(obj, (str, Path)):
         mimetype = None
         extension = Path(obj).suffix[1:]
@@ -316,4 +339,5 @@ def convert(output, path, converters=None, verify=True):
 def all_subclasses(cls):
     """Return all subclasses of a class."""
     return set(cls.__subclasses__()).union(
-        [s for c in cls.__subclasses__() for s in all_subclasses(c)])
+        [s for c in cls.__subclasses__() for s in all_subclasses(c)]
+    )

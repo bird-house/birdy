@@ -4,7 +4,7 @@ from birdy.utils import is_url
 
 
 class ComplexParamType(click.ParamType):
-    name = 'complex'
+    name = "complex"
 
     def convert(self, value, param, ctx):
         try:
@@ -12,10 +12,10 @@ class ComplexParamType(click.ParamType):
                 raise ValueError()
             return ComplexDataInput(value)
         except ValueError:
-            self.fail('%s is not a valid URL' % value, param, ctx)
+            self.fail("%s is not a valid URL" % value, param, ctx)
 
     def __repr__(self):
-        return 'COMPLEX'
+        return "COMPLEX"
 
 
 COMPLEX = ComplexParamType()

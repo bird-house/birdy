@@ -2,7 +2,7 @@ from pathlib import Path
 import datetime as dt
 import dateutil.parser
 from owslib.wps import ComplexDataInput
-from .. utils import sanitize, is_file
+from ..utils import sanitize, is_file
 from urllib.parse import urlparse
 
 
@@ -13,7 +13,9 @@ def filter_case_insensitive(names, complete_list):
     complete_list_lower = set(map(str.lower, complete_list))
 
     if isinstance(names, str):
-        names = [names, ]
+        names = [
+            names,
+        ]
 
     for name in names:
         if name.lower() in complete_list_lower:
@@ -53,11 +55,9 @@ def pretty_repr(obj, linebreaks=True):
 
     for key, value in items:
         value = pretty_repr(value, linebreaks=False)
-        attributes.append("{indent}{key}={value}".format(
-            indent=indent,
-            key=key,
-            value=value
-        ))
+        attributes.append(
+            "{indent}{key}={value}".format(indent=indent, key=key, value=value)
+        )
 
     attribute_joiner = ",\n" if linebreaks else ", "
     attributes = attribute_joiner.join(attributes)
@@ -79,17 +79,12 @@ def build_wps_client_doc(wps, processes):
     str
         The formatted docstring for this WPSClient
     """
-    doc = [wps.identification.abstract,
-           "",
-           "Processes",
-           "---------",
-           ""]
+    doc = [wps.identification.abstract, "", "Processes", "---------", ""]
 
     for process_name, process in list(processes.items()):
         sanitized_name = sanitize(process_name)
         description = "{name}\n    {abstract}".format(
-            name=sanitized_name,
-            abstract=process.abstract or "(No description)"
+            name=sanitized_name, abstract=process.abstract or "(No description)"
         )
         doc.append(description)
         doc.append("")
@@ -145,7 +140,12 @@ def format_type(obj):
             doc += obj.dataType
 
         if getattr(obj, "supportedValues", None):
-            doc += ", ".join([":mimetype:`{}`".format(getattr(f, 'mimeType', f)) for f in obj.supportedValues])
+            doc += ", ".join(
+                [
+                    ":mimetype:`{}`".format(getattr(f, "mimeType", f))
+                    for f in obj.supportedValues
+                ]
+            )
 
         if getattr(obj, "crss", None):
             crss = ", ".join(obj.crss[:nmax])
@@ -177,27 +177,29 @@ def is_embedded_in_request(url, value):
       - value is a File object
       - value is already the string content
     """
-    if hasattr(value, 'read'):  # File-like
+    if hasattr(value, "read"):  # File-like
         return True
 
     u = urlparse(url)
 
     if isinstance(value, Path):  # pathlib.Path
         p = value
-        scheme = 'file'
+        scheme = "file"
     else:  # String-like
         v = urlparse(value)
         p = Path(v.path)
         scheme = v.scheme
 
-    if scheme == 'file':  # Explicit link to file
+    if scheme == "file":  # Explicit link to file
         if is_file(p):
-            return 'localhost' not in u.netloc
+            return "localhost" not in u.netloc
         else:
-            raise IOError("{} should be a local file but was not found on disk.".format(value))
-    elif scheme == '':  # Could be a local path or just a string
+            raise IOError(
+                "{} should be a local file but was not found on disk.".format(value)
+            )
+    elif scheme == "":  # Could be a local path or just a string
         if is_file(p):
-            return 'localhost' not in u.netloc
+            return "localhost" not in u.netloc
         else:
             return True
     else:  # Other URL (http, https, ftp, ...)
@@ -209,7 +211,9 @@ def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
     # owslib only accepts literaldata, complexdata and boundingboxdata
 
     if data_type == "ComplexData":
-        return ComplexDataInput(value, encoding=encoding, mimeType=mimetype, schema=schema)
+        return ComplexDataInput(
+            value, encoding=encoding, mimeType=mimetype, schema=schema
+        )
     if data_type == "BoundingBoxData":
         # TODO: return BoundingBoxDataInput(data=value, crs=crs, dimensions=2)
         return value
@@ -297,8 +301,8 @@ def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetyp
         None for process default.
     """
     output_dictionary[output_identifier] = {
-        'as_ref': as_ref,
-        'mimetype': mimetype,
+        "as_ref": as_ref,
+        "mimetype": mimetype,
     }
 
 
@@ -320,10 +324,5 @@ def create_output_dictionary(output_identifier, as_ref=None, mimetype=None):
     -------
     output_dictionary: dict
     """
-    output_dictionary = {
-        output_identifier: {
-            'as_ref': as_ref,
-            'mimetype': mimetype,
-        }
-    }
+    output_dictionary = {output_identifier: {"as_ref": as_ref, "mimetype": mimetype,}}
     return output_dictionary

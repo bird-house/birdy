@@ -7,7 +7,13 @@ import requests
 import requests.auth
 import owslib
 from owslib.util import ServiceException
-from owslib.wps import WPS_DEFAULT_VERSION, WebProcessingService, SYNC, ASYNC, ComplexData
+from owslib.wps import (
+    WPS_DEFAULT_VERSION,
+    WebProcessingService,
+    SYNC,
+    ASYNC,
+    ComplexData,
+)
 
 from birdy.exceptions import UnauthorizedException
 from birdy.client import utils
@@ -105,7 +111,7 @@ class WPSClient(object):
             verify=verify,
             cert=cert,
             skip_caps=True,
-            language=language
+            language=language,
         )
 
         try:
@@ -121,9 +127,11 @@ class WPSClient(object):
 
         # Build the methods
         for pid in self._processes:
-            setattr(self, sanitize(pid), types.MethodType(self._method_factory(pid), self))
+            setattr(
+                self, sanitize(pid), types.MethodType(self._method_factory(pid), self)
+            )
 
-        self.logger = logging.getLogger('WPSClient')
+        self.logger = logging.getLogger("WPSClient")
         if progress:
             self._setup_logging()
 
@@ -159,9 +167,9 @@ class WPSClient(object):
         all_wps_processes = [p.identifier for p in self._wps.processes]
 
         if processes is None:
-            if owslib.__version__ > '0.17.0':
+            if owslib.__version__ > "0.17.0":
                 # Get the description for all processes in one request.
-                ps = self._wps.describeprocess('all', xml=xml)
+                ps = self._wps.describeprocess("all", xml=xml)
                 return OrderedDict((p.identifier, p) for p in ps)
             else:
                 processes = all_wps_processes
@@ -169,7 +177,8 @@ class WPSClient(object):
         # Check for invalid process names, i.e. not matching the getCapabilities response.
 
         process_names, missing = utils.filter_case_insensitive(
-            processes, all_wps_processes)
+            processes, all_wps_processes
+        )
 
         if missing:
             message = "These process names were not found on the WPS server: {}"
@@ -183,8 +192,9 @@ class WPSClient(object):
     def _setup_logging(self):
         self.logger.setLevel(logging.INFO)
         import sys
+
         fh = logging.StreamHandler(sys.stdout)
-        fh.setFormatter(logging.Formatter('%(asctime)s: %(message)s'))
+        fh.setFormatter(logging.Formatter("%(asctime)s: %(message)s"))
         self.logger.addHandler(fh)
 
     def _method_factory(self, pid):
@@ -223,11 +233,13 @@ class WPSClient(object):
         # convert defaults
         defaults = tuple(defaults)  # if defaults else None
 
-        body = dedent("""
+        body = dedent(
+            """
             inputs = locals()
             inputs.pop('self')
             return self._execute('{pid}', **inputs)
-        """).format(pid=pid)
+        """
+        ).format(pid=pid)
 
         func_builder = FunctionBuilder(
             name=sanitize(pid),
@@ -263,7 +275,7 @@ class WPSClient(object):
             if arg is None:
                 continue
 
-            values = [arg, ] if not isinstance(arg, (list, tuple)) else arg
+            values = [arg,] if not isinstance(arg, (list, tuple)) else arg
             supported_mimetypes = [v.mimeType for v in input_param.supportedValues]
 
             for value in values:
@@ -287,10 +299,12 @@ class WPSClient(object):
                         else:
                             value = fix_url(str(value))
 
-                        inp = utils.to_owslib(value,
-                                              data_type=input_param.dataType,
-                                              encoding=encoding,
-                                              mimetype=mimetype)
+                        inp = utils.to_owslib(
+                            value,
+                            data_type=input_param.dataType,
+                            encoding=encoding,
+                            mimetype=mimetype,
+                        )
 
                 else:
                     inp = utils.to_owslib(value, data_type=input_param.dataType)
@@ -313,7 +327,7 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = self._parse_output_formats(kwargs.get('output_formats'))
+        wps_outputs = self._parse_output_formats(kwargs.get("output_formats"))
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)
@@ -329,7 +343,7 @@ class WPSClient(object):
 
             if self._interactive and self._processes[pid].statusSupported:
                 if self._notebook:
-                    notebook.monitor(wps_response, sleep=.2)
+                    notebook.monitor(wps_response, sleep=0.2)
                 else:
                     self._console_monitor(wps_response)
 
@@ -360,14 +374,18 @@ class WPSClient(object):
         # Intercept CTRL-C
         def sigint_handler(signum, frame):
             self.cancel()
+
         signal.signal(signal.SIGINT, sigint_handler)
 
         while not execution.isComplete():
             execution.checkStatus(sleepSecs=sleep)
-            self.logger.info("{} [{}/100] - {} ".format(
-                execution.process.identifier,
-                execution.percentCompleted,
-                execution.statusMessage[:50],))
+            self.logger.info(
+                "{} [{}/100] - {} ".format(
+                    execution.process.identifier,
+                    execution.percentCompleted,
+                    execution.statusMessage[:50],
+                )
+            )
 
         if execution.isSucceded():
             self.logger.info("{} done.".format(execution.process.identifier))
@@ -393,7 +411,8 @@ def sort_inputs_key(i):
     The defaultValue for ComplexData is ComplexData instance specifying mimetype, encoding and schema.
     """
     conditions = [
-        i.minOccurs >= 1 and (i.defaultValue is None or isinstance(i.defaultValue, ComplexData)),
+        i.minOccurs >= 1
+        and (i.defaultValue is None or isinstance(i.defaultValue, ComplexData)),
         i.minOccurs >= 1,
         i.minOccurs == 0,
     ]
@@ -404,7 +423,7 @@ def nb_form(wps, pid):
     """Return a Notebook form to enter input values and launch process."""
     if wps._notebook:
         return notebook.interact(
-            func=getattr(wps, sanitize(pid)),
-            inputs=list(wps._inputs[pid].items()))
+            func=getattr(wps, sanitize(pid)), inputs=list(wps._inputs[pid].items())
+        )
     else:
         return None

@@ -14,34 +14,34 @@ cli.caps_xml = EMU_CAPS_XML
 @pytest.mark.online
 def test_help():
     runner = CliRunner()
-    result = runner.invoke(cli, ['--help'])
+    result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
-    assert 'hello' in result.output
-    assert 'wordcount' in result.output
-    assert 'language' in result.output
-    assert 'show-languages' in result.output
+    assert "hello" in result.output
+    assert "wordcount" in result.output
+    assert "language" in result.output
+    assert "show-languages" in result.output
 
 
 @pytest.mark.online
 def test_show_languages():
     runner = CliRunner()
-    result = runner.invoke(cli, ['--show-languages'])
+    result = runner.invoke(cli, ["--show-languages"])
     assert result.exit_code == 0
-    assert 'en-US' in result.output
+    assert "en-US" in result.output
 
 
 @pytest.mark.online
 def test_hello():
     runner = CliRunner()
-    result = runner.invoke(cli, ['hello', '--help'])
+    result = runner.invoke(cli, ["hello", "--help"])
     assert result.exit_code == 0
-    assert '--name' in result.output
+    assert "--name" in result.output
 
 
 @pytest.mark.online
 def test_hello_stranger():
     runner = CliRunner()
-    result = runner.invoke(cli, ['hello', '--name', 'stranger'])
+    result = runner.invoke(cli, ["hello", "--name", "stranger"])
     assert result.exit_code == 0
 
 
@@ -49,5 +49,5 @@ def test_hello_stranger():
 @pytest.mark.xfail(reason="click hides exception")
 def test_multiple_outputs():
     runner = CliRunner()
-    result = runner.invoke(cli, ['multiple_outputs', '--count 2', ])
+    result = runner.invoke(cli, ["multiple_outputs", "--count 2",])
     assert result.exit_code == 0
