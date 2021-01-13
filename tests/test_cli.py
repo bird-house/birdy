@@ -49,5 +49,11 @@ def test_hello_stranger():
 @pytest.mark.xfail(reason="click hides exception")
 def test_multiple_outputs():
     runner = CliRunner()
-    result = runner.invoke(cli, ["multiple_outputs", "--count 2",])
+    result = runner.invoke(
+        cli,
+        [
+            "multiple_outputs",
+            "--count 2",
+        ],
+    )
     assert result.exit_code == 0
