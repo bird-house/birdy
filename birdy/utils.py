@@ -8,27 +8,28 @@ import keyword
 
 # These mimetypes will be encoded in base64 when embedded in requests.
 # I'm sure there is a more elegant solution than this... https://pypi.org/project/binaryornot/ ?
-BINARY_MIMETYPES = ["application/geo+json",
-                    "application/x-zipped-shp",
-                    "application/vnd.google-earth.kmz",
-                    "image/tiff; subtype=geotiff",
-                    "application/x-netcdf",
-                    "application/octet-stream",
-                    "application/zip",
-                    "application/octet-stream",
-                    "application/x-gzip",
-                    "application/x-gtar",
-                    "application/x-tgz",
-                    ]
+BINARY_MIMETYPES = [
+    "application/geo+json",
+    "application/x-zipped-shp",
+    "application/vnd.google-earth.kmz",
+    "image/tiff; subtype=geotiff",
+    "application/x-netcdf",
+    "application/octet-stream",
+    "application/zip",
+    "application/octet-stream",
+    "application/x-gzip",
+    "application/x-gtar",
+    "application/x-tgz",
+]
 
 XML_MIMETYPES = ["application/xml", "application/gml+xml", "text/xml"]
 
-DEFAULT_ENCODING = 'utf-8'
+DEFAULT_ENCODING = "utf-8"
 
 
 def fix_url(url):
     """If url is a local path, add a file:// scheme."""
-    return urlparse(url, scheme='file').geturl()
+    return urlparse(url, scheme="file").geturl()
 
 
 def is_url(url):
@@ -61,16 +62,18 @@ def sanitize(name):
     """Lower-case name and replace all non-ascii chars by `_`.
     If name is a Python keyword (like `return`) then add a trailing `_`.
     """
-    new_name = re.sub(r'\W|^(?=\d)', '_', name.lower())
+    new_name = re.sub(r"\W|^(?=\d)", "_", name.lower())
     if keyword.iskeyword(new_name):
-        new_name = new_name + '_'
+        new_name = new_name + "_"
     return new_name
 
 
 def delist(data):
     """If data is a sequence with a single element, returns this element, otherwise return the sequence."""
     if (
-        isinstance(data, collections.abc.Iterable) and not isinstance(data, str) and len(data) == 1
+        isinstance(data, collections.abc.Iterable)
+        and not isinstance(data, str)
+        and len(data) == 1
     ):
         return data[0]
     return data
@@ -82,7 +85,9 @@ def embed(value, mimetype=None, encoding=None):
     :return: encoded content string and actual encoding
     """
 
-    if hasattr(value, 'read'):  # File-like, we don't know if it's open in bytes or string.
+    if hasattr(
+        value, "read"
+    ):  # File-like, we don't know if it's open in bytes or string.
         content = value.read()
 
     else:
@@ -94,7 +99,7 @@ def embed(value, mimetype=None, encoding=None):
             path = u.path
 
         if is_file(path):
-            mode = 'rb' if mimetype in BINARY_MIMETYPES else 'r'
+            mode = "rb" if mimetype in BINARY_MIMETYPES else "r"
             with open(path, mode) as fp:
                 content = fp.read()
         else:
@@ -108,7 +113,7 @@ def _encode(content, mimetype, encoding):
 
     if mimetype in BINARY_MIMETYPES:
         # An error here might be due to a bad file path. Check that the file exists.
-        return base64.b64encode(content), 'base64'
+        return base64.b64encode(content), "base64"
 
     else:
         if encoding is None:
@@ -149,7 +154,11 @@ def guess_type(url, supported):
     # -------------
 
     # netCDF
-    if mime == "application/x-netcdf" and "dodsC" in url and "application/x-ogc-dods" in supported:
+    if (
+        mime == "application/x-netcdf"
+        and "dodsC" in url
+        and "application/x-ogc-dods" in supported
+    ):
         mime = "application/x-ogc-dods"
 
     # ZIP

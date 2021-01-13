@@ -7,7 +7,7 @@ dependencies:
   - pip
   #- openssl
   - lxml
-  - owslib>=0.18
+  - owslib>=0.19
   - click
   - jinja2
   - wrapt
@@ -20,7 +20,7 @@ dependencies:
   - pytest
   - pytest-notebook
   - nbval
-  - flake8
+  - flake8>=3.8.4
   # sphinx for rtd
   - pandoc
   - ipykernel

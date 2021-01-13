@@ -10,7 +10,7 @@ from birdy.cli.misc import get_ssl_verify
 
 
 template_env = Environment(
-    loader=PackageLoader('birdy', 'templates'),
+    loader=PackageLoader("birdy", "templates"),
     autoescape=True,
 )
 
@@ -24,9 +24,10 @@ class BirdyCLI(click.MultiCommand):
     :param caps_xml: A WPS GetCapabilities response for testing.
     :param desc_xml: A WPS DescribeProcess response with "identifier=all" for testing.
     """
+
     def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, **attrs):
         click.MultiCommand.__init__(self, name, **attrs)
-        self.url = os.environ.get('WPS_SERVICE') or url
+        self.url = os.environ.get("WPS_SERVICE") or url
         self.verify = get_ssl_verify()
         self.caps_xml = caps_xml
         self.desc_xml = desc_xml
@@ -36,8 +37,10 @@ class BirdyCLI(click.MultiCommand):
     @property
     def wps(self):
         if self._wps is None:
-            language = self.context_settings['obj'].get('language')
-            self._wps = WebProcessingService(self.url, verify=self.verify, skip_caps=True, language=language)
+            language = self.context_settings["obj"].get("language")
+            self._wps = WebProcessingService(
+                self.url, verify=self.verify, skip_caps=True, language=language
+            )
         return self._wps
 
     def _update_commands(self):
@@ -45,16 +48,21 @@ class BirdyCLI(click.MultiCommand):
             try:
                 self.wps.getcapabilities(xml=self.caps_xml)
             except SSLError:
-                raise ConnectionError('SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false.')
+                raise ConnectionError(
+                    "SSL verfication of server certificate failed. Set WPS_SSL_VERIFY=false."
+                )
             except Exception as e:
-                raise ConnectionError("Could not connect to Web Processing Service ({!r})".format(e))
+                raise ConnectionError(
+                    "Could not connect to Web Processing Service ({!r})".format(e)
+                )
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
                     url=self.wps.url,
                     version=process.processVersion,
                     help=BirdyCLI.format_command_help(process),
-                    options=[])
+                    options=[],
+                )
 
     def list_commands(self, ctx):
         self._update_commands()
@@ -62,59 +70,66 @@ class BirdyCLI(click.MultiCommand):
 
     def get_command(self, ctx, name):
         self._update_commands()
-        cmd_templ = template_env.get_template('cmd.py.j2')
+        cmd_templ = template_env.get_template("cmd.py.j2")
         rendered_cmd = cmd_templ.render(self._get_command_info(name, ctx))
         ns = {}
-        code = compile(rendered_cmd, filename='<string>', mode='exec')
+        code = compile(rendered_cmd, filename="<string>", mode="exec")
         eval(code, ns, ns)
-        return ns['cli']
+        return ns["cli"]
 
     def _get_command_info(self, name, ctx):
         cmd = self.commands.get(name)
         pp = self.wps.describeprocess(name, xml=self.desc_xml)
         for inp in pp.dataInputs:
-            help = inp.title or ''
+            help = inp.title or ""
             default = BirdyCLI.get_param_default(inp)
             if default:
                 help = "{}. Default: {}".format(help, default)
-            cmd['options'].append(dict(
-                name=inp.identifier.replace(' ', '-'),
-                # default=BirdyCLI.get_param_default(inp),
-                help=help,
-                type=BirdyCLI.get_param_type(inp),
-                multiple=inp.maxOccurs > 1))
+            cmd["options"].append(
+                dict(
+                    name=inp.identifier.replace(" ", "-"),
+                    # default=BirdyCLI.get_param_default(inp),
+                    help=help,
+                    type=BirdyCLI.get_param_type(inp),
+                    multiple=inp.maxOccurs > 1,
+                )
+            )
         outputs = []
         for output in pp.processOutputs:
-            outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
+            outputs.append(
+                (output.identifier, BirdyCLI.get_param_type(output) is COMPLEX)
+            )
         return cmd
 
     @staticmethod
     def format_command_help(process):
-        return "{}: {}".format(process.title or process.identifier, process.abstract or '')
+        return "{}: {}".format(
+            process.title or process.identifier, process.abstract or ""
+        )
 
     @staticmethod
     def get_param_default(param):
-        if 'ComplexData' in param.dataType:
+        if "ComplexData" in param.dataType:
             # TODO: get default value of complex type
             default = None
-        elif 'BoundingBoxData' in param.dataType:
+        elif "BoundingBoxData" in param.dataType:
             # TODO: get default value of bbox
             default = None
         else:
-            default = getattr(param, 'defaultValue', None)
+            default = getattr(param, "defaultValue", None)
         return default
 
     @staticmethod
     def get_param_type(param):
         if param.dataType is None:
             param_type = click.STRING
-        elif 'boolean' in param.dataType:
+        elif "boolean" in param.dataType:
             param_type = click.BOOL
-        elif 'integer' in param.dataType:
+        elif "integer" in param.dataType:
             param_type = click.INT
-        elif 'float' in param.dataType:
+        elif "float" in param.dataType:
             param_type = click.FLOAT
-        elif 'ComplexData' in param.dataType:
+        elif "ComplexData" in param.dataType:
             param_type = COMPLEX
         else:
             param_type = click.STRING

@@ -1,0 +1,58 @@
+default_language_version:
+    python: python3.8
+
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.5.0
+    hooks:
+    -   id: trailing-whitespace
+        language_version: python3
+    -   id: end-of-file-fixer
+        language_version: python3
+    -   id: check-yaml
+        language_version: python3
+    -   id: debug-statements
+        language_version: python3
+-   repo: https://github.com/ambv/black
+    rev: 20.8b1
+    hooks:
+    -   id: black
+        language_version: python3
+        args: ["--target-version", "py38"]
+-   repo: https://github.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+    -   id: flake8
+        language_version: python3
+        args: ['--config=setup.cfg']
+#-   repo: https://github.com/pre-commit/mirrors-autopep8
+#    rev: v1.4.4
+#    hooks:
+#    -   id: autopep8
+#        args: ['--global-config=setup.cfg','--in-place']
+# -   repo: https://github.com/timothycrosley/isort
+#     rev: 5.0.7
+#     hooks:
+#     -   id: isort
+#         language_version: python3
+#         args: ['--profile', 'black']
+#-   repo: https://github.com/pycqa/pydocstyle
+#    rev: 5.0.2
+#    hooks:
+#    -   id: pydocstyle
+#        args: ["--conventions=numpy"]
+# -   repo: https://github.com/asottile/pyupgrade
+#     rev: v2.4.1
+#     hooks:
+#     -   id: pyupgrade
+#         language_version: python3
+# -   repo: meta
+#     hooks:
+#     -   id: check-hooks-apply
+#     -   id: check-useless-excludes
+# -   repo: https://github.com/kynan/nbstripout
+#     rev: 0.3.7
+#     hooks:
+#     -   id: nbstripout
+#         language_version: python3
+#         files: ".ipynb"

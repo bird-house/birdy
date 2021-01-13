@@ -18,16 +18,27 @@ Install additional dependencies::
 
   $ pip install -r requirements_dev.txt
 
-When you're done making changes, check that your changes pass `flake8` and the tests::
+When you're done making changes, check that your changes pass `black`, `flake8` and the tests::
 
-    $ flake8
-    $ pytest
+    $ black birdy tests
+    $ flake8 birdy tests
+    $ pytest -v tests
 
-   Or use the Makefile::
+Or use the Makefile::
 
      $ make lint
      $ make test
      $ make test-all
+
+Add pre-commit hooks
+--------------------
+
+Before committing your changes, we ask that you install `pre-commit` in your environment.
+`Pre-commit` runs git hooks that ensure that your code resembles that of the project
+and catches and corrects any small errors or inconsistencies when you `git commit`::
+
+     $ conda install -c conda-forge pre_commit
+     $ pre-commit install
 
 Write Documentation
 ===================
