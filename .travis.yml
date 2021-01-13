@@ -73,6 +73,6 @@ install:
   - python setup.py install
 script:
   - make test
-  - make test-nb
+  # - make test-nb
   - if [[ $PEP8 == true ]]; then flake8 birdy tests; fi
   - if [[ $DOCS == true ]]; then make docs; fi
