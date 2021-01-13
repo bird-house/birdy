@@ -24,10 +24,13 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-    - name: Test with pytest  ⚙️
+    - name: Test with pytest ⚙️
       run: make test
-    - name: Lint with flake8  ⚙️
+    - name: Lint with flake8 ⚙️
       run: make lint
+      if: matrix.python-version == 3.8
+    - name: Check formatting with black ⚙️
+      run: black --check --target-version py38 rooki tests
       if: matrix.python-version == 3.8
     - name: Build docs 🏗️
       run: make docs
