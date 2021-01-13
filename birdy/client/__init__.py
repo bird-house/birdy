@@ -82,7 +82,7 @@ requests-magpie_ module::
 Output format
 -------------
 
-Birdy automatically manages process output to reflect it's default values or 
+Birdy automatically manages process output to reflect it's default values or
 Birdy's own defaults.
 
 However, it's possible to customize the output of a process. Each process has an input

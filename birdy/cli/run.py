@@ -25,6 +25,7 @@ def _set_language(ctx, param, value):
         return
     CONTEXT_OBJ['language'] = value
 
+
 @click.command(cls=BirdyCLI, context_settings=CONTEXT_SETTINGS,
                url="http://localhost:5000/wps")
 @click.version_option()

@@ -211,16 +211,17 @@ class WPSClient(object):
         # A tuple containing default argument values for those arguments that have defaults,
         # or None if no arguments have a default value.
         defaults = []
-        # Set generic 'output_formats' input
-        input_names.append("output_formats")
-        defaults.append(None)
         # Set process inputs
         for inpt in required_inputs_first:
             input_names.append(sanitize(inpt.identifier))
             if inpt.minOccurs == 0 or inpt.defaultValue is not None:
                 default = inpt.defaultValue if inpt.dataType != "ComplexData" else None
                 defaults.append(utils.from_owslib(default, inpt.dataType))
-        defaults = tuple(defaults) if defaults else None
+        # Set generic 'output_formats' input
+        input_names.append("output_formats")
+        defaults.append(None)
+        # convert defaults
+        defaults = tuple(defaults)  # if defaults else None
 
         body = dedent("""
             inputs = locals()
@@ -312,7 +313,7 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = self._parse_output_formats(kwargs['output_formats'])
+        wps_outputs = self._parse_output_formats(kwargs.get('output_formats'))
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)

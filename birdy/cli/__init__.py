@@ -51,14 +51,14 @@ Using the output_formats option for a process
 Each process also has a default option named `output_formats`. It can be used
 to override a process' output format's default values.
 
-This option takes three parameters; 
+This option takes three parameters;
 
 The format identifier: the name given to it
 
-The ``as reference`` parameter: if the output is returned as a link of not. 
+The ``as reference`` parameter: if the output is returned as a link of not.
 Can be True, False, or None (which uses the process' default value)
 
-The MIME type: of which MIME type is the output. 
+The MIME type: of which MIME type is the output.
 Unless the process has multiple supported mime types, this can be left to None.
 
 Looking at the emu process `output_formats`, the JSON output's default's the ``as reference``
