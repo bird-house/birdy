@@ -6,4 +6,3 @@ wrapt
 funcsigs
 boltons
 requests
-

@@ -16,7 +16,7 @@ This module is to be used inside a jupyter notebook, either with a standard serv
 
 There are notebook examples which show how to use this module and what can be done with it.
 
-The WFS request is filtered by the extent of the visible map, to make large layers easier to work with. 
+The WFS request is filtered by the extent of the visible map, to make large layers easier to work with.
 Using the on-map 'Refresh WFS layer' button will make a new request for the current extent.
 
 **Warning**
