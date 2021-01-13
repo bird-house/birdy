@@ -275,7 +275,13 @@ class WPSClient(object):
             if arg is None:
                 continue
 
-            values = [arg,] if not isinstance(arg, (list, tuple)) else arg
+            values = (
+                [
+                    arg,
+                ]
+                if not isinstance(arg, (list, tuple))
+                else arg
+            )
             supported_mimetypes = [v.mimeType for v in input_param.supportedValues]
 
             for value in values:

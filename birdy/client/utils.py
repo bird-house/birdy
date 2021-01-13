@@ -324,5 +324,10 @@ def create_output_dictionary(output_identifier, as_ref=None, mimetype=None):
     -------
     output_dictionary: dict
     """
-    output_dictionary = {output_identifier: {"as_ref": as_ref, "mimetype": mimetype,}}
+    output_dictionary = {
+        output_identifier: {
+            "as_ref": as_ref,
+            "mimetype": mimetype,
+        }
+    }
     return output_dictionary
