@@ -6,9 +6,9 @@ Birdy
    :target: http://birdy.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://travis-ci.org/bird-house/birdy.svg?branch=master
-   :target: https://travis-ci.org/bird-house/birdy
-   :alt: Travis Build
+.. image:: https://github.com/bird-house/birdy/workflows/build/badge.svg
+    :target: https://github.com/bird-house/birdy/actions
+    :alt: Build Status
 
 .. image:: https://api.codacy.com/project/badge/Grade/da14405a9a6d4c2e9c405d9c0c8babe7
    :target: https://www.codacy.com/app/cehbrecht/birdy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bird-house/birdy&amp;utm_campaign=Badge_Grade

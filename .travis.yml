@@ -1,3 +1,6 @@
+## NOTE: travis CI is currently not used. We use github actions instead.
+## See: .github/workflows/main.yml
+
 dist: xenial   # required for Python >= 3.7
 
 language: generic
