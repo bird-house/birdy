@@ -18,44 +18,52 @@ def parse_reqs(file):
     return reqs
 
 
-with open(Path(__file__).parent / 'birdy' / '__init__.py', 'r') as f:
+with open(Path(__file__).parent / "birdy" / "__init__.py", "r") as f:
     version = re.search(r'__version__ = [\'"](.+?)[\'"]', f.read()).group(1)
 
-description = 'Birdy provides a command-line tool to work with Web Processing Services.'
+description = "Birdy provides a command-line tool to work with Web Processing Services."
 long_description = (
-    open('README.rst').read() + '\n' + open('AUTHORS.rst').read() + '\n' + open('CHANGES.rst').read()
+    open("README.rst").read()
+    + "\n"
+    + open("AUTHORS.rst").read()
+    + "\n"
+    + open("CHANGES.rst").read()
 )
 
 requirements = parse_reqs("requirements.txt")
-dev_requirements = parse_reqs('requirements_dev.txt')
+dev_requirements = parse_reqs("requirements_dev.txt")
 
 classifiers = [
-    'Development Status :: 4 - Beta',
-    'Intended Audience :: Science/Research',
-    'Operating System :: MacOS :: MacOS X',
-    'Operating System :: Microsoft :: Windows',
-    'Operating System :: POSIX',
-    'Programming Language :: Python',
-    'Topic :: Scientific/Engineering :: Atmospheric Science',
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
 ]
 
-setup(name='birdhouse-birdy',
-      version=version,
-      description=description,
-      long_description=long_description,
-      classifiers=classifiers,
-      keywords='wps pywps owslib geopython birdy birdhouse',
-      author='Carsten Ehbrecht',
-      author_email="ehbrecht@dkrz.de",
-      url='https://github.com/bird-house/birdy',
-      license="Apache License v2.0",
-      packages=find_packages(),
-      include_package_data=True,
-      install_requires=requirements,
-      extras_require={
-          "dev": dev_requirements,              # pip install ".[dev]"
-      },
-      entry_points={
-          'console_scripts': [
-              'birdy=birdy.cli.run:cli']},
-      )
+setup(
+    name="birdhouse-birdy",
+    version=version,
+    description=description,
+    long_description=long_description,
+    long_description_content_type="text/x-rst",
+    classifiers=classifiers,
+    keywords="wps pywps owslib geopython birdy birdhouse",
+    author="Carsten Ehbrecht",
+    author_email="ehbrecht@dkrz.de",
+    url="https://github.com/bird-house/birdy",
+    license="Apache License v2.0",
+    # This qualifier can be used to selectively exclude Python versions -
+    # in this case early Python 2 and 3 releases
+    python_requires=">=3.6.0",
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=requirements,
+    extras_require={
+        "dev": dev_requirements,  # pip install ".[dev]"
+    },
+    entry_points={"console_scripts": ["birdy=birdy.cli.run:cli"]},
+)
