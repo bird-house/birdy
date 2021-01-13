@@ -28,14 +28,7 @@ def test_sanitize():
 
 def test_delist():
     assert utils.delist(["one", "two"]) == ["one", "two"]
-    assert (
-        utils.delist(
-            [
-                "one",
-            ]
-        )
-        == "one"
-    )
+    assert utils.delist(["one"]) == "one"
     assert utils.delist("one") == "one"
 
 
@@ -76,20 +69,13 @@ class TestGuessType:
     def test_zip(self):
         mime, enc = utils.guess_type(
             "LSJ_LL.zip",
-            [
-                "application/gml+xml",
-                "application/zip",
-                "application/x-zipped-shp",
-            ],
+            ["application/gml+xml", "application/zip", "application/x-zipped-shp"],
         )
         assert mime == "application/zip"
 
         mime, enc = utils.guess_type(
             "LSJ_LL.zip",
-            [
-                "application/gml+xml",
-                "application/x-zipped-shp",
-            ],
+            ["application/gml+xml", "application/x-zipped-shp"],
         )
         assert mime == "application/x-zipped-shp"
 
