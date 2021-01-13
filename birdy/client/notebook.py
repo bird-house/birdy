@@ -152,6 +152,5 @@ def input2widget(inpt):
 
 
 def output2widget(output):
-    """Return notebook widget based on output mime-type.
-    """
+    """Return notebook widget based on output mime-type."""
     pass

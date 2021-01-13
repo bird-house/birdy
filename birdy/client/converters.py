@@ -274,8 +274,7 @@ class ZipConverter(BaseConverter):
 
 
 def _find_converter(mimetype=None, extension=None, converters=()):
-    """Return a list of compatible converters ordered by priority.
-    """
+    """Return a list of compatible converters ordered by priority."""
     select = [GenericConverter]
     for obj in converters:
         if (mimetype == obj.mimetype) or (extension in obj.extensions):

@@ -9,7 +9,10 @@ from birdy.cli.types import COMPLEX
 from birdy.cli.misc import get_ssl_verify
 
 
-template_env = Environment(loader=PackageLoader("birdy", "templates"), autoescape=True,)
+template_env = Environment(
+    loader=PackageLoader("birdy", "templates"),
+    autoescape=True,
+)
 
 
 class BirdyCLI(click.MultiCommand):

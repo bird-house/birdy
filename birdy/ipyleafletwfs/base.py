@@ -98,7 +98,7 @@ class IpyleafletWFS(object):
     def build_layer(
         self, layer_typename, source_map, layer_style=None, feature_property=None
     ):
-        """ Return an ipyleaflet GeoJSON layer from a geojson wfs request.
+        """Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
         Requires the WFS service to be capable of geojson output.
 
@@ -254,8 +254,7 @@ class IpyleafletWFS(object):
             print("There is no layer to refresh")
 
     def remove_layer(self):
-        """Remove layer instance and it's widgets from map.
-        """
+        """Remove layer instance and it's widgets from map."""
         if self._layer:
             # Remove maps elements
             self.clear_property_widgets()
@@ -306,8 +305,7 @@ class IpyleafletWFS(object):
 
     @property
     def geojson(self):
-        """Return the imported geojson data in a python object format.
-        """
+        """Return the imported geojson data in a python object format."""
         return self._geojson
 
     @property
