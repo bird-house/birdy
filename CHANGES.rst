@@ -1,6 +1,19 @@
 Change History
 **************
 
+0.7.0 (2021-01-15)
+==================
+
+Changes:
+
+* Added multiple language support (#164).
+* Added an Ipyleaflet wrapper for WFS support (#179).
+* Updated GeoJSON mimetype (#181).
+* Added ability to specify output format for process execution (#182).
+* Fixed tests (#184).
+* Use GitHub Actions for CI build instead of Travis CI (#185).
+* Use black formatting (#186, #187).
+
 0.6.9 (2020-03-10)
 ==================
 
