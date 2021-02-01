@@ -120,7 +120,7 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = "application/vnd.geo+json"
+    mimetype = "application/geo+json"
     extensions = [
         "geojson",
     ]
