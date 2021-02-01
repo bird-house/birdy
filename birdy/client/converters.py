@@ -224,6 +224,7 @@ class ShpFionaConverter(BaseConverter):
     def convert(self):
         import fiona
         import io
+
         return lambda x: fiona.open(io.BytesIO(x))
 
 
@@ -237,6 +238,7 @@ class ShpOgrConverter(BaseConverter):
 
     def convert(self):
         from osgeo import ogr
+
         return ogr.Open
 
 
@@ -260,10 +262,7 @@ class ImageConverter(BaseConverter):
 # TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
     mimetype = "image/tiff; application=geotiff"
-    extensions = [
-        "tiff",
-        "tif"
-    ]
+    extensions = ["tiff", "tif"]
     priority = 1
 
     def check_dependencies(self):
@@ -271,6 +270,7 @@ class GeotiffRasterioConverter(BaseConverter):
 
     def convert(self):
         import rasterio
+
         return rasterio.open(self.file)
 
 
@@ -284,6 +284,7 @@ class GeotiffGdalConverter(BaseConverter):
 
     def convert(self):
         from osgeo import gdal
+
         return gdal.Open(self.file)
 
 
