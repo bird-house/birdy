@@ -213,6 +213,7 @@ class XarrayConverter(BaseConverter):
             return xr.open_dataset(self.file)
 
 
+# TODO: Add test for this.
 class ShpFionaConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
     priority = 1
@@ -221,12 +222,12 @@ class ShpFionaConverter(BaseConverter):
         self._check_import("fiona")
 
     def convert(self):
-        raise NotImplementedError
-        # import fiona
-        # import io
-        # return lambda x: fiona.open(io.BytesIO(x))
+        import fiona
+        import io
+        return lambda x: fiona.open(io.BytesIO(x))
 
 
+# TODO: Add test for this.
 class ShpOgrConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
     priority = 1
@@ -235,9 +236,8 @@ class ShpOgrConverter(BaseConverter):
         self._check_import("ogr", package="osgeo")
 
     def convert(self):
-        raise NotImplementedError
-        # from osgeo import ogr
-        # return ogr.Open
+        from osgeo import ogr
+        return ogr.Open
 
 
 # TODO: Add test for this.
@@ -255,6 +255,36 @@ class ImageConverter(BaseConverter):
         from birdy.dependencies import IPython
 
         return IPython.display.Image(self.url)
+
+
+# TODO: Add test for this.
+class GeotiffRasterioConverter(BaseConverter):
+    mimetype = "image/tiff; application=geotiff"
+    extensions = [
+        "tiff",
+        "tif"
+    ]
+    priority = 1
+
+    def check_dependencies(self):
+        self._check_import("rasterio")
+
+    def convert(self):
+        import rasterio
+        return rasterio.open(self.file)
+
+
+# TODO: Add test for this.
+class GeotiffGdalConverter(BaseConverter):
+    mimetype = "image/tiff; application=geotiff"
+    priority = 1
+
+    def check_dependencies(self):
+        self._check_import("gdal", package="osgeo")
+
+    def convert(self):
+        from osgeo import gdal
+        return gdal.Open(self.file)
 
 
 class ZipConverter(BaseConverter):
