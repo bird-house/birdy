@@ -4,3 +4,6 @@ ipywidgets
 ipython
 geojson
 pymetalink
+fiona
+rasterio
+gdal
