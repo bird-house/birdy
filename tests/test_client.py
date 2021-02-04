@@ -339,10 +339,10 @@ def test_geojson_geotiff_converters(wps):
         processes=["geodata"],
         converters=[GeoJSONConverter, GeotiffRasterioConverter],
     ).geodata()
-
     raster, vector = result.get(asobj=True)
-    assert hasattr(raster, "shape")
+
     assert {"type", "name", "crs", "features"} == set(vector)
+    assert hasattr(raster, "shape")
 
 
 def test_sort_inputs(process):

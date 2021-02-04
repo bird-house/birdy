@@ -128,7 +128,7 @@ class GeoJSONConverter(BaseConverter):
     priority = 2
 
     def check_dependencies(self):
-        self._check_import("dask")
+        self._check_import("geojson")
 
     def convert(self):
         import geojson
@@ -220,6 +220,7 @@ class ShpFionaConverter(BaseConverter):
     priority = 1
 
     def check_dependencies(self):
+        ShpOgrConverter.check_dependencies(self)
         self._check_import("fiona")
 
     def convert(self):
@@ -271,13 +272,15 @@ class GeotiffRasterioConverter(BaseConverter):
     priority = 2
 
     def check_dependencies(self):
+        GeotiffGdalConverter.check_dependencies(self)
         self._check_import("rasterio")
 
     def convert(self):
         import rasterio
         import io
 
-        return lambda x: rasterio.open(io.BytesIO(x))
+        # return lambda x: rasterio.open(io.BytesIO(x))
+        return rasterio.open(self.file).read()
 
 
 # TODO: Add test for this.
