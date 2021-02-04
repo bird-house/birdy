@@ -120,11 +120,7 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = [
-        "application/json"
-        "application/geo+json",
-        "application/vnd.geo+json"
-        ]
+    mimetype = ["application/json" "application/geo+json", "application/vnd.geo+json"]
     extensions = [
         "json",
         "geojson",
@@ -269,8 +265,8 @@ class GeotiffRasterioConverter(BaseConverter):
     mimetype = [
         "image/tiff; application=geotiff",
         "image/tiff; subtype=geotiff",
-        "image/tiff"
-        ]
+        "image/tiff",
+    ]
     extensions = ["tiff", "tif"]
     priority = 2
 
@@ -289,8 +285,8 @@ class GeotiffGdalConverter(BaseConverter):
     mimetype = [
         "image/tiff; application=geotiff",
         "image/tiff; subtype=geotiff",
-        "image/tiff"
-        ]
+        "image/tiff",
+    ]
     extensions = ["tiff", "tif"]
     priority = 1
 

@@ -341,7 +341,7 @@ def test_geojson_geotiff_converters(wps):
     geowps = WPSClient(
         url=URL_EMU,
         processes=["geodata"],
-        converters=[GeoJSONConverter, GeotiffRasterioConverter]
+        converters=[GeoJSONConverter, GeotiffRasterioConverter],
     )
 
     result = geowps.geodata(
