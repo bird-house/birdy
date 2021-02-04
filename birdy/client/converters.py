@@ -120,7 +120,7 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = ["application/json" "application/geo+json", "application/vnd.geo+json"]
+    mimetype = ["application/json", "application/geo+json", "application/vnd.geo+json"]
     extensions = [
         "json",
         "geojson",
@@ -277,7 +277,8 @@ class GeotiffRasterioConverter(BaseConverter):
 
     def convert(self):
         import rasterio
-        import io
+
+        # import io
 
         # return lambda x: rasterio.open(io.BytesIO(x))
         return rasterio.open(self.file).read()

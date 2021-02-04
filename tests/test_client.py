@@ -341,7 +341,7 @@ def test_geojson_geotiff_converters(wps):
     ).geodata()
     raster, vector = result.get(asobj=True)
 
-    assert {"type", "name", "crs", "features"} == set(vector)
+    assert isinstance(vector, dict)
     assert hasattr(raster, "shape")
 
 
