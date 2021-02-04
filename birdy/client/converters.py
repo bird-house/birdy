@@ -59,8 +59,8 @@ class BaseConverter(object):
         try:
             import_module(name, package)
         except ImportError as e:
-            message = "Class {} has unmet dependencies: {}"
-            raise type(e)(message.format(self.__class__.__name__, name))
+            message = f"Class {self.__class__.__name__} has unmet dependencies: {name}"
+            raise type(e)(message)
 
     def convert(self):
         """To be subclassed"""
@@ -120,14 +120,19 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = "application/geo+json"
+    mimetype = [
+        "application/json"
+        "application/geo+json",
+        "application/vnd.geo+json"
+        ]
     extensions = [
+        "json",
         "geojson",
     ]
-    priority = 1
+    priority = 2
 
     def check_dependencies(self):
-        self._check_import("geojson")
+        self._check_import("dask")
 
     def convert(self):
         import geojson
@@ -231,7 +236,7 @@ class ShpFionaConverter(BaseConverter):
 # TODO: Add test for this.
 class ShpOgrConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
-    priority = 1
+    priority = 2
 
     def check_dependencies(self):
         self._check_import("ogr", package="osgeo")
@@ -261,22 +266,32 @@ class ImageConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
-    mimetype = "image/tiff; application=geotiff"
+    mimetype = [
+        "image/tiff; application=geotiff",
+        "image/tiff; subtype=geotiff",
+        "image/tiff"
+        ]
     extensions = ["tiff", "tif"]
-    priority = 1
+    priority = 2
 
     def check_dependencies(self):
         self._check_import("rasterio")
 
     def convert(self):
         import rasterio
+        import io
 
-        return rasterio.open(self.file)
+        return lambda x: rasterio.open(io.BytesIO(x))
 
 
 # TODO: Add test for this.
 class GeotiffGdalConverter(BaseConverter):
-    mimetype = "image/tiff; application=geotiff"
+    mimetype = [
+        "image/tiff; application=geotiff",
+        "image/tiff; subtype=geotiff",
+        "image/tiff"
+        ]
+    extensions = ["tiff", "tif"]
     priority = 1
 
     def check_dependencies(self):
@@ -284,8 +299,9 @@ class GeotiffGdalConverter(BaseConverter):
 
     def convert(self):
         from osgeo import gdal
+        import io
 
-        return gdal.Open(self.file)
+        return lambda x: gdal.Open(io.BytesIO(x))
 
 
 class ZipConverter(BaseConverter):
@@ -340,6 +356,8 @@ def convert(output, path, converters=None, verify=True):
       Path on disk where temporary files are stored.
     converters : sequence of BaseConverter subclasses
       Converter classes to search within for a match.
+    verify : bool
+
 
     Returns
     -------

@@ -65,7 +65,7 @@ def test_wps_with_language_arg():
 
 
 @pytest.mark.online
-@pytest.mark.xfail(reason="a wps process has invalid defaultValue Inf")
+@pytest.mark.xfail(reason="A wps process has invalid defaultValue Inf")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     WPSClient(url_52n)
@@ -234,7 +234,7 @@ def test_asobj_non_pythonic_id(wps):
     assert out.output_2 == d
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="owslib_esgfwps is needed for this test")
 def test_esgfapi(wps):
     from owslib_esgfwps import Domain, Dimension, Variable
 
@@ -270,7 +270,7 @@ def test_inputs(wps):
         any_value="7",
         ref_value="Scots",
         text="some unsafe text &<",
-        dataset="file://" + resource_file("dummy.nc"),
+        dataset=f"file://{resource_file('dummy.nc')}",
     )
     expected = (
         "test string",
@@ -325,6 +325,36 @@ def test_xarray_converter(wps):
 
     ncdata, jsondata = wps.output_formats().get(asobj=True)
     assert isinstance(ncdata, xr.Dataset)
+
+
+@pytest.mark.online
+def test_geojson_geotiff_converters(wps):
+    pytest.importorskip("geojson")
+    pytest.importorskip("rasterio")
+    import owslib.ows
+
+    from birdy.client.converters import GeoJSONConverter, GeotiffRasterioConverter
+
+    tif = f"file://{resource_file('Olympus.tif')}"
+    gj = f"file://{resource_file('Olympus_Mons.geojson')}"
+
+    geowps = WPSClient(
+        url=URL_EMU,
+        processes=["geodata"],
+        converters=[GeoJSONConverter, GeotiffRasterioConverter]
+    )
+
+    result = geowps.geodata(
+        vector=gj,
+        raster=tif,
+    )
+
+    centroid, bbox, raster, vector = result.get(asobj=True)
+    centroid = centroid.split(",")
+    assert len(centroid) == 2
+    assert isinstance(bbox, owslib.ows.BoundingBox)
+    assert hasattr(raster, "shape")
+    assert {"type", "name", "crs", "features"} == set(vector)
 
 
 def test_sort_inputs(process):
