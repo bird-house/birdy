@@ -331,28 +331,16 @@ def test_xarray_converter(wps):
 def test_geojson_geotiff_converters(wps):
     pytest.importorskip("geojson")
     pytest.importorskip("rasterio")
-    import owslib.ows
 
     from birdy.client.converters import GeoJSONConverter, GeotiffRasterioConverter
 
-    tif = f"file://{resource_file('Olympus.tif')}"
-    gj = f"file://{resource_file('Olympus_Mons.geojson')}"
-
-    geowps = WPSClient(
+    result = WPSClient(
         url=URL_EMU,
         processes=["geodata"],
         converters=[GeoJSONConverter, GeotiffRasterioConverter],
-    )
+    ).geodata()
 
-    result = geowps.geodata(
-        vector=gj,
-        raster=tif,
-    )
-
-    centroid, bbox, raster, vector = result.get(asobj=True)
-    centroid = centroid.split(",")
-    assert len(centroid) == 2
-    assert isinstance(bbox, owslib.ows.BoundingBox)
+    raster, vector = result.get(asobj=True)
     assert hasattr(raster, "shape")
     assert {"type", "name", "crs", "features"} == set(vector)
 
