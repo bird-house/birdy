@@ -168,13 +168,14 @@ def guess_type(url, supported):
         if mime in zips and set(zips).intersection(supported):
             mime = set(zips).intersection(supported).pop()
 
-    # GeoTIFF (workaround since this mimetype isn't correctly understoud)
-    if mime == "image/tiff" and (".tif" in url or ".tiff" in "url"):
-        mime = "image/tiff; subtype=geotiff"
-
-    # GeoJSON (workaround since this mimetype isn't correctly understoud)
-    if mime == "application/geo+json":
-        mime = "application/vnd.geo+json"
+    # FIXME: Verify whether this code is needed. Remove if not.
+    # # GeoTIFF (workaround since this mimetype isn't correctly understoud)
+    # if mime == "image/tiff" and (".tif" in url or ".tiff" in "url"):
+    #     mime = "image/tiff; subtype=geotiff"
+    #
+    # # GeoJSON (workaround since this mimetype isn't correctly understoud)
+    # if mime == "application/geo+json":
+    #     mime = "application/vnd.geo+json"
 
     # All the various XML schemes
     # TODO
