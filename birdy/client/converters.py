@@ -1,9 +1,11 @@
+import tempfile
 from distutils.version import StrictVersion
 from importlib import import_module
-from . import notebook as nb
-import tempfile
 from pathlib import Path
+
 from owslib.wps import Output
+
+from . import notebook as nb
 
 
 class BaseConverter(object):
@@ -120,7 +122,7 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = ["application/json", "application/geo+json", "application/vnd.geo+json"]
+    mimetype = "application/geo+json"
     extensions = [
         "json",
         "geojson",
@@ -164,9 +166,7 @@ class Meta4Converter(MetalinkConverter):
 
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
-    extensions = [
-        "nc",
-    ]
+    extensions = ["nc", "nc4"]
     priority = 1
 
     def check_dependencies(self):
@@ -224,8 +224,8 @@ class ShpFionaConverter(BaseConverter):
         self._check_import("fiona")
 
     def convert(self):
-        import fiona
-        import io
+        import io  # isort: skip
+        import fiona  # isort: skip
 
         return lambda x: fiona.open(io.BytesIO(x))
 
@@ -233,6 +233,9 @@ class ShpFionaConverter(BaseConverter):
 # TODO: Add test for this.
 class ShpOgrConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
+    extensions = [
+        "zip",
+    ]
     priority = 2
 
     def check_dependencies(self):
@@ -263,11 +266,7 @@ class ImageConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
-    mimetype = [
-        "image/tiff; application=geotiff",
-        "image/tiff; subtype=geotiff",
-        "image/tiff",
-    ]
+    mimetype = "image/tiff; application=geotiff"
     extensions = ["tiff", "tif"]
     priority = 2
 
@@ -276,9 +275,9 @@ class GeotiffRasterioConverter(BaseConverter):
         self._check_import("rasterio")
 
     def convert(self):
-        import rasterio
+        import rasterio  # isort: skip
 
-        # import io
+        # import io   # isort: skip
 
         # return lambda x: rasterio.open(io.BytesIO(x))
         return rasterio.open(self.file).read()
@@ -286,11 +285,7 @@ class GeotiffRasterioConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffGdalConverter(BaseConverter):
-    mimetype = [
-        "image/tiff; application=geotiff",
-        "image/tiff; subtype=geotiff",
-        "image/tiff",
-    ]
+    mimetype = "image/tiff; application=geotiff"
     extensions = ["tiff", "tif"]
     priority = 1
 
@@ -298,8 +293,8 @@ class GeotiffGdalConverter(BaseConverter):
         self._check_import("gdal", package="osgeo")
 
     def convert(self):
-        from osgeo import gdal
-        import io
+        import io  # isort: skip
+        from osgeo import gdal  # isort: skip
 
         return lambda x: gdal.Open(io.BytesIO(x))
 
