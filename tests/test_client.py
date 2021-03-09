@@ -332,8 +332,6 @@ def test_geojson_geotiff_converters(wps):
     pytest.importorskip("geojson")
     pytest.importorskip("rasterio")
 
-    from birdy.client.converters import GeoJSONConverter, GeotiffRasterioConverter
-
     result = WPSClient(
         url=URL_EMU,
         processes=["geodata"],
