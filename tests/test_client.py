@@ -337,7 +337,6 @@ def test_geojson_geotiff_converters(wps):
     result = WPSClient(
         url=URL_EMU,
         processes=["geodata"],
-        converters=[GeoJSONConverter, GeotiffRasterioConverter],
     ).geodata()
     raster, vector = result.get(asobj=True)
 
@@ -438,7 +437,7 @@ def test_zipconverter():
     zf.write(b.name, arcname=os.path.split(b.name)[1])
     zf.close()
 
-    [oa, ob] = converters.convert(f, path="/tmp")
+    [oa, ob] = converters.convert(f, path="/tmp", converters=[converters.ZipConverter])
     assert oa == {"a": 1}
     assert len(ob.splitlines()) == 2
 

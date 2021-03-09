@@ -266,7 +266,7 @@ class ImageConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
-    mimetype = "image/tiff; application=geotiff"
+    mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
     priority = 2
 
@@ -277,15 +277,12 @@ class GeotiffRasterioConverter(BaseConverter):
     def convert(self):
         import rasterio  # isort: skip
 
-        # import io   # isort: skip
-
-        # return lambda x: rasterio.open(io.BytesIO(x))
         return rasterio.open(self.file).read()
 
 
 # TODO: Add test for this.
 class GeotiffGdalConverter(BaseConverter):
-    mimetype = "image/tiff; application=geotiff"
+    mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
     priority = 1
 
