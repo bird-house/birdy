@@ -9,14 +9,15 @@ import keyword
 # These mimetypes will be encoded in base64 when embedded in requests.
 # I'm sure there is a more elegant solution than this... https://pypi.org/project/binaryornot/ ?
 BINARY_MIMETYPES = [
+    "application/vnd.geo+json",
     "application/geo+json",
     "application/x-zipped-shp",
     "application/vnd.google-earth.kmz",
     "image/tiff; subtype=geotiff",
+    "image/tiff; application=geotiff",
     "application/x-netcdf",
     "application/octet-stream",
     "application/zip",
-    "application/octet-stream",
     "application/x-gzip",
     "application/x-gtar",
     "application/x-tgz",
@@ -166,6 +167,15 @@ def guess_type(url, supported):
     if mime not in supported:
         if mime in zips and set(zips).intersection(supported):
             mime = set(zips).intersection(supported).pop()
+
+    # FIXME: Verify whether this code is needed. Remove if not.
+    # # GeoTIFF (workaround since this mimetype isn't correctly understoud)
+    # if mime == "image/tiff" and (".tif" in url or ".tiff" in "url"):
+    #     mime = "image/tiff; subtype=geotiff"
+    #
+    # # GeoJSON (workaround since this mimetype isn't correctly understoud)
+    # if mime == "application/geo+json":
+    #     mime = "application/vnd.geo+json"
 
     # All the various XML schemes
     # TODO

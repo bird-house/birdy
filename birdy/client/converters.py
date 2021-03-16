@@ -1,9 +1,11 @@
+import tempfile
 from distutils.version import StrictVersion
 from importlib import import_module
-from . import notebook as nb
-import tempfile
 from pathlib import Path
+
 from owslib.wps import Output
+
+from . import notebook as nb
 
 
 class BaseConverter(object):
@@ -59,8 +61,8 @@ class BaseConverter(object):
         try:
             import_module(name, package)
         except ImportError as e:
-            message = "Class {} has unmet dependencies: {}"
-            raise type(e)(message.format(self.__class__.__name__, name))
+            message = f"Class {self.__class__.__name__} has unmet dependencies: {name}"
+            raise type(e)(message)
 
     def convert(self):
         """To be subclassed"""
@@ -120,11 +122,12 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = "application/vnd.geo+json"
+    mimetype = "application/geo+json"
     extensions = [
+        "json",
         "geojson",
     ]
-    priority = 1
+    priority = 2
 
     def check_dependencies(self):
         self._check_import("geojson")
@@ -163,9 +166,7 @@ class Meta4Converter(MetalinkConverter):
 
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
-    extensions = [
-        "nc",
-    ]
+    extensions = ["nc", "nc4"]
     priority = 1
 
     def check_dependencies(self):
@@ -213,31 +214,37 @@ class XarrayConverter(BaseConverter):
             return xr.open_dataset(self.file)
 
 
+# TODO: Add test for this.
 class ShpFionaConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
     priority = 1
 
     def check_dependencies(self):
+        ShpOgrConverter.check_dependencies(self)
         self._check_import("fiona")
 
     def convert(self):
-        raise NotImplementedError
-        # import fiona
-        # import io
-        # return lambda x: fiona.open(io.BytesIO(x))
+        import io  # isort: skip
+        import fiona  # isort: skip
+
+        return lambda x: fiona.open(io.BytesIO(x))
 
 
+# TODO: Add test for this.
 class ShpOgrConverter(BaseConverter):
     mimetype = "application/x-zipped-shp"
-    priority = 1
+    extensions = [
+        "zip",
+    ]
+    priority = 2
 
     def check_dependencies(self):
         self._check_import("ogr", package="osgeo")
 
     def convert(self):
-        raise NotImplementedError
-        # from osgeo import ogr
-        # return ogr.Open
+        from osgeo import ogr
+
+        return ogr.Open
 
 
 # TODO: Add test for this.
@@ -255,6 +262,38 @@ class ImageConverter(BaseConverter):
         from birdy.dependencies import IPython
 
         return IPython.display.Image(self.url)
+
+
+# TODO: Add test for this.
+class GeotiffRasterioConverter(BaseConverter):
+    mimetype = "image/tiff; subtype=geotiff"
+    extensions = ["tiff", "tif"]
+    priority = 2
+
+    def check_dependencies(self):
+        GeotiffGdalConverter.check_dependencies(self)
+        self._check_import("rasterio")
+
+    def convert(self):
+        import rasterio  # isort: skip
+
+        return rasterio.open(self.file).read()
+
+
+# TODO: Add test for this.
+class GeotiffGdalConverter(BaseConverter):
+    mimetype = "image/tiff; subtype=geotiff"
+    extensions = ["tiff", "tif"]
+    priority = 1
+
+    def check_dependencies(self):
+        self._check_import("gdal", package="osgeo")
+
+    def convert(self):
+        import io  # isort: skip
+        from osgeo import gdal  # isort: skip
+
+        return lambda x: gdal.Open(io.BytesIO(x))
 
 
 class ZipConverter(BaseConverter):
@@ -309,6 +348,8 @@ def convert(output, path, converters=None, verify=True):
       Path on disk where temporary files are stored.
     converters : sequence of BaseConverter subclasses
       Converter classes to search within for a match.
+    verify : bool
+
 
     Returns
     -------

@@ -65,7 +65,7 @@ def test_wps_with_language_arg():
 
 
 @pytest.mark.online
-@pytest.mark.xfail(reason="a wps process has invalid defaultValue Inf")
+@pytest.mark.xfail(reason="A wps process has invalid defaultValue Inf")
 def test_52north():
     """This WPS server has process and input ids with dots and dashes."""
     WPSClient(url_52n)
@@ -234,7 +234,7 @@ def test_asobj_non_pythonic_id(wps):
     assert out.output_2 == d
 
 
-@pytest.mark.skip
+@pytest.mark.skip(reason="owslib_esgfwps is needed for this test")
 def test_esgfapi(wps):
     from owslib_esgfwps import Domain, Dimension, Variable
 
@@ -270,7 +270,7 @@ def test_inputs(wps):
         any_value="7",
         ref_value="Scots",
         text="some unsafe text &<",
-        dataset="file://" + resource_file("dummy.nc"),
+        dataset=f"file://{resource_file('dummy.nc')}",
     )
     expected = (
         "test string",
@@ -325,6 +325,21 @@ def test_xarray_converter(wps):
 
     ncdata, jsondata = wps.output_formats().get(asobj=True)
     assert isinstance(ncdata, xr.Dataset)
+
+
+@pytest.mark.online
+def test_geojson_geotiff_converters(wps):
+    pytest.importorskip("geojson")
+    pytest.importorskip("rasterio")
+
+    result = WPSClient(
+        url=URL_EMU,
+        processes=["geodata"],
+    ).geodata()
+    raster, vector = result.get(asobj=True)
+
+    assert isinstance(vector, dict)
+    assert hasattr(raster, "shape")
 
 
 def test_sort_inputs(process):
@@ -420,7 +435,7 @@ def test_zipconverter():
     zf.write(b.name, arcname=os.path.split(b.name)[1])
     zf.close()
 
-    [oa, ob] = converters.convert(f, path="/tmp")
+    [oa, ob] = converters.convert(f, path="/tmp", converters=[converters.ZipConverter])
     assert oa == {"a": 1}
     assert len(ob.splitlines()) == 2
 
