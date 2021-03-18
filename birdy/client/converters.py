@@ -265,6 +265,23 @@ class ImageConverter(BaseConverter):
 
 
 # TODO: Add test for this.
+class GeotiffRioxarrayConverter(BaseConverter):
+    mimetype = "image/tiff; subtype=geotiff"
+    extensions = ["tiff", "tif"]
+    priority = 3
+
+    def check_dependencies(self):
+        GeotiffRasterioConverter.check_dependencies(self)
+        self._check_import("rioxarray")
+
+    def convert(self):
+        import xarray  # isort: skip
+        import rioxarray  # noqa
+
+        return xarray.open_rasterio(self.file)
+
+
+# TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
     mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
