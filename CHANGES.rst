@@ -1,6 +1,13 @@
 Change History
 **************
 
+0.7.1 (unreleased)
+==================
+
+Changes:
+
+* Added a converter for loading GeoTIFF using xarray/rioxarray (#193).
+
 0.7.0 (2021-01-15)
 ==================
 
