@@ -2,6 +2,7 @@ import tempfile
 from distutils.version import StrictVersion
 from importlib import import_module
 from pathlib import Path
+from typing import Sequence, Union
 
 from owslib.wps import Output
 
@@ -166,7 +167,10 @@ class Meta4Converter(MetalinkConverter):
 
 class Netcdf4Converter(BaseConverter):
     mimetype = "application/x-netcdf"
-    extensions = ["nc", "nc4"]
+    extensions = [
+        "nc",
+        "nc4",
+    ]
     priority = 1
 
     def check_dependencies(self):
@@ -196,6 +200,7 @@ class XarrayConverter(BaseConverter):
     mimetype = "application/x-netcdf"
     extensions = [
         "nc",
+        "nc4",
     ]
     priority = 2
 
@@ -354,7 +359,12 @@ def find_converter(obj, converters):
     return _find_converter(mimetype, extension, converters=converters)
 
 
-def convert(output, path, converters=None, verify=True):
+def convert(
+    output: Union[Output, Path, str],
+    path: Union[str, Path],
+    converters: Sequence[BaseConverter] = None,
+    verify: bool = True,
+):
     """Convert a file to an object.
 
     Parameters
