@@ -227,9 +227,15 @@ class WPSClient(object):
             if inpt.minOccurs == 0 or inpt.defaultValue is not None:
                 default = inpt.defaultValue if inpt.dataType != "ComplexData" else None
                 defaults.append(utils.from_owslib(default, inpt.dataType))
-        # Set generic 'output_formats' input
-        input_names.append("output_formats")
-        defaults.append(None)
+
+        # Set generic 'output_formats' input, only if one of the output is a ComplexData.
+        for o in process.processOutputs:
+            if o.dataType == "ComplexData":
+                if len(o.supportedValues) > 1:
+                    input_names.append("output_formats")
+                    defaults.append(None)
+                    break
+
         # convert defaults
         defaults = tuple(defaults)  # if defaults else None
 
@@ -333,7 +339,7 @@ class WPSClient(object):
         """Execute the process."""
         wps_inputs = self._build_inputs(pid, **kwargs)
 
-        wps_outputs = self._parse_output_formats(kwargs.get("output_formats"))
+        wps_outputs = self._parse_output_formats(kwargs.get("output_formats", {}))
         if not wps_outputs:
             wps_outputs = [
                 (o.identifier, "ComplexData" in o.dataType)
@@ -429,7 +435,10 @@ def nb_form(wps, pid):
     """Return a Notebook form to enter input values and launch process."""
     if wps._notebook:
         return notebook.interact(
-            func=getattr(wps, sanitize(pid)), inputs=list(wps._inputs[pid].items())
+            func=getattr(wps, sanitize(pid)),
+            inputs=list(wps._inputs[pid].items()),
+            outputs=list(wps._outputs[pid].items()),
         )
+
     else:
         return None
