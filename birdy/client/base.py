@@ -52,6 +52,7 @@ class WPSClient(object):
         caps_xml=None,
         desc_xml=None,
         language=None,
+        lineage=False,
     ):
         """
         Args:
@@ -72,10 +73,12 @@ class WPSClient(object):
             version (str): WPS version to use.
             language (str): passed to :class:`owslib.wps.WebProcessingService`
                 ex: 'fr-CA', 'en_US'.
+            lineage: (bool): If True, the Execute operation includes lineage information.
         """
         self._converters = converters
         self._interactive = progress
         self._mode = ASYNC if progress else SYNC
+        self._lineage = lineage
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
@@ -344,7 +347,11 @@ class WPSClient(object):
 
         try:
             wps_response = self._wps.execute(
-                pid, inputs=wps_inputs, output=wps_outputs, mode=mode
+                pid,
+                inputs=wps_inputs,
+                output=wps_outputs,
+                mode=mode,
+                lineage=self._lineage,
             )
 
             if self._interactive and self._processes[pid].statusSupported:
