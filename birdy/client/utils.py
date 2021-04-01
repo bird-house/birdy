@@ -1,3 +1,4 @@
+# noqa: D100
 from pathlib import Path
 import datetime as dt
 import dateutil.parser
@@ -27,7 +28,7 @@ def filter_case_insensitive(names, complete_list):
 
 
 def pretty_repr(obj, linebreaks=True):
-    """Pretty repr for an Output
+    """Output pretty repr for an Output.
 
     Parameters
     ----------
@@ -157,13 +158,13 @@ def format_type(obj):
             doc += ", optional"
 
         if getattr(obj, "default", None):
-            doc += ", default:{0}".format(obj.defaultValue)
+            doc += ", default:{}".format(obj.defaultValue)
 
         if getattr(obj, "uoms", None):
             doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
 
     except Exception as e:
-        raise type(e)("{0} (in {1} docstring)".format(e, obj.identifier))
+        raise type(e)("{} (in {} docstring)".format(e, obj.identifier))
     return doc
 
 
