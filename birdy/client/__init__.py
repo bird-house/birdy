@@ -125,3 +125,4 @@ The created dictionary can then be used with a process::
 """
 
 from .base import WPSClient, nb_form  # noqa: F401
+from birdy.client.notebook import gui  # noqa: F401

@@ -5,6 +5,9 @@ from . import utils
 from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
 from birdy.utils import sanitize
+from IPython.display import display  # noqa
+
+# from traitlets import Dict, Unicode
 
 
 def is_notebook():
@@ -24,16 +27,138 @@ def is_notebook():
         return False  # Probably standard Python interpreter
 
 
-def interact(func, inputs):
-    """Return a Notebook form to enter input values and launch process.
+def gui(func):
+    """Return a Notebook form to enter input values and launch process."""
+    if func.__self__._notebook:
+        return Form(func)
+    else:
+        raise NotImplementedError(
+            "The interactive notebook form is only available in a notebook."
+        )
 
-    The output is stored in the `widget.result` attribute of the response.
-    """
-    ws = {sanitize(key): input2widget(inpt) for key, inpt in inputs}
-    out = widgets.interact_manual(func, **ws)
-    out.widget.children[-2].description = "Launch process"
-    # IPython.display.display(out)
-    return out
+
+class Form:
+    """Create notebook form to launch WPS process."""
+
+    def __init__(self, func):
+        self.result = None
+        wps = func.__self__
+        pid = self.pid = [
+            k for k in wps._processes.keys() if sanitize(k) == func.__name__
+        ][0]
+
+        self.process = wps._processes[pid]
+        inputs = list(wps._inputs[pid].items())
+        outputs = list(wps._outputs[pid].items())
+
+        # Create widgets
+        iw = self.input_widgets(inputs)
+        ofw = self.output_formats_widgets(outputs)
+        go = widgets.Button(
+            description="Launch process",
+            layout=widgets.Layout(width="100%"),
+            button_style="success",
+        )
+        out = widgets.Output()
+
+        # Interaction logic
+        def execute(change):
+            """Callback when "Launch process" button is clicked."""
+            go.disabled = True
+            of = self.output_format_widget_values(ofw)
+            if of:
+                of = {"output_formats": of}
+            kwargs = {**self.input_widget_values(iw), **of}
+
+            with out:
+                self.result = func(**kwargs)
+
+        # Connect callback to button
+        go.on_click(execute)
+
+        # Create GUI
+        ui = self.build_ui(iw, ofw, go)
+        display(ui, out)
+
+    def get(self, asobj=False):
+        """Return the process response outputs.
+
+        Args:
+            asobj: If True, object_converters will be used.
+        """
+        # Mimicks the `WPSResult.get` method, to provide a consistent look and feel to all user interfaces.
+        if self.result is None:
+            raise ValueError("The process has not yet been executed.")
+        return self.result.get(asobj)
+
+    def input_widgets(self, inputs):
+        """Return input parameter widgets."""
+        return {sanitize(key): input2widget(inpt) for key, inpt in inputs}
+
+    def input_widget_values(self, widgets):
+        """Return values from input widgets."""
+        return {k: v.value for (k, v) in widgets.items()}
+
+    def output_formats_widgets(self, outputs):
+        """Return output formats parameter widgets for ComplexData outputs that have multiple supported formats."""
+        of = {}
+        style = {"description_width": "initial"}
+        if any(
+            [
+                o.dataType == "ComplexData" and len(o.supportedValues) > 1
+                for (key, o) in outputs
+            ]
+        ):
+            for (key, output) in outputs:
+                if hasattr(output, "supportedValues"):
+                    of[key] = widgets.RadioButtons(
+                        options=[o.mimeType for o in output.supportedValues],
+                        description=output.title,
+                        description_tooltip=output.abstract,
+                        style=style,
+                    )
+
+        return of
+
+    def output_format_widget_values(self, widgets):
+        """Return the `output_formats` dict from output_formats widgets."""
+        out = {}
+        for key, val in widgets.items():
+            utils.add_output_format(
+                out, output_identifier=sanitize(key), mimetype=val.value, as_ref=True
+            )
+        if out:
+            return out
+        return {}
+
+    def build_ui(self, input_widgets, of_widgets, go):
+        """Create the form."""
+        iw = list(input_widgets.values())
+        ofw = list(of_widgets.values())
+
+        header = widgets.Button(
+            description=self.process.abstract or self.process.identifier,
+            layout=widgets.Layout(width="100%"),
+        )
+        header = widgets.HTML(
+            value=f"<h3>{self.process.abstract or self.process.identifier}</h3>"
+        )
+        input_header = widgets.HTML(value="<h4>Input parameters</h4>")
+        widgets.Label("Input parameters")
+        inputs = widgets.VBox([input_header, widgets.VBox(iw)])
+
+        if len(ofw) > 0:
+            widgets.Label("Complex outputs format")
+            outputs_header = widgets.HTML(value="<h4>Complex outputs format</h4>")
+            outputs = widgets.VBox([outputs_header, widgets.VBox(ofw)])
+        else:
+            outputs = None
+
+        ui = widgets.AppLayout(
+            header=header, left_sidebar=inputs, right_sidebar=outputs, footer=go
+        )
+
+        return ui
 
 
 def monitor(execution, sleep=3):
@@ -108,8 +233,14 @@ def input2widget(inpt):
 
     # Object default
     odefault = utils.from_owslib(inpt.defaultValue, inpt.dataType)
-
-    kwds = dict(description=inpt.title)
+    style = {"description_width": "initial"}
+    layout = {}
+    kwds = dict(
+        description=inpt.title,
+        description_tooltip=inpt.abstract,
+        style=style,
+        layout=layout,
+    )
     if opt:
         vopt = [utils.from_owslib(o, typ) for o in opt]
         if inpt.maxOccurs == 1:

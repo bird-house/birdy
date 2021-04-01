@@ -19,7 +19,8 @@ class WPSResult(WPSExecution):
         self._path = tempfile.mkdtemp()
 
     def get(self, asobj=False):
-        """
+        """Return the process response outputs.
+
         Args:
             asobj: If True, object_converters will be used.
         """

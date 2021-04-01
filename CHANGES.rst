@@ -7,6 +7,7 @@ Change History
 Changes:
 
 * Added a converter for loading GeoTIFF using xarray/rioxarray (#193).
+* Update notebook process forms. See `client.gui` function.
 
 0.7.0 (2021-01-15)
 ==================
