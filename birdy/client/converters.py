@@ -10,8 +10,8 @@ from . import notebook as nb
 
 
 class BaseConverter(object):
-    mimetype = None
-    extensions = []
+    mimetypes = ()
+    extensions = ()
     priority = None
     nested = False
 
@@ -79,7 +79,7 @@ class GenericConverter(BaseConverter):
 
 
 class TextConverter(BaseConverter):
-    mimetype = "text/plain"
+    mimetypes = ["text/plain"]
     extensions = ["txt", "csv", "md", "rst"]
     priority = 1
 
@@ -105,10 +105,8 @@ class TextConverter(BaseConverter):
 
 
 class JSONConverter(BaseConverter):
-    mimetype = "application/json"
-    extensions = [
-        "json",
-    ]
+    mimetypes = ["application/json"]
+    extensions = ["json"]
     priority = 1
 
     def convert(self):
@@ -123,11 +121,8 @@ class JSONConverter(BaseConverter):
 
 
 class GeoJSONConverter(BaseConverter):
-    mimetype = "application/geo+json"
-    extensions = [
-        "json",
-        "geojson",
-    ]
+    mimetypes = ["application/geo+json", "application/vnd.geo+json"]
+    extensions = ["json", "geojson"]
     priority = 2
 
     def check_dependencies(self):
@@ -141,10 +136,8 @@ class GeoJSONConverter(BaseConverter):
 
 
 class MetalinkConverter(BaseConverter):
-    mimetype = "application/metalink+xml; version=3.0"
-    extensions = [
-        "metalink",
-    ]
+    mimetypes = ["application/metalink+xml; version=3.0", "application/metalink+xml; version=4.0"]
+    extensions = ["metalink", "meta4"]
     nested = True
     priority = 1
 
@@ -158,19 +151,9 @@ class MetalinkConverter(BaseConverter):
         return files
 
 
-class Meta4Converter(MetalinkConverter):
-    mimetype = "application/metalink+xml; version=4.0"
-    extensions = [
-        "meta4",
-    ]
-
-
 class Netcdf4Converter(BaseConverter):
-    mimetype = "application/x-netcdf"
-    extensions = [
-        "nc",
-        "nc4",
-    ]
+    mimetypes = ["application/x-netcdf"]
+    extensions = ["nc", "nc4"]
     priority = 1
 
     def check_dependencies(self):
@@ -197,11 +180,8 @@ class Netcdf4Converter(BaseConverter):
 
 
 class XarrayConverter(BaseConverter):
-    mimetype = "application/x-netcdf"
-    extensions = [
-        "nc",
-        "nc4",
-    ]
+    mimetypes = ["application/x-netcdf"]
+    extensions = ["nc", "nc4"]
     priority = 2
 
     def check_dependencies(self):
@@ -221,7 +201,7 @@ class XarrayConverter(BaseConverter):
 
 # TODO: Add test for this.
 class ShpFionaConverter(BaseConverter):
-    mimetype = "application/x-zipped-shp"
+    mimetypes = ["application/x-zipped-shp"]
     priority = 1
 
     def check_dependencies(self):
@@ -237,7 +217,7 @@ class ShpFionaConverter(BaseConverter):
 
 # TODO: Add test for this.
 class ShpOgrConverter(BaseConverter):
-    mimetype = "application/x-zipped-shp"
+    mimetypes = ["application/x-zipped-shp"]
     extensions = [
         "zip",
     ]
@@ -252,12 +232,10 @@ class ShpOgrConverter(BaseConverter):
         return ogr.Open
 
 
-# TODO: Add test for this.
+# TODO: Add test for this. Probably can be applied to jpeg/jpg/gif but needs notebook testing
 class ImageConverter(BaseConverter):
-    mimetype = "image/png"
-    extensions = [
-        "png",
-    ]
+    mimetypes = ["image/png"]
+    extensions = ["png"]
     priority = 1
 
     def check_dependencies(self):
@@ -271,7 +249,7 @@ class ImageConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffRioxarrayConverter(BaseConverter):
-    mimetype = "image/tiff; subtype=geotiff"
+    mimetypes = ["image/tiff; subtype=geotiff"]
     extensions = ["tiff", "tif"]
     priority = 3
 
@@ -288,7 +266,7 @@ class GeotiffRioxarrayConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffRasterioConverter(BaseConverter):
-    mimetype = "image/tiff; subtype=geotiff"
+    mimetypes = ["image/tiff; subtype=geotiff"]
     extensions = ["tiff", "tif"]
     priority = 2
 
@@ -304,7 +282,7 @@ class GeotiffRasterioConverter(BaseConverter):
 
 # TODO: Add test for this.
 class GeotiffGdalConverter(BaseConverter):
-    mimetype = "image/tiff; subtype=geotiff"
+    mimetypes = ["image/tiff; subtype=geotiff"]
     extensions = ["tiff", "tif"]
     priority = 1
 
@@ -319,10 +297,8 @@ class GeotiffGdalConverter(BaseConverter):
 
 
 class ZipConverter(BaseConverter):
-    mimetype = "application/zip"
-    extensions = [
-        "zip",
-    ]
+    mimetypes = ["application/zip"]
+    extensions = ["zip"]
     nested = True
     priority = 1
 
@@ -338,7 +314,7 @@ def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority."""
     select = [GenericConverter]
     for obj in converters:
-        if (mimetype == obj.mimetype) or (extension in obj.extensions):
+        if (mimetype in obj.mimetypes) or (extension in obj.extensions):
             select.append(obj)
 
     select.sort(key=lambda x: x.priority, reverse=True)

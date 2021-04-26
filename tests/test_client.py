@@ -1,12 +1,9 @@
 import datetime
-import os
-import json
-import tempfile
 from pathlib import Path
 from unittest import mock
 import owslib.wps
 import pytest
-
+import json
 # from owslib import crs
 
 from birdy.client import converters, nb_form
@@ -329,17 +326,26 @@ def test_xarray_converter(wps):
 
 @pytest.mark.online
 def test_geojson_geotiff_converters(wps):
-    pytest.importorskip("geojson")
     pytest.importorskip("rasterio")
 
-    result = WPSClient(
-        url=URL_EMU,
-        processes=["geodata"],
-    ).geodata()
+    result = wps.geodata()
     raster, vector = result.get(asobj=True)
 
     assert isinstance(vector, dict)
     assert hasattr(raster, "shape")
+
+    # Checking input validation
+    shape = {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [125.6, 10.1]
+        },
+        "properties": {
+            "name": "Dinagat Islands <"
+        }
+    }
+    result = wps.geodata(shape=json.dumps(shape))
 
 
 def test_sort_inputs(process):
@@ -377,11 +383,6 @@ def test_sort_inputs_conditions():
     assert sort_inputs_key(i) == [True, True, False]
 
 
-def test_all_subclasses():
-    c = converters.all_subclasses(converters.BaseConverter)
-    assert converters.Meta4Converter in c
-
-
 def count_class_methods(class_):
     import types
 
@@ -392,64 +393,6 @@ def count_class_methods(class_):
             if isinstance(f, types.MethodType) and not f.__name__.startswith("_")
         ]
     )
-
-
-def test_jsonconverter():
-    d = {"a": 1}
-    s = json.dumps(d)
-    b = bytes(s, "utf8")
-
-    fs = tempfile.NamedTemporaryFile(mode="w")
-    fs.write(s)
-    fs.file.seek(0)
-
-    fb = tempfile.NamedTemporaryFile(mode="w+b")
-    fb.write(b)
-    fb.file.seek(0)
-
-    j = converters.JSONConverter(fs.name)
-    assert j.convert() == d
-
-    j = converters.JSONConverter(fb.name)
-    assert j.convert() == d
-
-    fs.close()
-    fb.close()
-
-
-def test_zipconverter():
-    import zipfile
-
-    f = tempfile.mktemp(suffix=".zip")
-    zf = zipfile.ZipFile(f, mode="w")
-
-    a = tempfile.NamedTemporaryFile(mode="w", suffix=".json")
-    a.write(json.dumps({"a": 1}))
-    a.seek(0)
-
-    b = tempfile.NamedTemporaryFile(mode="w", suffix=".csv")
-    b.write("a, b, c\n1, 2, 3")
-    b.seek(0)
-
-    zf.write(a.name, arcname=os.path.split(a.name)[1])
-    zf.write(b.name, arcname=os.path.split(b.name)[1])
-    zf.close()
-
-    [oa, ob] = converters.convert(f, path="/tmp", converters=[converters.ZipConverter])
-    assert oa == {"a": 1}
-    assert len(ob.splitlines()) == 2
-
-
-def test_jpeg_imageconverter():
-    "Since the format is not supported, bytes will be returned."
-    fn = tempfile.mktemp(suffix=".jpeg")
-    with open(fn, "w") as f:
-        f.write(
-            "jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000"
-        )
-
-    b = converters.convert(fn, path="/tmp")
-    assert isinstance(b, bytes)
 
 
 class TestIsEmbedded:
