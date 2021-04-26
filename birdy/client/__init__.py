@@ -1,4 +1,5 @@
-"""
+"""WPSClient Class.
+
 The :class:`WPSClient` class aims to make working with WPS servers easy,
 even without any prior knowledge of WPS.
 
@@ -33,24 +34,24 @@ If a WPS server with a simple `hello` process is running on the local host on po
   >>> emu.hello
   <bound method hello of <birdy.client.base.WPSClient object>>
   >>> print(emu.hello.__doc__)
-  ""
-  Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
 
-  Parameters
-  ----------
-  name : string
-      Please enter your name.
+  # Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
 
-  Returns
-  -------
-  output : string
-      A friendly Hello from us.
-
-  ""
-
-  # Call the function. The output is a namedtuple
-  >>> emu.hello('stranger')
-  hello(output='Hello stranger')
+  # Parameters
+  # ----------
+  # name : string
+  #     Please enter your name.
+  #
+  # Returns
+  # -------
+  # output : string
+  #     A friendly Hello from us.
+  #
+  # ""
+  #
+  # # Call the function. The output is a namedtuple
+  # >>> emu.hello('stranger')
+  # hello(output='Hello stranger')
 
 Authentication
 --------------
@@ -124,5 +125,6 @@ The created dictionary can then be used with a process::
 
 """
 
-from .base import WPSClient, nb_form  # noqa: F401
 from birdy.client.notebook import gui  # noqa: F401
+
+from .base import WPSClient, nb_form  # noqa: F401

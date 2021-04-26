@@ -1,13 +1,16 @@
+# noqa: D100
+
 import os
+from collections import OrderedDict
+
 import click
-from requests.exceptions import SSLError
 from jinja2 import Environment, PackageLoader
 from owslib.wps import WebProcessingService
-from collections import OrderedDict
-from birdy.exceptions import ConnectionError
-from birdy.cli.types import COMPLEX
-from birdy.cli.misc import get_ssl_verify
+from requests.exceptions import SSLError
 
+from birdy.cli.misc import get_ssl_verify
+from birdy.cli.types import COMPLEX
+from birdy.exceptions import ConnectionError
 
 template_env = Environment(
     loader=PackageLoader("birdy", "templates"),
@@ -16,13 +19,18 @@ template_env = Environment(
 
 
 class BirdyCLI(click.MultiCommand):
-    """BirdyCLI is an implementation of :class:`click.MultiCommand`. It
-    adds each process of a Web Processing Service as command to the
-    command-line interface.
+    """BirdyCLI is an implementation of :class:`click.MultiCommand`.
 
-    :param url: URL of the Web Processing Service.
-    :param caps_xml: A WPS GetCapabilities response for testing.
-    :param desc_xml: A WPS DescribeProcess response with "identifier=all" for testing.
+    Adds each process of a Web Processing Service as command to the command-line interface.
+
+    Parameters
+    ----------
+    url: str
+      URL of the Web Processing Service.
+    caps_xml: str
+      A WPS GetCapabilities response for testing.
+    desc_xml: str
+      A WPS DescribeProcess response with "identifier=all" for testing.
     """
 
     def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, **attrs):
@@ -35,7 +43,7 @@ class BirdyCLI(click.MultiCommand):
         self.commands = OrderedDict()
 
     @property
-    def wps(self):
+    def wps(self):  # noqa: D102
         if self._wps is None:
             language = self.context_settings["obj"].get("language")
             self._wps = WebProcessingService(
@@ -43,7 +51,7 @@ class BirdyCLI(click.MultiCommand):
             )
         return self._wps
 
-    def _update_commands(self):
+    def _update_commands(self):  # noqa: D102
         if not self.commands:
             try:
                 self.wps.getcapabilities(xml=self.caps_xml)
@@ -64,11 +72,11 @@ class BirdyCLI(click.MultiCommand):
                     options=[],
                 )
 
-    def list_commands(self, ctx):
+    def list_commands(self, ctx):  # noqa: D102
         self._update_commands()
         return list(self.commands.keys())
 
-    def get_command(self, ctx, name):
+    def get_command(self, ctx, name):  # noqa: D102
         self._update_commands()
         cmd_templ = template_env.get_template("cmd.py.j2")
         rendered_cmd = cmd_templ.render(self._get_command_info(name, ctx))
@@ -77,7 +85,7 @@ class BirdyCLI(click.MultiCommand):
         eval(code, ns, ns)
         return ns["cli"]
 
-    def _get_command_info(self, name, ctx):
+    def _get_command_info(self, name, ctx):  # noqa: D102
         cmd = self.commands.get(name)
         pp = self.wps.describeprocess(name, xml=self.desc_xml)
         for inp in pp.dataInputs:
@@ -102,13 +110,13 @@ class BirdyCLI(click.MultiCommand):
         return cmd
 
     @staticmethod
-    def format_command_help(process):
+    def format_command_help(process):  # noqa: D102
         return "{}: {}".format(
             process.title or process.identifier, process.abstract or ""
         )
 
     @staticmethod
-    def get_param_default(param):
+    def get_param_default(param):  # noqa: D102
         if "ComplexData" in param.dataType:
             # TODO: get default value of complex type
             default = None
@@ -120,7 +128,7 @@ class BirdyCLI(click.MultiCommand):
         return default
 
     @staticmethod
-    def get_param_type(param):
+    def get_param_type(param):  # noqa: D102
         if param.dataType is None:
             param_type = click.STRING
         elif "boolean" in param.dataType:

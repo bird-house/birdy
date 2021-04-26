@@ -1,10 +1,11 @@
-from click.testing import CliRunner
+# noqa: D100
+
 import pytest
+from click.testing import CliRunner
 
 import birdy.cli.run
 
 from .common import EMU_CAPS_XML, URL_EMU
-
 
 cli = birdy.cli.run.cli
 cli.url = URL_EMU
@@ -12,7 +13,7 @@ cli.caps_xml = EMU_CAPS_XML
 
 
 @pytest.mark.online
-def test_help():
+def test_help():  # noqa: D103
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
@@ -23,7 +24,7 @@ def test_help():
 
 
 @pytest.mark.online
-def test_show_languages():
+def test_show_languages():  # noqa: D103
     runner = CliRunner()
     result = runner.invoke(cli, ["--show-languages"])
     assert result.exit_code == 0
@@ -31,7 +32,7 @@ def test_show_languages():
 
 
 @pytest.mark.online
-def test_hello():
+def test_hello():  # noqa: D103
     runner = CliRunner()
     result = runner.invoke(cli, ["hello", "--help"])
     assert result.exit_code == 0
@@ -39,7 +40,7 @@ def test_hello():
 
 
 @pytest.mark.online
-def test_hello_stranger():
+def test_hello_stranger():  # noqa: D103
     runner = CliRunner()
     result = runner.invoke(cli, ["hello", "--name", "stranger"])
     assert result.exit_code == 0
@@ -47,7 +48,7 @@ def test_hello_stranger():
 
 @pytest.mark.online
 @pytest.mark.xfail(reason="click hides exception")
-def test_multiple_outputs():
+def test_multiple_outputs():  # noqa: D103
     runner = CliRunner()
     result = runner.invoke(
         cli,

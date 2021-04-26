@@ -1,7 +1,11 @@
+# noqa: D100
+
+import json
+
+from owslib.wfs import WebFeatureService
+
 from birdy.dependencies import ipyleaflet as ipyl
 from birdy.dependencies import ipywidgets as ipyw
-from owslib.wfs import WebFeatureService
-import json
 
 ipyl_not_installed = "Ipyleaflet is not supported. Please install *ipyleaflet*."
 ipyw_not_installed = "Ipywidgets is not supported. Please install *ipywidgets*."
@@ -54,17 +58,16 @@ class IpyleafletWFS(object):
     or use the create_wfsgeojson_layer() function to build your own custom map and widgets
     with ipyleaflet.
 
-    Parameters:
-    -----------
-    url: string
+    Parameters
+    ----------
+    url: str
       The url of the WFS service
-
-    wfs_version: string
-      The version of the WFS service to use. Defaults to 2.0.0
+    wfs_version: str
+      The version of the WFS service to use. Defaults to 2.0.0.
 
     Returns
     -------
-    IpyleafletWFS instance
+    IpyleafletWFS
       Instance from which the WFS layers can be created.
     """
 
@@ -334,7 +337,7 @@ class IpyleafletWFS(object):
         return self._geojson["features"][0]["properties"]
 
     @property
-    def layer(self):
+    def layer(self):  # noqa: D102
         return self._layer
 
     # # # # # # # # # #
@@ -393,13 +396,9 @@ class IpyleafletWFS(object):
         """Create a visualization widget for a specific feature property.
 
         Will create a widget for the layer and source map.
-        Once the widget is created, click on a map feature to have the information
-        appear in the corresponding box.
-
-        To replace the default widget that get created by the build_layer() function,
-        set the  widget_name parameter to 'main_widget'.
-
-        Widgets create by this function are unique by their widget_name variable.
+        Once the widget is created, click on a map feature to have the information appear in the corresponding box.
+        To replace the default widget that get created by the build_layer() function, set the  widget_name parameter
+        to 'main_widget'.
 
         Parameters
         ----------
@@ -414,8 +413,10 @@ class IpyleafletWFS(object):
         widget_position: string
           Position on the map for the widget. Choose between ‘bottomleft’, ‘bottomright’, ‘topleft’, or ‘topright’.
 
+        Notes
+        -----
+        Widgets created by this function are unique by their widget_name variable.
         """
-
         textbox = ipyw.HTML(
             """
             Click on a feature

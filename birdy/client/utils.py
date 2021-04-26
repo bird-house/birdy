@@ -1,10 +1,13 @@
-# noqa: D100
-from pathlib import Path
+# noqa: D100, D101, D102
+
 import datetime as dt
+from pathlib import Path
+from urllib.parse import urlparse
+
 import dateutil.parser
 from owslib.wps import ComplexDataInput
-from ..utils import sanitize, is_file
-from urllib.parse import urlparse
+
+from ..utils import is_file, sanitize
 
 
 def filter_case_insensitive(names, complete_list):

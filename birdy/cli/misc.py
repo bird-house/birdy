@@ -1,8 +1,11 @@
+# noqa: D100
+
 import os
+
 import click
 
 
-def monitor(execution):
+def monitor(execution):  # noqa: D103
     with click.progressbar(length=100, label=execution.status) as bar:
         while not execution.isComplete():
             execution.checkStatus(sleepSecs=1)
@@ -18,7 +21,7 @@ def monitor(execution):
         click.echo("Process execution failed.")
 
 
-def get_ssl_verify():
+def get_ssl_verify():  # noqa: D103
     value = os.environ.get("WPS_SSL_VERIFY", "True")
     if value.lower() == "true":
         verify = True
