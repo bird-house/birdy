@@ -6,7 +6,7 @@ import pytest
 import json
 # from owslib import crs
 
-from birdy.client import converters, nb_form
+from birdy.client import nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 from birdy import WPSClient
