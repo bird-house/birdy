@@ -96,14 +96,21 @@ class TestGuessType:  # noqa: D101
         )
         assert mime == "application/x-netcdf"
 
-    def test_path(self):
+    def test_path(self):  # noqa: D102
         from pathlib import Path
 
-        mime, enc = utils.guess_type(Path("shape.json"), ["wrong", "application/geo+json"])
+        mime, enc = utils.guess_type(
+            Path("shape.json"), ["wrong", "application/geo+json"]
+        )
         assert mime == "application/geo+json"
 
-        mime, enc = utils.guess_type(Path("data.nc"), ["application/x-ogc-dods", "application/x-netcdf"])
+        mime, enc = utils.guess_type(
+            Path("data.nc"), ["application/x-ogc-dods", "application/x-netcdf"]
+        )
         assert mime == "application/x-netcdf"
 
-        mime, enc = utils.guess_type(Path("file:///dodsC/data.nc"), ["application/x-netcdf", "application/x-ogc-dods"])
+        mime, enc = utils.guess_type(
+            Path("file:///dodsC/data.nc"),
+            ["application/x-netcdf", "application/x-ogc-dods"],
+        )
         assert mime == "application/x-ogc-dods"
