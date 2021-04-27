@@ -136,7 +136,7 @@ def guess_type(url, supported):
 
     Parameters
     ----------
-    url : str
+    url : str, Path
       Path or URL to file.
     supported : list, tuple
       Supported mimetypes.
@@ -148,7 +148,7 @@ def guess_type(url, supported):
     import mimetypes
 
     try:
-        mime, enc = mimetypes.guess_type(url, strict=False)
+        mime, enc = mimetypes.guess_type(str(url), strict=False)
     except TypeError:
         mime, enc = None, None
 
@@ -158,7 +158,7 @@ def guess_type(url, supported):
     # netCDF
     if (
         mime == "application/x-netcdf"
-        and "dodsC" in url
+        and "dodsC" in str(url)
         and "application/x-ogc-dods" in supported
     ):
         mime = "application/x-ogc-dods"
@@ -169,14 +169,15 @@ def guess_type(url, supported):
         if mime in zips and set(zips).intersection(supported):
             mime = set(zips).intersection(supported).pop()
 
+    # GeoJSON
+    if mime == "application/json" and "application/geo+json" in supported:
+        mime = "application/geo+json"
+
     # FIXME: Verify whether this code is needed. Remove if not.
     # # GeoTIFF (workaround since this mimetype isn't correctly understoud)
     # if mime == "image/tiff" and (".tif" in url or ".tiff" in "url"):
     #     mime = "image/tiff; subtype=geotiff"
     #
-    # # GeoJSON (workaround since this mimetype isn't correctly understoud)
-    # if mime == "application/geo+json":
-    #     mime = "application/vnd.geo+json"
 
     # All the various XML schemes
     # TODO
