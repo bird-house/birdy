@@ -1,9 +1,7 @@
-# noqa
+# noqa: D100
 
 import datetime
 import json
-import os
-import tempfile
 from pathlib import Path
 from unittest import mock
 
@@ -11,7 +9,7 @@ import owslib.wps
 import pytest
 
 from birdy import WPSClient
-from birdy.client import converters, nb_form
+from birdy.client import nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 
@@ -343,13 +341,8 @@ def test_geojson_geotiff_converters(wps):  # noqa: D103
     # Checking input validation
     shape = {
         "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [125.6, 10.1]
-        },
-        "properties": {
-            "name": "Dinagat Islands <"
-        }
+        "geometry": {"type": "Point", "coordinates": [125.6, 10.1]},
+        "properties": {"name": "Dinagat Islands <"},
     }
     result = wps.geodata(shape=json.dumps(shape))
 

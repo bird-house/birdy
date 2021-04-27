@@ -140,7 +140,10 @@ class GeoJSONConverter(BaseConverter):  # noqa: D101
 
 
 class MetalinkConverter(BaseConverter):  # noqa: D101
-    mimetypes = ["application/metalink+xml; version=3.0", "application/metalink+xml; version=4.0"]
+    mimetypes = [
+        "application/metalink+xml; version=3.0",
+        "application/metalink+xml; version=4.0",
+    ]
     extensions = ["metalink", "meta4"]
     nested = True
     priority = 1

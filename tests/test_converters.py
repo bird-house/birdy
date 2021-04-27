@@ -1,16 +1,20 @@
-from birdy.client import converters
-import os
+# noqa: D100
+
 import json
+import os
 import tempfile
+
 import pytest
 
+from birdy.client import converters
 
-def test_all_subclasses():
+
+def test_all_subclasses():  # noqa: D103
     c = converters.all_subclasses(converters.BaseConverter)
-    assert (converters.MetalinkConverter in c)
+    assert converters.MetalinkConverter in c
 
 
-def test_jsonconverter():
+def test_jsonconverter():  # noqa: D103
     d = {"a": 1}
     s = json.dumps(d)
     b = bytes(s, "utf8")
@@ -33,7 +37,7 @@ def test_jsonconverter():
     fb.close()
 
 
-def test_geojsonconverter():
+def test_geojsonconverter():  # noqa: D103
     pytest.importorskip("geojson")
     d = {"a": 1}
     s = json.dumps(d)
@@ -57,7 +61,7 @@ def test_geojsonconverter():
     fb.close()
 
 
-def test_zipconverter():
+def test_zipconverter():  # noqa: D103
     import zipfile
 
     f = tempfile.mktemp(suffix=".zip")
@@ -80,8 +84,8 @@ def test_zipconverter():
     assert len(ob.splitlines()) == 2
 
 
-def test_jpeg_imageconverter():
-    "Since the format is not supported, bytes will be returned."
+def test_jpeg_imageconverter():  # noqa: D103
+    # Note: Since the format is not supported, bytes will be returned
     fn = tempfile.mktemp(suffix=".jpeg")
     with open(fn, "w") as f:
         f.write(
