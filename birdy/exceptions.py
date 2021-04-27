@@ -1,26 +1,28 @@
+# noqa: D100
+
 import click
 from owslib.util import ServiceException
 
 
-class ConnectionError(click.ClickException):
+class ConnectionError(click.ClickException):  # noqa: D101
     pass
 
 
-class UnauthorizedException(ServiceException):
+class UnauthorizedException(ServiceException):  # noqa: D101
     pass
 
 
-class IPythonWarning(UserWarning):
+class IPythonWarning(UserWarning):  # noqa: D101
     pass
 
 
-class ProcessIsNotComplete(Exception):
+class ProcessIsNotComplete(Exception):  # noqa: D101
     pass
 
 
-class ProcessFailed(Exception):
+class ProcessFailed(Exception):  # noqa: D101
     pass
 
 
-class ProcessCanceled(Exception):
+class ProcessCanceled(Exception):  # noqa: D101
     pass

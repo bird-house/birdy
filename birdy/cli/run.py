@@ -1,10 +1,12 @@
+# noqa: D100
+
 import os
 
 import click
+from owslib.wps import WebProcessingService
+
 from birdy.cli.base import BirdyCLI
 from birdy.cli.misc import get_ssl_verify
-
-from owslib.wps import WebProcessingService
 
 CONTEXT_OBJ = dict(language=None)
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], obj=CONTEXT_OBJ)

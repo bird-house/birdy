@@ -1,18 +1,25 @@
+# noqa: D100
+
+import tempfile
 from collections import namedtuple
 
-from birdy.utils import sanitize, delist
+from owslib.wps import WPSExecution
+
 from birdy.client import utils
 from birdy.client.converters import convert
-from birdy.exceptions import ProcessIsNotComplete, ProcessFailed
-from owslib.wps import WPSExecution
-import tempfile
+from birdy.exceptions import ProcessFailed, ProcessIsNotComplete
+from birdy.utils import delist, sanitize
 
 
-class WPSResult(WPSExecution):
+class WPSResult(WPSExecution):  # noqa: D101
     def attach(self, wps_outputs, converters=None):
-        """
-        Args:
-            converters (dict): Converter dictionary {name: object}
+        """Attach the outputs according to converters.
+
+        Parameters
+        ----------
+        wps_outputs: dict
+        converters: dict
+          Converter dictionary {name: object}
         """
         self._wps_outputs = wps_outputs
         self._converters = converters
@@ -21,8 +28,10 @@ class WPSResult(WPSExecution):
     def get(self, asobj=False):
         """Return the process response outputs.
 
-        Args:
-            asobj: If True, object_converters will be used.
+        Parameters
+        ----------
+        asobj: bool
+          If True, object_converters will be used.
         """
         if not self.isComplete():
             raise ProcessIsNotComplete("Please wait ...")
@@ -42,12 +51,13 @@ class WPSResult(WPSExecution):
         )
 
     def _process_output(self, output, convert_objects=False):
-        """Process the output response, whether it is actual data or a URL to a
-        file.
+        """Process the output response, whether it is actual data or a URL to a file.
 
-        Args:
-            output (owslib.wps.Output):
-            convert_objects: If True, object_converters will be used.
+        Parameters
+        ----------
+        output: owslib.wps.Output
+        convert_objects: bool
+          If True, object_converters will be used.
         """
         # Get the data for recognized types.
         if output.data:

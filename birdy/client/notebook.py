@@ -1,11 +1,15 @@
+# noqa: D100
+
 import threading
+
+from IPython.display import display  # noqa
 from owslib.wps import Input
 
-from . import utils
-from birdy.dependencies import ipywidgets as widgets
 from birdy.dependencies import IPython
+from birdy.dependencies import ipywidgets as widgets
 from birdy.utils import sanitize
-from IPython.display import display  # noqa
+
+from . import utils
 
 # from traitlets import Dict, Unicode
 
@@ -63,7 +67,7 @@ class Form:
 
         # Interaction logic
         def execute(change):
-            """Callback when "Launch process" button is clicked."""
+            """Execute callback when "Launch process" button is clicked."""
             go.disabled = True
             of = self.output_format_widget_values(ofw)
             if of:
@@ -83,8 +87,10 @@ class Form:
     def get(self, asobj=False):
         """Return the process response outputs.
 
-        Args:
-            asobj: If True, object_converters will be used.
+        Parameters
+        ----------
+        asobj: bool
+          If True, object_converters will be used.
         """
         # Mimicks the `WPSResult.get` method, to provide a consistent look and feel to all user interfaces.
         if self.result is None:

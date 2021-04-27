@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This module is used to manage optional dependencies.
+Module for managing optional dependencies.
 
 Example usage::
 
@@ -9,6 +9,7 @@ Example usage::
 """
 
 import warnings
+
 from .exceptions import IPythonWarning
 
 # TODO: we ignore warnings for now. They are only needed when birdy is used in a notebook,

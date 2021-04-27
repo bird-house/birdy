@@ -1,3 +1,5 @@
+# noqa: D100, D104
+
 __version__ = "0.7.0"
 
 from .client import WPSClient
