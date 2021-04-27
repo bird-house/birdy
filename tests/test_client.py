@@ -1,24 +1,23 @@
+# noqa
+
 import datetime
-import os
 import json
+import os
 import tempfile
 from pathlib import Path
 from unittest import mock
+
 import owslib.wps
 import pytest
 
-# from owslib import crs
-
+from birdy import WPSClient
 from birdy.client import converters, nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
-from birdy import WPSClient
-from .common import (
-    resource_file,
-    URL_EMU,
-    EMU_CAPS_XML,
-    EMU_DESC_XML,
-)
+
+from .common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
+
+# from owslib import crs
 
 
 # 52 north WPS
@@ -28,12 +27,12 @@ url_fly = "https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps"
 
 
 @pytest.fixture(scope="module")
-def wps():
+def wps():  # noqa: D103
     return WPSClient(url=URL_EMU)
 
 
 @pytest.fixture(scope="module")
-def wps_offline():
+def wps_offline():  # noqa: D103
     return WPSClient(url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML)
 
 
@@ -46,16 +45,16 @@ def process():
     return owslib.wps.Process(xml)
 
 
-def test_emu_offline(wps_offline):
+def test_emu_offline(wps_offline):  # noqa: D103
     assert "Hello" in wps_offline.hello.__doc__
 
 
-def test_wps_supported_languages(wps_offline):
+def test_wps_supported_languages(wps_offline):  # noqa: D103
     assert wps_offline.languages.supported == ["en-US", "fr-CA"]
 
 
 @pytest.mark.online
-def test_wps_with_language_arg():
+def test_wps_with_language_arg():  # noqa: D103
     wps = WPSClient(URL_EMU, language="fr-CA")
     assert wps.language == "fr-CA"
     p = wps._processes["translation"]
@@ -67,7 +66,10 @@ def test_wps_with_language_arg():
 @pytest.mark.online
 @pytest.mark.xfail(reason="A wps process has invalid defaultValue Inf")
 def test_52north():
-    """This WPS server has process and input ids with dots and dashes."""
+    """Test for the 52North conventions for WPS.
+
+    This WPS server has process and input ids with dots and dashes.
+    """
     WPSClient(url_52n)
 
 
@@ -93,11 +95,11 @@ def test_52north_offline():
 
 
 @pytest.mark.online
-def test_flyingpigeon():
+def test_flyingpigeon():  # noqa: D103
     WPSClient(url_fly)
 
 
-def test_flyingpigeon_offline():
+def test_flyingpigeon_offline():  # noqa: D103
     WPSClient(
         url_fly,
         caps_xml=open(resource_file("wps_fly_caps.xml"), "rb").read(),
@@ -106,7 +108,7 @@ def test_flyingpigeon_offline():
 
 
 @pytest.mark.online
-def test_wps_client_backward_compability():
+def test_wps_client_backward_compability():  # noqa: D103
     from birdy import BirdyClient
 
     BirdyClient(url=URL_EMU)
@@ -115,19 +117,19 @@ def test_wps_client_backward_compability():
     import_wps(url=URL_EMU)
 
 
-def test_wps_docs(wps_offline):
+def test_wps_docs(wps_offline):  # noqa: D103
     assert "Processes" in wps_offline.__doc__
 
 
 @pytest.mark.online
-def test_wps_client_single_output(wps):
+def test_wps_client_single_output(wps):  # noqa: D103
     result = wps.hello("david")
     assert result.get()[0] == "Hello david"
     result = wps.binaryoperatorfornumbers(inputa=1, inputb=2, operator="add")
     assert result.get()[0] == 3.0
 
 
-def test_wps_nb_form(wps_offline):
+def test_wps_nb_form(wps_offline):  # noqa: D103
     for pid in list(wps_offline._processes.keys()):
         if pid in [
             "bbox",
@@ -137,7 +139,7 @@ def test_wps_nb_form(wps_offline):
 
 
 @pytest.mark.online
-def test_wps_client_dummy_process(wps):
+def test_wps_client_dummy_process(wps):  # noqa: D103
     # For multiple outputs, the output is a namedtuple
     result = wps.dummyprocess(10, 20)
     output = result.get()
@@ -148,7 +150,7 @@ def test_wps_client_dummy_process(wps):
 
 
 @pytest.mark.online
-def test_wps_wordcounter(wps):
+def test_wps_wordcounter(wps):  # noqa: D103
     fn = "/tmp/text.txt"
     with open(fn, "w") as f:
         f.write("Just an example")
@@ -157,7 +159,7 @@ def test_wps_wordcounter(wps):
 
 
 @pytest.mark.online
-def test_interactive(capsys):
+def test_interactive(capsys):  # noqa: D103
     m = WPSClient(url=URL_EMU, progress=True)
     assert m.hello("david").get()[0] == "Hello david"
     captured = capsys.readouterr()
@@ -166,7 +168,7 @@ def test_interactive(capsys):
 
 
 @pytest.mark.online
-def test_wps_client_multiple_outputs(wps):
+def test_wps_client_multiple_outputs(wps):  # noqa: D103
     pytest.importorskip("metalink.download")
     resp = wps.multiple_outputs(2)
 
@@ -186,7 +188,7 @@ def test_wps_client_multiple_outputs(wps):
 
 
 @pytest.mark.online
-def test_process_subset_only_one():
+def test_process_subset_only_one():  # noqa: D103
     m = WPSClient(url=URL_EMU, processes=["nap", "sleep"])
     assert count_class_methods(m) == 2
 
@@ -195,7 +197,7 @@ def test_process_subset_only_one():
 
 
 @pytest.mark.online
-def test_process_subset_names():
+def test_process_subset_names():  # noqa: D103
     with pytest.raises(ValueError, match="missing"):
         WPSClient(url=URL_EMU, processes=["missing"])
     with pytest.raises(ValueError, match="wrong, process, names"):
@@ -203,7 +205,7 @@ def test_process_subset_names():
 
 
 @pytest.mark.online
-def test_asobj(wps):
+def test_asobj(wps):  # noqa: D103
     resp = wps.ncmeta(dataset=resource_file("dummy.nc"))
     out = resp.get(asobj=True)
     assert "URL" in out.output  # Part of expected text file content.
@@ -224,7 +226,7 @@ def test_asobj(wps):
 
 
 @pytest.mark.online
-def test_asobj_non_pythonic_id(wps):
+def test_asobj_non_pythonic_id(wps):  # noqa: D103
     import json
 
     d = {"a": 1}
@@ -235,8 +237,8 @@ def test_asobj_non_pythonic_id(wps):
 
 
 @pytest.mark.skip(reason="owslib_esgfwps is needed for this test")
-def test_esgfapi(wps):
-    from owslib_esgfwps import Domain, Dimension, Variable
+def test_esgfapi(wps):  # noqa: D103
+    from owslib_esgfwps import Dimension, Domain, Variable
 
     uri = resource_file("test.nc")
 
@@ -249,7 +251,7 @@ def test_esgfapi(wps):
 
 
 @pytest.mark.online
-def test_inputs(wps):
+def test_inputs(wps):  # noqa: D103
     import netCDF4 as nc
 
     time_ = datetime.datetime.now().time()
@@ -301,9 +303,10 @@ def test_inputs(wps):
 
 
 @pytest.mark.online
-def test_netcdf():
+def test_netcdf():  # noqa: D103
     import netCDF4 as nc
-    from birdy.client.converters import Netcdf4Converter, JSONConverter
+
+    from birdy.client.converters import JSONConverter, Netcdf4Converter
 
     # Xarray is the default converter. Use netCDF4 here.
     if nc.getlibversion() > "4.5":
@@ -319,7 +322,7 @@ def test_netcdf():
 
 
 @pytest.mark.online
-def test_xarray_converter(wps):
+def test_xarray_converter(wps):  # noqa: D103
     pytest.importorskip("xarray")
     import xarray as xr
 
@@ -328,7 +331,7 @@ def test_xarray_converter(wps):
 
 
 @pytest.mark.online
-def test_geojson_geotiff_converters(wps):
+def test_geojson_geotiff_converters(wps):  # noqa: D103
     pytest.importorskip("geojson")
     pytest.importorskip("rasterio")
 
@@ -342,7 +345,7 @@ def test_geojson_geotiff_converters(wps):
     assert hasattr(raster, "shape")
 
 
-def test_sort_inputs(process):
+def test_sort_inputs(process):  # noqa: D103
     # The first three inputs are all minOccurs=1 with no default, so we expect them to remain in the same order.
     ps = sorted(process.dataInputs, key=sort_inputs_key)
     for i in range(3):
@@ -350,13 +353,13 @@ def test_sort_inputs(process):
 
 
 def test_sort_inputs_conditions():
-    """
+    """Test for the input sorting function.
+
     The order should be:
      - Inputs that have minOccurs >= 1 and no default value
      - Inputs that have minOccurs >= 1 and a default value
      - Every other input
     """
-
     i = mock.Mock()
     i.minOccurs = 1
     i.defaultValue = None
@@ -377,12 +380,12 @@ def test_sort_inputs_conditions():
     assert sort_inputs_key(i) == [True, True, False]
 
 
-def test_all_subclasses():
+def test_all_subclasses():  # noqa: D103
     c = converters.all_subclasses(converters.BaseConverter)
     assert converters.Meta4Converter in c
 
 
-def count_class_methods(class_):
+def count_class_methods(class_):  # noqa: D103
     import types
 
     return len(
@@ -394,7 +397,7 @@ def count_class_methods(class_):
     )
 
 
-def test_jsonconverter():
+def test_jsonconverter():  # noqa: D103
     d = {"a": 1}
     s = json.dumps(d)
     b = bytes(s, "utf8")
@@ -417,7 +420,7 @@ def test_jsonconverter():
     fb.close()
 
 
-def test_zipconverter():
+def test_zipconverter():  # noqa: D103
     import zipfile
 
     f = tempfile.mktemp(suffix=".zip")
@@ -441,7 +444,10 @@ def test_zipconverter():
 
 
 def test_jpeg_imageconverter():
-    "Since the format is not supported, bytes will be returned."
+    """Test for the JPEG image converter.
+
+    Since the format is not supported, bytes will be returned.
+    """
     fn = tempfile.mktemp(suffix=".jpeg")
     with open(fn, "w") as f:
         f.write(
@@ -452,7 +458,7 @@ def test_jpeg_imageconverter():
     assert isinstance(b, bytes)
 
 
-class TestIsEmbedded:
+class TestIsEmbedded:  # noqa: D101
     remote = "http://remote.org"
     local = "http://localhost:5000"
     fn = resource_file("dummy.nc")
@@ -460,11 +466,11 @@ class TestIsEmbedded:
     uri = "file://" + fn
     url = "http://some.random.site/test.txt"
 
-    def test_string(self):
+    def test_string(self):  # noqa: D102
         assert is_embedded_in_request(self.remote, "just a string")
         assert is_embedded_in_request(self.local, "just a string")
 
-    def test_file_like(self):
+    def test_file_like(self):  # noqa: D102
         import io
 
         f = io.StringIO()
@@ -474,18 +480,18 @@ class TestIsEmbedded:
         assert is_embedded_in_request(self.remote, f)
         assert is_embedded_in_request(self.local, f)
 
-    def test_local_fn(self):
+    def test_local_fn(self):  # noqa: D102
         assert is_embedded_in_request(self.remote, self.fn)
         assert not is_embedded_in_request(self.local, self.fn)
 
-    def test_local_path(self):
+    def test_local_path(self):  # noqa: D102
         assert is_embedded_in_request(self.remote, self.path)
         assert not is_embedded_in_request(self.local, self.path)
 
-    def test_local_uri(self):
+    def test_local_uri(self):  # noqa: D102
         assert is_embedded_in_request(self.remote, self.uri)
         assert not is_embedded_in_request(self.local, self.uri)
 
-    def test_url(self):
+    def test_url(self):  # noqa: D102
         assert not is_embedded_in_request(self.remote, self.url)
         assert not is_embedded_in_request(self.local, self.url)

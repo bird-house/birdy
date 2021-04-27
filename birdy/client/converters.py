@@ -1,3 +1,5 @@
+# noqa: D100
+
 import tempfile
 from distutils.version import StrictVersion
 from importlib import import_module
@@ -9,7 +11,7 @@ from owslib.wps import Output
 from . import notebook as nb
 
 
-class BaseConverter(object):
+class BaseConverter(object):  # noqa: D101
     mimetype = None
     extensions = []
     priority = None
@@ -18,8 +20,10 @@ class BaseConverter(object):
     def __init__(self, output=None, path=None, verify=True):
         """Instantiate the conversion class.
 
-        Args:
-            output (owslib.wps.Output): Output object to be converted.
+        Parameters
+        ----------
+        output: owslib.wps.Output
+          Output object to be converted.
         """
         self.path = path or tempfile.mkdtemp()
         self.output = output
@@ -36,7 +40,7 @@ class BaseConverter(object):
 
     @property
     def file(self):
-        """Return output Path object. Download from server if """
+        """Return output Path object. Download from server if not found."""
         if self._file is None:
             self.output.writeToDisk(path=self.path, verify=self.verify)
             self._file = Path(self.output.filePath)
@@ -50,14 +54,18 @@ class BaseConverter(object):
         else:
             return self.output.retrieveData()
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         pass
 
     def _check_import(self, name, package=None):
-        """
-        Args:
-            name: module name to try to import
-            package: package of the module
+        """Check if libraries can be imported.
+
+        Parameters
+        ----------
+        name: str
+          module name to try to import
+        package: str
+          package of the module
         """
         try:
             import_module(name, package)
@@ -66,11 +74,11 @@ class BaseConverter(object):
             raise type(e)(message)
 
     def convert(self):
-        """To be subclassed"""
+        """To be subclassed."""
         raise NotImplementedError
 
 
-class GenericConverter(BaseConverter):
+class GenericConverter(BaseConverter):  # noqa: D101
     priority = 0
 
     def convert(self):
@@ -78,7 +86,7 @@ class GenericConverter(BaseConverter):
         return self.data
 
 
-class TextConverter(BaseConverter):
+class TextConverter(BaseConverter):  # noqa: D101
     mimetype = "text/plain"
     extensions = ["txt", "csv", "md", "rst"]
     priority = 1
@@ -104,25 +112,21 @@ class TextConverter(BaseConverter):
 #         IPython.display.display(w)
 
 
-class JSONConverter(BaseConverter):
+class JSONConverter(BaseConverter):  # noqa: D101
     mimetype = "application/json"
     extensions = [
         "json",
     ]
     priority = 1
 
-    def convert(self):
-        """
-        Args:
-            data:
-        """
+    def convert(self):  # noqa: D102
         import json
 
         with open(self.file) as f:
             return json.load(f)
 
 
-class GeoJSONConverter(BaseConverter):
+class GeoJSONConverter(BaseConverter):  # noqa: D101
     mimetype = "application/geo+json"
     extensions = [
         "json",
@@ -130,17 +134,17 @@ class GeoJSONConverter(BaseConverter):
     ]
     priority = 2
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         self._check_import("geojson")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import geojson
 
         with open(self.file) as f:
             return geojson.load(f)
 
 
-class MetalinkConverter(BaseConverter):
+class MetalinkConverter(BaseConverter):  # noqa: D101
     mimetype = "application/metalink+xml; version=3.0"
     extensions = [
         "metalink",
@@ -148,24 +152,24 @@ class MetalinkConverter(BaseConverter):
     nested = True
     priority = 1
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         self._check_import("metalink.download")
 
-    def convert(self):
-        import metalink.download as md
+    def convert(self):  # noqa: D102
+        from metalink import download as md
 
         files = md.get(self.url, path=self.path, segmented=False)
         return files
 
 
-class Meta4Converter(MetalinkConverter):
+class Meta4Converter(MetalinkConverter):  # noqa: D101
     mimetype = "application/metalink+xml; version=4.0"
     extensions = [
         "meta4",
     ]
 
 
-class Netcdf4Converter(BaseConverter):
+class Netcdf4Converter(BaseConverter):  # noqa: D101
     mimetype = "application/x-netcdf"
     extensions = [
         "nc",
@@ -173,7 +177,7 @@ class Netcdf4Converter(BaseConverter):
     ]
     priority = 1
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         self._check_import("netCDF4")
         from netCDF4 import getlibversion
 
@@ -181,11 +185,7 @@ class Netcdf4Converter(BaseConverter):
         if version < StrictVersion("4.5"):
             raise ImportError("netCDF4 library must be at least version 4.5")
 
-    def convert(self):
-        """
-        Args:
-            data:
-        """
+    def convert(self):  # noqa: D102
         import netCDF4
 
         try:
@@ -196,7 +196,7 @@ class Netcdf4Converter(BaseConverter):
             return netCDF4.Dataset(self.file)
 
 
-class XarrayConverter(BaseConverter):
+class XarrayConverter(BaseConverter):  # noqa: D101
     mimetype = "application/x-netcdf"
     extensions = [
         "nc",
@@ -204,11 +204,11 @@ class XarrayConverter(BaseConverter):
     ]
     priority = 2
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         Netcdf4Converter.check_dependencies(self)
         self._check_import("xarray")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import xarray as xr
 
         try:
@@ -220,15 +220,15 @@ class XarrayConverter(BaseConverter):
 
 
 # TODO: Add test for this.
-class ShpFionaConverter(BaseConverter):
+class ShpFionaConverter(BaseConverter):  # noqa: D101
     mimetype = "application/x-zipped-shp"
     priority = 1
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         ShpOgrConverter.check_dependencies(self)
         self._check_import("fiona")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import io  # isort: skip
         import fiona  # isort: skip
 
@@ -236,50 +236,50 @@ class ShpFionaConverter(BaseConverter):
 
 
 # TODO: Add test for this.
-class ShpOgrConverter(BaseConverter):
+class ShpOgrConverter(BaseConverter):  # noqa: D101
     mimetype = "application/x-zipped-shp"
     extensions = [
         "zip",
     ]
     priority = 2
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         self._check_import("ogr", package="osgeo")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         from osgeo import ogr
 
         return ogr.Open
 
 
 # TODO: Add test for this.
-class ImageConverter(BaseConverter):
+class ImageConverter(BaseConverter):  # noqa: D101
     mimetype = "image/png"
     extensions = [
         "png",
     ]
     priority = 1
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         return nb.is_notebook()
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         from birdy.dependencies import IPython
 
         return IPython.display.Image(self.url)
 
 
 # TODO: Add test for this.
-class GeotiffRioxarrayConverter(BaseConverter):
+class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
     mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
     priority = 3
 
-    def check_dependencies(self):
-        GeotiffRasterioConverter.check_dependencies(self)
+    def check_dependencies(self):  # noqa: D102
+        GeotiffRasterioConverter.check_dependencies(self)  # type: ignore
         self._check_import("rioxarray")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import xarray  # isort: skip
         import rioxarray  # noqa
 
@@ -287,38 +287,38 @@ class GeotiffRioxarrayConverter(BaseConverter):
 
 
 # TODO: Add test for this.
-class GeotiffRasterioConverter(BaseConverter):
+class GeotiffRasterioConverter(BaseConverter):  # noqa: D101
     mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
     priority = 2
 
-    def check_dependencies(self):
-        GeotiffGdalConverter.check_dependencies(self)
+    def check_dependencies(self):  # noqa: D102
+        GeotiffGdalConverter.check_dependencies(self)  # type: ignore
         self._check_import("rasterio")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import rasterio  # isort: skip
 
         return rasterio.open(self.file).read()
 
 
 # TODO: Add test for this.
-class GeotiffGdalConverter(BaseConverter):
+class GeotiffGdalConverter(BaseConverter):  # noqa: D101
     mimetype = "image/tiff; subtype=geotiff"
     extensions = ["tiff", "tif"]
     priority = 1
 
-    def check_dependencies(self):
+    def check_dependencies(self):  # noqa: D102
         self._check_import("gdal", package="osgeo")
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import io  # isort: skip
         from osgeo import gdal  # isort: skip
 
         return lambda x: gdal.Open(io.BytesIO(x))
 
 
-class ZipConverter(BaseConverter):
+class ZipConverter(BaseConverter):  # noqa: D101
     mimetype = "application/zip"
     extensions = [
         "zip",
@@ -326,7 +326,7 @@ class ZipConverter(BaseConverter):
     nested = True
     priority = 1
 
-    def convert(self):
+    def convert(self):  # noqa: D102
         import zipfile
 
         with zipfile.ZipFile(self.file) as z:
