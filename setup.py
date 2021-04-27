@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
+# noqa: D100
 
-from setuptools import find_packages
-from setuptools import setup
-from pathlib import Path
 import re
+from pathlib import Path
+
+from setuptools import find_packages, setup
 
 
 def parse_reqs(file):
+    """Parse dependencies from requirements file with regex."""
     egg_regex = re.compile(r"#egg=(\w+)")
     reqs = list()
     for req in open(file):

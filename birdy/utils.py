@@ -1,10 +1,11 @@
-import re
-import collections
-import base64
-from urllib.parse import urlparse
-from pathlib import Path
-import keyword
+# noqa: D100
 
+import base64
+import collections
+import keyword
+import re
+from pathlib import Path
+from urllib.parse import urlparse
 
 # These mimetypes will be encoded in base64 when embedded in requests.
 # I'm sure there is a more elegant solution than this... https://pypi.org/project/binaryornot/ ?
@@ -59,6 +60,7 @@ def is_file(path):
 
 def sanitize(name):
     """Lower-case name and replace all non-ascii chars by `_`.
+
     If name is a Python keyword (like `return`) then add a trailing `_`.
     """
     new_name = re.sub(r"\W|^(?=\d)", "_", name.lower())
@@ -81,9 +83,11 @@ def delist(data):
 def embed(value, mimetype=None, encoding=None):
     """Return the content of the file, either as a string or base64 bytes.
 
-    :return: encoded content string and actual encoding
+    Returns
+    -------
+    str
+      encoded content string and actual encoding
     """
-
     if hasattr(
         value, "read"
     ):  # File-like, we don't know if it's open in bytes or string.
@@ -109,7 +113,6 @@ def embed(value, mimetype=None, encoding=None):
 
 def _encode(content, mimetype, encoding):
     """Encode in base64 if mimetype is a binary type."""
-
     if mimetype in BINARY_MIMETYPES:
         # An error here might be due to a bad file path. Check that the file exists.
         return base64.b64encode(content), "base64"
@@ -128,8 +131,8 @@ def _encode(content, mimetype, encoding):
 
 def guess_type(url, supported):
     """Guess the mime type of the file link.
-    If the mimetype is not recognized, default to the first supported value.
 
+    If the mimetype is not recognized, default to the first supported value.
 
     Parameters
     ----------

@@ -1,38 +1,38 @@
+# noqa: D100
+
+import logging
 import types
 from collections import OrderedDict
 from textwrap import dedent
-from boltons.funcutils import FunctionBuilder
 
+import owslib
 import requests
 import requests.auth
-import owslib
+from boltons.funcutils import FunctionBuilder
 from owslib.util import ServiceException
 from owslib.wps import (
-    WPS_DEFAULT_VERSION,
-    WebProcessingService,
-    SYNC,
     ASYNC,
+    SYNC,
+    WPS_DEFAULT_VERSION,
     ComplexData,
+    WebProcessingService,
 )
 
-from birdy.exceptions import UnauthorizedException
-from birdy.client import utils
-from birdy.utils import sanitize, fix_url, embed, guess_type
-from birdy.client import notebook
+from birdy.client import notebook, utils
 from birdy.client.outputs import WPSResult
-
-import logging
+from birdy.exceptions import UnauthorizedException
+from birdy.utils import embed, fix_url, guess_type, sanitize
 
 
 # TODO: Support passing ComplexInput's data using POST.
 class WPSClient(object):
-    """Returns a class where every public method is a WPS process available at
-    the given url.
+    """Returns a class where every public method is a WPS process available at the given url.
 
-    Example:
-        >>> emu = WPSClient(url='<server url>')
-        >>> emu.hello('stranger')
-        'Hello stranger'
+    Examples
+    --------
+    >>> emu = WPSClient(url='<server url>')
+    >>> emu.hello('stranger')
+    'Hello stranger'
     """
 
     def __init__(
@@ -52,30 +52,46 @@ class WPSClient(object):
         caps_xml=None,
         desc_xml=None,
         language=None,
+        lineage=False,
     ):
-        """
-        Args:
-            url (str): Link to WPS provider. config (Config): an instance
-            processes: Specify a subset of processes to bind. Defaults to all
-                processes.
-            converters (dict): Correspondence of {mimetype: class} to convert
-                this mimetype to a python object.
-            username (str): passed to :class:`owslib.wps.WebProcessingService`
-            password (str): passed to :class:`owslib.wps.WebProcessingService`
-            headers (str): passed to :class:`owslib.wps.WebProcessingService`
-            auth (requests.auth.AuthBase): requests-style auth class to authenticate,
-                see https://2.python-requests.org/en/master/user/authentication/
-            verify (bool): passed to :class:`owslib.wps.WebProcessingService`
-            cert (str): passed to :class:`owslib.wps.WebProcessingService`
-            verbose (str): passed to :class:`owslib.wps.WebProcessingService`
-            progress (bool): If True, enable interactive user mode.
-            version (str): WPS version to use.
-            language (str): passed to :class:`owslib.wps.WebProcessingService`
-                ex: 'fr-CA', 'en_US'.
+        """Initialize WPSClient.
+
+        Parameters
+        ----------
+        url: str
+          Link to WPS provider. config (Config): an instance
+        processes:
+          Specify a subset of processes to bind. Defaults to all processes.
+        converters: dict
+          Correspondence of {mimetype: class} to convert this mimetype to a python object.
+        username: str
+          passed to :class:`owslib.wps.WebProcessingService`
+        password: str
+          passed to :class:`owslib.wps.WebProcessingService`
+        headers: str
+          passed to :class:`owslib.wps.WebProcessingService`
+        auth: requests.auth.AuthBase
+          requests-style auth class to authenticate.
+          see https://2.python-requests.org/en/master/user/authentication/
+        verify: bool
+          passed to :class:`owslib.wps.WebProcessingService`
+        cert: str
+          passed to :class:`owslib.wps.WebProcessingService`
+        verbose: str
+          passed to :class:`owslib.wps.WebProcessingService`
+        progress: bool
+          If True, enable interactive user mode.
+        version: str
+          WPS version to use.
+        language: str
+          passed to :class:`owslib.wps.WebProcessingService` (ex: 'fr-CA', 'en_US').
+        lineage: bool
+          If True, the Execute operation includes lineage information.
         """
         self._converters = converters
         self._interactive = progress
         self._mode = ASYNC if progress else SYNC
+        self._lineage = lineage
         self._notebook = notebook.is_notebook()
         self._inputs = {}
         self._outputs = {}
@@ -138,15 +154,15 @@ class WPSClient(object):
         self.__doc__ = utils.build_wps_client_doc(self._wps, self._processes)
 
     @property
-    def language(self):
+    def language(self):  # noqa: D102
         return self._wps.language
 
     @language.setter
-    def language(self, value):
+    def language(self, value):  # noqa: D102
         self._wps.language = value
 
     @property
-    def languages(self):
+    def languages(self):  # noqa: D102
         return self._wps.languages
 
     def _get_process_description(self, processes=None, xml=None):
@@ -198,8 +214,9 @@ class WPSClient(object):
         self.logger.addHandler(fh)
 
     def _method_factory(self, pid):
-        """Create a custom function signature with docstring, instantiate it and
-        pass it to a wrapper which will actually call the process.
+        """Create a custom function signature with docstring, instantiate it and pass it to a wrapper.
+
+        The wrapper will call the process on reception.
 
         Parameters
         ----------
@@ -211,7 +228,6 @@ class WPSClient(object):
         func
           A Python function calling the remote process, complete with docstring and signature.
         """
-
         process = self._processes[pid]
 
         required_inputs_first = sorted(process.dataInputs, key=sort_inputs_key)
@@ -350,7 +366,11 @@ class WPSClient(object):
 
         try:
             wps_response = self._wps.execute(
-                pid, inputs=wps_inputs, output=wps_outputs, mode=mode
+                pid,
+                inputs=wps_inputs,
+                output=wps_outputs,
+                mode=mode,
+                lineage=self._lineage,
             )
 
             if self._interactive and self._processes[pid].statusSupported:
@@ -406,7 +426,7 @@ class WPSClient(object):
 
 
 def sort_inputs_key(i):
-    """Function used as key when sorting process inputs.
+    """Key function for sorting process inputs.
 
     The order is:
      - Inputs that have minOccurs >= 1 and no default value
