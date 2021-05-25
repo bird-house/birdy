@@ -1,16 +1,20 @@
 Change History
 **************
 
-0.7.1 (unreleased)
+0.8.0 (2021-05-25)
 ==================
 
 Changes:
 
 * Added a converter for loading GeoTIFF using xarray/rioxarray (#193).
 * Update notebook process forms. See `client.gui` function.
-* Add support for Path objects in `utils.guess_type`
-* Support multiple mimetypes in converters. API change: mimetype (str) replaced by mimetypes (tuple)
+* Add support for Path objects in `utils.guess_type`.
+* Support multiple mimetypes in converters.
 * Removed geojson mimetypes from BINARY_MIMETYPES so it's embedded as a string rather than bytes.
+
+API changes:
+
+* `mimetype` (str) replaced by `mimetypes` (tuple) in `client.converters.BaseConverter`.
 
 
 0.7.0 (2021-01-15)
