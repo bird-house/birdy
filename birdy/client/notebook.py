@@ -2,7 +2,6 @@
 
 import threading
 
-from IPython.display import display  # noqa
 from owslib.wps import Input
 
 from birdy.dependencies import IPython
@@ -82,7 +81,7 @@ class Form:
 
         # Create GUI
         ui = self.build_ui(iw, ofw, go)
-        display(ui, out)
+        IPython.display(ui, out)
 
     def get(self, asobj=False):
         """Return the process response outputs.
