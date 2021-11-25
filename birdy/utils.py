@@ -43,6 +43,34 @@ def is_url(url):
         return True
 
 
+def is_opendap_url(url):
+    """
+    Check if a provided url is an OpenDAP url.
+
+    The DAP Standard specifies that a specific tag must be included in the
+    Content-Description header of every request. This tag is one of:
+        "dods-dds" | "dods-das" | "dods-data" | "dods-error"
+
+    So we can check if the header starts with `dods`.
+
+    Note that this might not work with every DAP server implementation.
+    """
+    import requests
+    from requests.exceptions import ConnectionError, InvalidSchema, MissingSchema
+
+    try:
+        content_description = requests.head(url, timeout=5).headers.get(
+            "Content-Description"
+        )
+    except (ConnectionError, MissingSchema, InvalidSchema):
+        return False
+
+    if content_description:
+        return content_description.lower().startswith("dods")
+    else:
+        return False
+
+
 def is_file(path):
     """Return True if `path` is a valid file."""
     if not path:

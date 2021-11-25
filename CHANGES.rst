@@ -1,6 +1,14 @@
 Change History
 **************
 
+0.8.1 (unreleased)
+==================
+
+Changes:
+
+* Before trying to open a netCDF dataset, determine whether link is a valid OPeNDAP endpoint to avoid unnecessarily raising the cryptic ``syntax error, unexpected WORD_WORD, expecting SCAN_ATTR or SCAN_DATASET or SCAN_ERROR``.
+
+
 0.8.0 (2021-05-25)
 ==================
 

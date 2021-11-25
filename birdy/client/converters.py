@@ -5,7 +5,7 @@ from distutils.version import StrictVersion
 from importlib import import_module
 from pathlib import Path
 from typing import Sequence, Union
-
+from birdy.utils import is_opendap_url
 from owslib.wps import Output
 
 from . import notebook as nb
@@ -174,12 +174,12 @@ class Netcdf4Converter(BaseConverter):  # noqa: D101
     def convert(self):  # noqa: D102
         import netCDF4
 
-        try:
-            # try OpenDAP url
+        # Try to access with OpenDAP url to avoid a download
+        if is_opendap_url(self.url):
             return netCDF4.Dataset(self.url)
-        except IOError:
-            # download the file
-            return netCDF4.Dataset(self.file)
+
+        # Download the file and open the local copy
+        return netCDF4.Dataset(self.file)
 
 
 class XarrayConverter(BaseConverter):  # noqa: D101
@@ -194,12 +194,12 @@ class XarrayConverter(BaseConverter):  # noqa: D101
     def convert(self):  # noqa: D102
         import xarray as xr
 
-        try:
-            # try OpenDAP url
+        # Try to access with OpenDAP url to avoid a download
+        if is_opendap_url(self.url):
             return xr.open_dataset(self.url)
-        except IOError:
-            # download the file
-            return xr.open_dataset(self.file)
+
+        # Download the file and open the local copy
+        return xr.open_dataset(self.file)
 
 
 # TODO: Add test for this.
