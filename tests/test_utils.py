@@ -1,5 +1,6 @@
 # noqa
 
+import pytest
 from pathlib import Path
 
 from birdy import utils
@@ -114,3 +115,31 @@ class TestGuessType:  # noqa: D101
             ["application/x-netcdf", "application/x-ogc-dods"],
         )
         assert mime == "application/x-ogc-dods"
+
+
+@pytest.mark.online
+def test_is_opendap_url():
+    # This test uses online requests, and the servers are not as stable as hoped.
+    # We should record these requests so that the tests don't break when the servers are down.
+
+    url = (
+        "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/dodsC/"
+        "birdhouse/nrcan/nrcan_canada_daily_v2/tasmin/nrcan_canada_daily_tasmin_2017.nc"
+    )
+    assert utils.is_opendap_url(url)
+
+    url = url.replace("dodsC", "fileServer")
+    assert not utils.is_opendap_url(url)
+
+    # no Content-Description header
+    # url = "http://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
+    # assert is_opendap_url(url)
+
+    url = "invalid_schema://something"
+    assert not utils.is_opendap_url(url)
+
+    url = "https://www.example.com"
+    assert not utils.is_opendap_url(url)
+
+    url = "/missing_schema"
+    assert not utils.is_opendap_url(url)
