@@ -61,28 +61,6 @@ def test_wps_with_language_arg():  # noqa: D103
     assert resp.processOutputs[0].title == "Sortie #1"
 
 
-@pytest.mark.online
-@pytest.mark.xfail(reason="A wps process has invalid defaultValue Inf")
-def test_52north():
-    """Test for the 52North conventions for WPS.
-
-    This WPS server has process and input ids with dots and dashes.
-    """
-    WPSClient(url_52n)
-
-
-@pytest.mark.online
-def test_52north_simple():
-    """Check only a few 52north processes."""
-    WPSClient(
-        url_52n,
-        processes=[
-            "org.n52.wps.server.algorithm.r.AnnotationValidation",
-            "org.n52.wps.server.r.uncertweb.make-realizations",
-        ],
-    )
-
-
 def test_52north_offline():
     """Check offline 52north processes."""
     WPSClient(

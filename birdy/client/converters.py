@@ -321,7 +321,6 @@ class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
     priority = 3
 
     def check_dependencies(self):  # noqa: D102
-        GeotiffRasterioConverter.check_dependencies(self)  # type: ignore
         self._check_import("rioxarray")
 
     def _load_func(self):
@@ -345,7 +344,6 @@ class GeotiffRasterioConverter(BaseConverter):  # noqa: D101
     priority = 2
 
     def check_dependencies(self):  # noqa: D102
-        GeotiffGdalConverter.check_dependencies(self)  # type: ignore
         self._check_import("rasterio")
 
     def _load_func(self):
