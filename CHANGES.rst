@@ -1,6 +1,15 @@
 Change History
 **************
 
+0.8.2 (unreleased)
+==================
+
+Changes:
+
+* Relax dependency check on GeoTiff rioxarray and rasterio converters due to some mysterious gdal error.
+* Remove tests with live 52North WPS server since it seems offline.
+
+
 0.8.1 (2021-12-01)
 ==================
 
