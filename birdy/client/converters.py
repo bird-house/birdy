@@ -40,6 +40,7 @@ class BaseConverter(object):  # noqa: D101
         else:
             raise NotImplementedError
 
+        # Create load method for converter
         self.load = self._load_func()
 
     @property
@@ -84,6 +85,7 @@ class BaseConverter(object):  # noqa: D101
     def _load_func(self):
         """Return function that can open file."""
         raise NotImplementedError
+
 
 class GenericConverter(BaseConverter):  # noqa: D101
     priority = 0
@@ -399,7 +401,7 @@ class ZipConverter(BaseConverter):  # noqa: D101
 
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority."""
-    select = []  # Previously defaulted to GenericConverter, but let's keep it explicit.
+    select = [GenericConverter]
 
     for obj in converters:
         if (mimetype in obj.mimetypes) or (extension in obj.extensions):

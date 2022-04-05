@@ -14,7 +14,7 @@ from .converters import find_converter
 
 
 class BirdyOutput(Output):
-    """Adds user-friendly conversion methods."""
+    """An owslib WPS output with user-friendly interface, including conversion methods."""
 
     def __init__(self, output, path=None, converters=None):
         # Copy owslib.wps.Output attributes
@@ -29,7 +29,7 @@ class BirdyOutput(Output):
             # Primary converter instance
             self.converter = self.converters[0](output, path=path, verify=False)
 
-            # Copy converter attributes
+            # Copy converter attributes, including `load` method
             for key in ["data", "file", "path", "load"]:
                 setattr(self, key, getattr(self.converter, key))
 
@@ -64,6 +64,10 @@ class WPSResult(WPSExecution):  # noqa: D101
         )
 
     def load(self):
+        """Return BirdyOutput instances.
+
+        TODO: Decide on function name.
+        """
         if not self.isComplete():
             raise ProcessIsNotComplete("Please wait ...")
         if not self.isSucceded():
