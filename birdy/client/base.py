@@ -79,7 +79,7 @@ class WPSClient(object):
           passed to :class:`owslib.wps.WebProcessingService`
         cert: str
           passed to :class:`owslib.wps.WebProcessingService`
-        verbose: str
+        verbose: bool
           Deprecated. passed to :class:`owslib.wps.WebProcessingService` for owslib < 0.29
         progress: bool
           If True, enable interactive user mode.
