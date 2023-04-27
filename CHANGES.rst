@@ -8,8 +8,8 @@ Changes:
 
 * Relax dependency check on GeoTiff rioxarray and rasterio converters due to some mysterious gdal error.
 * Remove tests with live 52North WPS server since it seems offline.
+* Remove Python 3.6 from test matrix and add 3.10.
 * Handle the removal of the `verbose` argument in `OWSLib.WebProcessingService` 0.29.0.
-
 
 0.8.1 (2021-12-01)
 ==================
