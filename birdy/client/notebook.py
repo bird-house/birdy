@@ -114,7 +114,7 @@ class Form:
                 for (key, o) in outputs
             ]
         ):
-            for (key, output) in outputs:
+            for key, output in outputs:
                 if hasattr(output, "supportedValues"):
                     of[key] = widgets.RadioButtons(
                         options=[o.mimeType for o in output.supportedValues],
