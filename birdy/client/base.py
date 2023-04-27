@@ -9,7 +9,6 @@ import owslib
 import requests
 import requests.auth
 from boltons.funcutils import FunctionBuilder
-import owslib
 from owslib.util import ServiceException
 from owslib.wps import (
     ASYNC,
