@@ -19,7 +19,7 @@ from owslib.wps import (
     WebProcessingService,
 )
 from warnings import warn
-import packaging
+import packaging.version
 
 from birdy.client import notebook, utils
 from birdy.client.outputs import WPSResult
