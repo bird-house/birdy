@@ -409,3 +409,10 @@ class TestIsEmbedded:  # noqa: D101
     def test_url(self):  # noqa: D102
         assert not is_embedded_in_request(self.remote, self.url)
         assert not is_embedded_in_request(self.local, self.url)
+
+
+def test_verbose_deprecation():  # noqa: D103
+    with pytest.warns(DeprecationWarning):
+        WPSClient(
+            url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, verbose=True
+        )

@@ -17,6 +17,8 @@ from owslib.wps import (
     ComplexData,
     WebProcessingService,
 )
+from warnings import warn
+import packaging.version
 
 from birdy.client import notebook, utils
 from birdy.client.outputs import WPSResult
@@ -46,13 +48,13 @@ class WPSClient(object):
         auth=None,
         verify=True,
         cert=None,
-        verbose=False,
         progress=False,
         version=WPS_DEFAULT_VERSION,
         caps_xml=None,
         desc_xml=None,
         language=None,
         lineage=False,
+        **kwds,
     ):
         """Initialize WPSClient.
 
@@ -77,8 +79,8 @@ class WPSClient(object):
           passed to :class:`owslib.wps.WebProcessingService`
         cert: str
           passed to :class:`owslib.wps.WebProcessingService`
-        verbose: str
-          passed to :class:`owslib.wps.WebProcessingService`
+        verbose: bool
+          Deprecated. passed to :class:`owslib.wps.WebProcessingService` for owslib < 0.29
         progress: bool
           If True, enable interactive user mode.
         version: str
@@ -117,17 +119,28 @@ class WPSClient(object):
             auth_headers = ["Authorization", "Proxy-Authorization", "Cookie"]
             headers.update({h: r.headers[h] for h in auth_headers if h in r.headers})
 
+        if "verbose" in kwds:
+            if packaging.version.parse(owslib.__version__) >= packaging.version.parse(
+                "0.29.0"
+            ):
+                kwds.pop("verbose")
+            warn(
+                "The 'verbose' keyword is deprecated and will be removed in a future version. Starting with owslib "
+                "0.29.0, debugging information is logged instead of printed.",
+                DeprecationWarning,
+            )
+
         self._wps = WebProcessingService(
             url,
             version=version,
             username=username,
             password=password,
-            verbose=verbose,
             headers=headers,
             verify=verify,
             cert=cert,
             skip_caps=True,
             language=language,
+            **kwds,
         )
 
         try:
@@ -309,7 +322,6 @@ class WPSClient(object):
             for value in values:
                 #  if input_param.dataType == "ComplexData": seems simpler
                 if isinstance(input_param.defaultValue, ComplexData):
-
                     # Guess the mimetype of the input value
                     mimetype, encoding = guess_type(value, supported_mimetypes)
 
