@@ -413,4 +413,6 @@ class TestIsEmbedded:  # noqa: D101
 
 def test_verbose_deprecation():  # noqa: D103
     with pytest.warns(DeprecationWarning):
-        WPSClient(url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, verbose=True)
+        WPSClient(
+            url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, verbose=True
+        )

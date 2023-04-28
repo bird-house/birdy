@@ -9,7 +9,6 @@ import owslib
 import requests
 import requests.auth
 from boltons.funcutils import FunctionBuilder
-import owslib
 from owslib.util import ServiceException
 from owslib.wps import (
     ASYNC,
@@ -55,7 +54,7 @@ class WPSClient(object):
         desc_xml=None,
         language=None,
         lineage=False,
-        **kwds
+        **kwds,
     ):
         """Initialize WPSClient.
 
@@ -80,7 +79,7 @@ class WPSClient(object):
           passed to :class:`owslib.wps.WebProcessingService`
         cert: str
           passed to :class:`owslib.wps.WebProcessingService`
-        verbose: str
+        verbose: bool
           Deprecated. passed to :class:`owslib.wps.WebProcessingService` for owslib < 0.29
         progress: bool
           If True, enable interactive user mode.
@@ -121,7 +120,9 @@ class WPSClient(object):
             headers.update({h: r.headers[h] for h in auth_headers if h in r.headers})
 
         if "verbose" in kwds:
-            if packaging.version.parse(owslib.__version__) >= packaging.version.parse("0.29.0"):
+            if packaging.version.parse(owslib.__version__) >= packaging.version.parse(
+                "0.29.0"
+            ):
                 kwds.pop("verbose")
             warn(
                 "The 'verbose' keyword is deprecated and will be removed in a future version. Starting with owslib "
@@ -139,7 +140,7 @@ class WPSClient(object):
             cert=cert,
             skip_caps=True,
             language=language,
-            **kwds
+            **kwds,
         )
 
         try:
@@ -321,7 +322,6 @@ class WPSClient(object):
             for value in values:
                 #  if input_param.dataType == "ComplexData": seems simpler
                 if isinstance(input_param.defaultValue, ComplexData):
-
                     # Guess the mimetype of the input value
                     mimetype, encoding = guess_type(value, supported_mimetypes)
 

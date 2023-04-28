@@ -30,7 +30,7 @@ jobs:
       run: make lint
       if: matrix.python-version == 3.8
     - name: Check formatting with black ⚙️
-      run: black --check --target-version py36 birdy tests
+      run: black --check --target-version py38 birdy tests
       if: matrix.python-version == 3.8
     - name: Build docs 🏗️
       run: make docs
