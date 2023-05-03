@@ -1,6 +1,13 @@
 Change History
 **************
 
+0.8.3 (2023-05-03)
+==================
+
+Changes:
+
+* Added the `packaging` library to the list of requirements.
+
 0.8.2 (2023-04-28)
 ==================
 
