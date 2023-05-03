@@ -6,24 +6,25 @@ channels:
 dependencies:
   - pip
   #- openssl
+  - boltons
+  - click
+  - funcsigs
+  - jinja2
   - lxml
   - owslib>=0.19
-  - click
-  - jinja2
+  - packaging
   - wrapt
-  - funcsigs
-  - boltons
   # optional
   - netcdf4
   - xarray
   # tests
+  - flake8>=3.8.4
+  - nbval
   - pytest
   - pytest-notebook
-  - nbval
-  - flake8>=3.8.4
   # sphinx for rtd
-  - pandoc
   - ipykernel
-  - sphinx
-  - nbsphinx
   - nbconvert
+  - nbsphinx
+  - pandoc
+  - sphinx
