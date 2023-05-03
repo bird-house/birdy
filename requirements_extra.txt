@@ -1,9 +1,9 @@
-netCDF4
-ipyleaflet
-ipywidgets
-ipython
-geojson
-pymetalink
 fiona
+geojson
+ipyleaflet
+ipython
+ipywidgets
+netCDF4
+pymetalink
 rasterio
 rioxarray
