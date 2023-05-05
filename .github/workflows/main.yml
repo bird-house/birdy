@@ -1,6 +1,10 @@
 name: build ⚙️
 
-on: [ push, pull_request ]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build:
@@ -8,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
     steps:
     - uses: actions/checkout@v2
     - name: Install packages
       run: |
         sudo apt-get -y install pandoc
-      if: matrix.python-version == 3.6
+      if: matrix.python-version == 3.9
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -28,10 +32,10 @@ jobs:
       run: make test
     - name: Lint with flake8 ⚙️
       run: make lint
-      if: matrix.python-version == 3.6
+      if: matrix.python-version == 3.9
     - name: Check formatting with black ⚙️
-      run: black --check --target-version py36 birdy tests
-      if: matrix.python-version == 3.6
+      run: black --check --target-version py39 birdy tests
+      if: matrix.python-version == 3.9
     - name: Build docs 🏗️
       run: make docs
-      if: matrix.python-version == 3.6
+      if: matrix.python-version == 3.9

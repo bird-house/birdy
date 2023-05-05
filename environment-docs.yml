@@ -4,6 +4,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - sphinx
   - ipython
   - nbsphinx
+  - sphinx
