@@ -69,7 +69,6 @@ Release a new version
 
 Leveraging GitHub Workflows, maintainers can release new versions of Birdy automatically:
 
-* Within the repository secrets, set two API tokens (`PYPI_API_TOKEN` and `TEST_PYPI_API_TOKEN`) with push access to Birdy on PyPI and TestPyPI, respectively.
 * Ensure that the changelog and version on the main development branch have been updated to reflect the new version.
 * Create a tag (`vX.Y.Z`) of the main development branch and push to the GitHub repository.
     * This will trigger a workflow that will attempt to build Birdy and publish it to TestPyPI.
