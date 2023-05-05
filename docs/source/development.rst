@@ -12,7 +12,7 @@ Check out code from the birdy GitHub repo and start the installation::
    $ git clone https://github.com/bird-house/birdy.git
    $ cd birdy
    $ conda env create -f environment.yml
-   $ python setup.py develop
+   $ pip install --editable .
 
 Install additional dependencies::
 
@@ -37,7 +37,7 @@ Before committing your changes, we ask that you install `pre-commit` in your env
 `Pre-commit` runs git hooks that ensure that your code resembles that of the project
 and catches and corrects any small errors or inconsistencies when you `git commit`::
 
-     $ conda install -c conda-forge pre_commit
+     $ conda install -c conda-forge pre-commit
      $ pre-commit install
 
 Write Documentation
@@ -63,3 +63,17 @@ Make a new version of Birdy in the following steps:
 See the bumpversion_ documentation for details.
 
 .. _bumpversion: https://pypi.org/project/bumpversion/
+
+Release a new version
+=====================
+
+Leveraging GitHub Workflows, maintainers can release new versions of Birdy automatically:
+
+* Within the repository secrets, set two API tokens (`PYPI_API_TOKEN` and `TEST_PYPI_API_TOKEN`) with push access to Birdy on PyPI and TestPyPI, respectively.
+* Ensure that the changelog and version on the main development branch have been updated to reflect the new version.
+* Create a tag (`vX.Y.Z`) of the main development branch and push to the GitHub repository.
+    * This will trigger a workflow that will attempt to build Birdy and publish it to TestPyPI.
+    * When this actions succeeds, be sure to verify on TestPyPI that the package reflects changes.
+* On GitHub, a maintainer can then publish a new version using the newly created tag.
+    * This will trigger a workflow that will attempt to build Birdy and publish it to PyPI.
+    * Be warned that once published to PyPI, a version number can never be overwritten! Bad versions may only be `yanked <https://pypi.org/help/#yanked>`_.
