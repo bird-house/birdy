@@ -59,9 +59,7 @@ def pretty_repr(obj, linebreaks=True):
 
     for key, value in items:
         value = pretty_repr(value, linebreaks=False)
-        attributes.append(
-            "{indent}{key}={value}".format(indent=indent, key=key, value=value)
-        )
+        attributes.append(f"{indent}{key}={value}")
 
     attribute_joiner = ",\n" if linebreaks else ", "
     attributes = attribute_joiner.join(attributes)
@@ -110,8 +108,8 @@ def build_process_doc(process):
         doc.append("Parameters")
         doc.append("----------")
         for i in process.dataInputs:
-            doc.append("{} : {}".format(sanitize(i.identifier), format_type(i)))
-            doc.append("    {}".format(i.abstract or i.title))
+            doc.append(f"{sanitize(i.identifier)} : {format_type(i)}")
+            doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
         doc.append("")
@@ -121,8 +119,8 @@ def build_process_doc(process):
         doc.append("Returns")
         doc.append("-------")
         for i in process.processOutputs:
-            doc.append("{} : {}".format(sanitize(i.identifier), format_type(i)))
-            doc.append("    {}".format(i.abstract or i.title))
+            doc.append(f"{sanitize(i.identifier)} : {format_type(i)}")
+            doc.append(f"    {i.abstract or i.title}")
 
     doc.append("")
     return "\n".join(doc)
@@ -135,7 +133,7 @@ def format_type(obj):
     doc = ""
     try:
         if getattr(obj, "allowedValues", None):
-            av = ", ".join(["'{}'".format(i) for i in obj.allowedValues[:nmax]])
+            av = ", ".join([f"'{i}'" for i in obj.allowedValues[:nmax]])
             if len(obj.allowedValues) > nmax:
                 av += ", ..."
             doc += "{" + av + "}"
@@ -161,13 +159,13 @@ def format_type(obj):
             doc += ", optional"
 
         if getattr(obj, "default", None):
-            doc += ", default:{}".format(obj.defaultValue)
+            doc += f", default:{obj.defaultValue}"
 
         if getattr(obj, "uoms", None):
             doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
 
     except Exception as e:
-        raise type(e)("{} (in {} docstring)".format(e, obj.identifier))
+        raise type(e)(f"{e} (in {obj.identifier} docstring)")
     return doc
 
 
@@ -198,9 +196,7 @@ def is_embedded_in_request(url, value):
         if is_file(p):
             return "localhost" not in u.netloc
         else:
-            raise IOError(
-                "{} should be a local file but was not found on disk.".format(value)
-            )
+            raise OSError(f"{value} should be a local file but was not found on disk.")
     elif scheme == "":  # Could be a local path or just a string
         if is_file(p):
             return "localhost" not in u.netloc

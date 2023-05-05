@@ -41,7 +41,7 @@ def _map_extent_to_bbox_filter(source_map):
     return formatted_coordinates
 
 
-class IpyleafletWFS(object):
+class IpyleafletWFS:
     """Create a connection to a WFS service capable of geojson output.
 
     This class is a small wrapper for ipylealet to facilitate the use of

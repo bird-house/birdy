@@ -61,7 +61,7 @@ class BirdyCLI(click.MultiCommand):
                 )
             except Exception as e:
                 raise ConnectionError(
-                    "Could not connect to Web Processing Service ({!r})".format(e)
+                    f"Could not connect to Web Processing Service ({e!r})"
                 )
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
@@ -92,7 +92,7 @@ class BirdyCLI(click.MultiCommand):
             help = inp.title or ""
             default = BirdyCLI.get_param_default(inp)
             if default:
-                help = "{}. Default: {}".format(help, default)
+                help = f"{help}. Default: {default}"
             cmd["options"].append(
                 dict(
                     name=inp.identifier.replace(" ", "-"),

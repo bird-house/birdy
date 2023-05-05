@@ -14,9 +14,7 @@ def monitor(execution):  # noqa: D103
     if execution.isSucceded():
         click.echo("Output:")
         for output in execution.processOutputs:
-            click.echo(
-                "{}={}".format(output.identifier, output.data or output.reference)
-            )
+            click.echo(f"{output.identifier}={output.data or output.reference}")
     else:
         click.echo("Process execution failed.")
 

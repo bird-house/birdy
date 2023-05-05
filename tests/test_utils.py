@@ -1,7 +1,8 @@
 # noqa
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from birdy import utils
 

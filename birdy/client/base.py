@@ -4,8 +4,10 @@ import logging
 import types
 from collections import OrderedDict
 from textwrap import dedent
+from warnings import warn
 
 import owslib
+import packaging.version
 import requests
 import requests.auth
 from boltons.funcutils import FunctionBuilder
@@ -17,8 +19,6 @@ from owslib.wps import (
     ComplexData,
     WebProcessingService,
 )
-from warnings import warn
-import packaging.version
 
 from birdy.client import notebook, utils
 from birdy.client.outputs import WPSResult
@@ -27,7 +27,7 @@ from birdy.utils import embed, fix_url, guess_type, sanitize
 
 
 # TODO: Support passing ComplexInput's data using POST.
-class WPSClient(object):
+class WPSClient:
     """Returns a class where every public method is a WPS process available at the given url.
 
     Examples
@@ -432,9 +432,9 @@ class WPSClient(object):
             )
 
         if execution.isSucceded():
-            self.logger.info("{} done.".format(execution.process.identifier))
+            self.logger.info(f"{execution.process.identifier} done.")
         else:
-            self.logger.info("{} failed.".format(execution.process.identifier))
+            self.logger.info(f"{execution.process.identifier} failed.")
 
 
 def sort_inputs_key(i):
