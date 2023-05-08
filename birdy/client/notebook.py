@@ -282,7 +282,7 @@ def input2widget(inpt):
     elif typ.endswith("ComplexData"):
         out = widgets.Text(description=inpt.title)
     else:
-        raise AttributeError("Data type not recognized {}".format(typ))
+        raise AttributeError(f"Data type not recognized {typ}")
 
     return out
 

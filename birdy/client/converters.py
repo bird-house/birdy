@@ -5,13 +5,15 @@ from distutils.version import StrictVersion
 from importlib import import_module
 from pathlib import Path
 from typing import Sequence, Union
-from birdy.utils import is_opendap_url
+
 from owslib.wps import Output
+
+from birdy.utils import is_opendap_url
 
 from . import notebook as nb
 
 
-class BaseConverter(object):  # noqa: D101
+class BaseConverter:  # noqa: D101
     mimetypes = ()
     extensions = ()
     priority = None

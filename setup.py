@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # noqa: D100
 
 import re
@@ -20,7 +19,7 @@ def parse_reqs(file):
     return reqs
 
 
-with open(Path(__file__).parent / "birdy" / "__init__.py", "r") as f:
+with open(Path(__file__).parent / "birdy" / "__init__.py") as f:
     version = re.search(r'__version__ = [\'"](.+?)[\'"]', f.read()).group(1)
 
 description = "Birdy provides a command-line tool to work with Web Processing Services."
