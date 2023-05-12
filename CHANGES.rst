@@ -1,6 +1,14 @@
 Change History
 **************
 
+0.8.4 (unreleased)
+==================
+
+Changes:
+
+* Fix docstring creation error occurring when the server identification abstract is None. See issue `228`.
+
+
 0.8.3 (2023-05-03)
 ==================
 
