@@ -81,7 +81,7 @@ def build_wps_client_doc(wps, processes):
     str
         The formatted docstring for this WPSClient
     """
-    doc = [wps.identification.abstract, "", "Processes", "---------", ""]
+    doc = [wps.identification.abstract or "", "", "Processes", "---------", ""]
 
     for process_name, process in list(processes.items()):
         sanitized_name = sanitize(process_name)
