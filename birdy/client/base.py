@@ -198,10 +198,10 @@ class WPSClient:
         if processes is None:
             try:
                 # Get the description for all processes in one request.
-                ps = self._wps.describeprocess("ALL", xml=xml)
+                ps = self._wps.describeprocess("all", xml=xml)
                 return OrderedDict((p.identifier, p) for p in ps)
 
-            except ServiceException as e:
+            except (ServiceException, ValueError) as e:
                 processes = all_wps_processes
 
         # Check for invalid process names, i.e. not matching the getCapabilities response.
