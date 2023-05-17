@@ -201,7 +201,7 @@ class WPSClient:
                 ps = self._wps.describeprocess("all", xml=xml)
                 return OrderedDict((p.identifier, p) for p in ps)
 
-            except (ServiceException, ValueError) as e:
+            except (ServiceException, ValueError):
                 processes = all_wps_processes
 
         # Check for invalid process names, i.e. not matching the getCapabilities response.
