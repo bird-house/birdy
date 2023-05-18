@@ -7,7 +7,7 @@ Change History
 Changes:
 
 * Fix docstring creation error occurring when the server identification abstract is None. See issue `228`.
-
+* Handle case where the server `describeProcess` does not understand "ALL" as the process identifier. See issue `229`.
 
 0.8.3 (2023-05-03)
 ==================

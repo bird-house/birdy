@@ -196,11 +196,12 @@ class WPSClient:
         all_wps_processes = [p.identifier for p in self._wps.processes]
 
         if processes is None:
-            if owslib.__version__ > "0.17.0":
+            try:
                 # Get the description for all processes in one request.
                 ps = self._wps.describeprocess("all", xml=xml)
                 return OrderedDict((p.identifier, p) for p in ps)
-            else:
+
+            except (ServiceException, ValueError):
                 processes = all_wps_processes
 
         # Check for invalid process names, i.e. not matching the getCapabilities response.
