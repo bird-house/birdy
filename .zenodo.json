@@ -1,0 +1,33 @@
+{
+    "creators": [
+       {
+            "name": "Carsten Ehbrecht",
+            "affiliation": "DKRZ"
+        },
+        {
+            "name": "David Huard",
+            "affiliation": "Ouranos",
+            "orcid": "0000-0003-0311-5498"
+        },
+        {
+            "name": "Trevor James Smith",
+            "affiliation": "Ouranos",
+            "orcid": "0000-0001-5393-8359"
+        },
+        {
+            "name": "Francis Pelletier",
+            "affiliation": "CRIM"
+        },
+        {
+            "name": "David Caron"
+        }
+    ],
+
+    "license": "Apache-2.0",
+  
+    "keywords": ["OGC", "WPS"],
+
+    "communities": [
+        {"identifier": "birdhouse"}
+    ]
+}
