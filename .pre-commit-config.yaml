@@ -18,36 +18,39 @@ repos:
   rev: 0.6.1
   hooks:
   - id: nbstripout
-    files: ".ipynb"
+    files: '.ipynb'
 - repo: https://github.com/psf/black
   rev: 23.9.1
   hooks:
   - id: black
-    args: [ "--target-version=py37" ]
+    args: [ '--target-version=py37' ]
 - repo: https://github.com/pycqa/flake8
   rev: 6.1.0
   hooks:
   - id: flake8
-    args: [ "--config=setup.cfg" ]
+    args: [ '--config=setup.cfg' ]
 - repo: https://github.com/PyCQA/isort
   rev: 5.12.0
   hooks:
   - id: isort
-    args: [ "--profile=black" ]
+    args: [ '--profile=black' ]
 - repo: https://github.com/nbQA-dev/nbQA
   rev: 1.7.0
   hooks:
   - id: nbqa-black
-    args: [ "--target-version=py37" ]
+    args: [ '--target-version=py37' ]
+    additional_dependencies: [ 'black==23.9.1' ]
   - id: nbqa-pyupgrade
-    args: [ "--py37-plus" ]
+    args: [ '--py37-plus' ]
+    additional_dependencies: [ 'pyupgrade==v3.14.0' ]
   - id: nbqa-isort
-    args: [ "--profile=black" ]
+    args: [ '--profile=black' ]
+    additional_dependencies: [ 'isort==5.12.0' ]
 - repo: https://github.com/pycqa/pydocstyle
   rev: 6.3.0
   hooks:
   - id: pydocstyle
-    args: [ "--convention=numpy" ]
+    args: [ '--convention=numpy' ]
 - repo: https://github.com/asottile/pyupgrade
   rev: v3.14.0
   hooks:
