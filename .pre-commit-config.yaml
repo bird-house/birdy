@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.8.0
+  rev: v3.14.0
   hooks:
   - id: pyupgrade
     args: ['--py37-plus']
@@ -20,12 +20,12 @@ repos:
   - id: nbstripout
     files: ".ipynb"
 - repo: https://github.com/psf/black
-  rev: 23.3.0
+  rev: 23.9.1
   hooks:
   - id: black
     args: [ "--target-version=py37" ]
 - repo: https://github.com/pycqa/flake8
-  rev: 6.0.0
+  rev: 6.1.0
   hooks:
   - id: flake8
     args: [ "--config=setup.cfg" ]
@@ -49,7 +49,7 @@ repos:
   - id: pydocstyle
     args: [ "--convention=numpy" ]
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.8.0
+  rev: v3.14.0
   hooks:
   - id: pyupgrade
 - repo: meta
