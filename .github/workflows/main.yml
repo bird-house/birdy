@@ -1,4 +1,4 @@
-name: build ⚙️
+name: Build Tests ⚙️
 
 on:
   push:
@@ -7,14 +7,35 @@ on:
   pull_request:
 
 jobs:
-  build:
-
+  black:
+    name: Black (Python${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version:
+          - "3.9"
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - name: Set up Python${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install black
+        run: |
+          pip install black
+      - name: Check formatting with black ⚙️
+        run: |
+          black --check --target-version py37 birdy tests
+
+  build:
+    name: Testing with Python${{ matrix.python-version }}
+    needs: black
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+    steps:
+    - uses: actions/checkout@v4
     - name: Install packages
       run: |
         sudo apt-get -y install pandoc
@@ -29,13 +50,12 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
     - name: Test with pytest ⚙️
-      run: make test
+      run: |
+        make test
     - name: Lint with flake8 ⚙️
-      run: make lint
-      if: matrix.python-version == 3.9
-    - name: Check formatting with black ⚙️
-      run: black --check --target-version py39 birdy tests
-      if: matrix.python-version == 3.9
+      run: |
+        make lint
     - name: Build docs 🏗️
-      run: make docs
       if: matrix.python-version == 3.9
+      run: |
+        make docs
