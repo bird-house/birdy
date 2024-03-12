@@ -7,6 +7,7 @@ import tempfile
 import pytest
 
 from birdy.client import converters
+
 from .common import resource_file
 
 
@@ -103,4 +104,3 @@ def test_raster_tif():
 
     ds = converters.convert(fn, path="/tmp")
     assert "band_data" in ds.variables
-

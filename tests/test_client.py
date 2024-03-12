@@ -21,6 +21,7 @@ from .common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
 # 52 north WPS
 url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501
 
+
 @pytest.fixture(scope="module")
 def wps():  # noqa: D103
     return WPSClient(url=URL_EMU)
@@ -70,7 +71,6 @@ def test_52north_offline():
 def test_flyingpigeon_offline():  # noqa: D103
     WPSClient(
         "https://test.org",
-
         caps_xml=open(resource_file("wps_fly_caps.xml"), "rb").read(),
         desc_xml=open(resource_file("wps_fly_desc.xml"), "rb").read(),
     )
