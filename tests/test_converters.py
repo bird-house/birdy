@@ -7,6 +7,7 @@ import tempfile
 import pytest
 
 from birdy.client import converters
+from .common import resource_file
 
 
 def test_all_subclasses():  # noqa: D103
@@ -94,3 +95,12 @@ def test_jpeg_imageconverter():  # noqa: D103
 
     b = converters.convert(fn, path="/tmp")
     assert isinstance(b, bytes)
+
+
+def test_raster_tif():
+    # Note: Since the format is not supported, bytes will be returned
+    fn = resource_file("Olympus.tif")
+
+    ds = converters.convert(fn, path="/tmp")
+    assert "band_data" in ds.variables
+

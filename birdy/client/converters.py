@@ -250,7 +250,6 @@ class ImageConverter(BaseConverter):  # noqa: D101
         return IPython.display.Image(self.url)
 
 
-# TODO: Add test for this.
 class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
     mimetypes = ["image/tiff; subtype=geotiff"]
     extensions = ["tiff", "tif"]
@@ -263,22 +262,7 @@ class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
         import xarray  # isort: skip
         import rioxarray  # noqa
 
-        return xarray.open_rasterio(self.file)
-
-
-# TODO: Add test for this.
-class GeotiffRasterioConverter(BaseConverter):  # noqa: D101
-    mimetypes = ["image/tiff; subtype=geotiff"]
-    extensions = ["tiff", "tif"]
-    priority = 2
-
-    def check_dependencies(self):  # noqa: D102
-        self._check_import("rasterio")
-
-    def convert(self):  # noqa: D102
-        import rasterio  # isort: skip
-
-        return rasterio.open(self.file).read()
+        return xarray.open_dataset(self.file, engine="rasterio")
 
 
 # TODO: Add test for this.

@@ -5,5 +5,5 @@ ipython
 ipywidgets
 netCDF4
 pymetalink
-rasterio
+xarray>=v2023.04
 rioxarray
