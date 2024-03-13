@@ -162,6 +162,11 @@ def test_wps_client_multiple_outputs(wps):  # noqa: D103
     assert len(files) == 2
     assert len(files4) == 2
 
+    # As augmented outputs
+    [files, files4] = resp.load()
+    len(files.load()) == 2
+    len(files4.load()) == 2
+
 
 @pytest.mark.online
 def test_process_subset_only_one():  # noqa: D103

@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Sequence, Union
 
 from owslib.wps import Output
+from functools import partial
+from boltons.funcutils import update_wrapper
 
 from birdy.utils import is_opendap_url
 
@@ -24,7 +26,7 @@ class BaseConverter:  # noqa: D101
 
         Parameters
         ----------
-        output: owslib.wps.Output
+        output: owslib.wps.Output | Path | str
           Output object to be converted.
         """
         self.path = path or tempfile.mkdtemp()
@@ -39,6 +41,9 @@ class BaseConverter:  # noqa: D101
             self._file = Path(output)
         else:
             raise NotImplementedError
+
+        # Create load method for converter
+        self.load = self._load_func()
 
     @property
     def file(self):
@@ -79,9 +84,17 @@ class BaseConverter:  # noqa: D101
         """To be subclassed."""
         raise NotImplementedError
 
+    def _load_func(self):
+        """Return function that can open file."""
+        raise NotImplementedError
+
 
 class GenericConverter(BaseConverter):  # noqa: D101
     priority = 0
+
+    def _load_func(self):
+        """Return function that can open file."""
+        return lambda self: self.data
 
     def convert(self):
         """Return raw bytes memory representation."""
@@ -92,6 +105,9 @@ class TextConverter(BaseConverter):  # noqa: D101
     mimetypes = ["text/plain"]
     extensions = ["txt", "csv", "md", "rst"]
     priority = 1
+
+    def _load_func(self):
+        return self.file.read_text
 
     def convert(self):
         """Return text content."""
@@ -119,6 +135,12 @@ class JSONConverter(BaseConverter):  # noqa: D101
     extensions = ["json"]
     priority = 1
 
+    def _load_func(self):
+        import json
+
+        func = json.loads
+        return update_wrapper(partial(func, s=self.data), func, injected=["s"])
+
     def convert(self):  # noqa: D102
         import json
 
@@ -133,6 +155,13 @@ class GeoJSONConverter(BaseConverter):  # noqa: D101
 
     def check_dependencies(self):  # noqa: D102
         self._check_import("geojson")
+
+    def _load_func(self):
+        import geojson
+
+        func = geojson.loads
+        return update_wrapper(partial(func, s=self.data), func, injected=["s"])
+
 
     def convert(self):  # noqa: D102
         import geojson
@@ -152,6 +181,14 @@ class MetalinkConverter(BaseConverter):  # noqa: D101
 
     def check_dependencies(self):  # noqa: D102
         self._check_import("metalink.download")
+
+    def _load_func(self):
+        from metalink import download as md
+
+        func = md.get
+        return update_wrapper(partial(func, src=self.url, path=self.path, segmented=False),
+                              func,
+                              injected=["src", "path", "segmented"])
 
     def convert(self):  # noqa: D102
         from metalink import download as md
@@ -173,6 +210,13 @@ class Netcdf4Converter(BaseConverter):  # noqa: D101
         if version < StrictVersion("4.5"):
             raise ImportError("netCDF4 library must be at least version 4.5")
 
+    def _load_func(self):
+        import netCDF4
+
+        link = self.url if is_opendap_url(self.url) else self.file
+        func = netCDF4.Dataset.__call__
+        return update_wrapper(partial(func, filename=link), func, injected=["filename"])
+
     def convert(self):  # noqa: D102
         import netCDF4
 
@@ -192,6 +236,13 @@ class XarrayConverter(BaseConverter):  # noqa: D101
     def check_dependencies(self):  # noqa: D102
         Netcdf4Converter.check_dependencies(self)
         self._check_import("xarray")
+
+    def _load_func(self):
+        import xarray as xr
+
+        link = self.url if is_opendap_url(self.url) else self.file
+        func = xr.open_dataset
+        return update_wrapper(partial(func, filename_or_obj=link), func, injected=["filename_or_obj"])
 
     def convert(self):  # noqa: D102
         import xarray as xr
@@ -213,11 +264,18 @@ class ShpFionaConverter(BaseConverter):  # noqa: D101
         ShpOgrConverter.check_dependencies(self)
         self._check_import("fiona")
 
+    def _load_func(self):
+        import io  # isort: skip
+        import fiona  # isort: skip
+
+        func = fiona.open
+        return update_wrapper(partial(func, fp=self.file), func, injected=["fp"])
+
     def convert(self):  # noqa: D102
         import io  # isort: skip
         import fiona  # isort: skip
 
-        return lambda x: fiona.open(io.BytesIO(x))
+        return fiona.open(fp=self.file)
 
 
 # TODO: Add test for this.
@@ -229,10 +287,15 @@ class ShpOgrConverter(BaseConverter):  # noqa: D101
     def check_dependencies(self):  # noqa: D102
         self._check_import("ogr", package="osgeo")
 
+    def _load_func(self):
+        from osgeo import ogr
+        func = ogr.Open
+        return update_wrapper(partial(func, utf8_path=self.file), func, injected=["utf8_path"])
+
     def convert(self):  # noqa: D102
         from osgeo import ogr
 
-        return ogr.Open
+        return ogr.Open(self.file)
 
 
 # TODO: Add test for this. Probably can be applied to jpeg/jpg/gif but needs notebook testing
@@ -243,6 +306,11 @@ class ImageConverter(BaseConverter):  # noqa: D101
 
     def check_dependencies(self):  # noqa: D102
         return nb.is_notebook()
+
+    def _load_func(self):
+        from birdy.dependencies import IPython
+        func = IPython.display.Image
+        return update_wrapper(partial(func, data=self.url), func, injected=["data"])
 
     def convert(self):  # noqa: D102
         from birdy.dependencies import IPython
@@ -258,6 +326,13 @@ class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
 
     def check_dependencies(self):  # noqa: D102
         self._check_import("rioxarray")
+
+    def _load_func(self):
+        import xarray  # isort: skip
+        import rioxarray  # noqa
+
+        func = xarray.open_rasterio
+        return update_wrapper(partial(func, filename=self.file), injected=["filename"])
 
     def convert(self):  # noqa: D102
         import xarray  # isort: skip
@@ -275,6 +350,12 @@ class GeotiffRasterioConverter(BaseConverter):  # noqa: D101
     def check_dependencies(self):  # noqa: D102
         self._check_import("rasterio")
 
+    def _load_func(self):
+        import rasterio  # isort: skip
+
+        ds = rasterio.open(self.file)
+        return ds.read
+
     def convert(self):  # noqa: D102
         import rasterio  # isort: skip
 
@@ -290,11 +371,16 @@ class GeotiffGdalConverter(BaseConverter):  # noqa: D101
     def check_dependencies(self):  # noqa: D102
         self._check_import("gdal", package="osgeo")
 
-    def convert(self):  # noqa: D102
-        import io  # isort: skip
+    def _load_func(self):
         from osgeo import gdal  # isort: skip
 
-        return lambda x: gdal.Open(io.BytesIO(x))
+        func = gdal.Open
+        return update_wrapper(partial(func, utf8_path=self.file), func, injected=["utf8_path"])
+
+    def convert(self):  # noqa: D102
+        from osgeo import gdal  # isort: skip
+
+        return lambda x: gdal.Open(self.file)
 
 
 class ZipConverter(BaseConverter):  # noqa: D101
@@ -303,7 +389,11 @@ class ZipConverter(BaseConverter):  # noqa: D101
     nested = True
     priority = 1
 
+    def _load_func(self):
+        return self.convert
+
     def convert(self):  # noqa: D102
+        """Return list of files in archive."""
         import zipfile
 
         with zipfile.ZipFile(self.file) as z:
@@ -314,6 +404,7 @@ class ZipConverter(BaseConverter):  # noqa: D101
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority."""
     select = [GenericConverter]
+
     for obj in converters:
         if (mimetype in obj.mimetypes) or (extension in obj.extensions):
             select.append(obj)
@@ -322,8 +413,13 @@ def _find_converter(mimetype=None, extension=None, converters=()):
     return select
 
 
-def find_converter(obj, converters):
+def find_converter(obj, converters=None):
     """Find converters for a WPS output or a file on disk."""
+
+    # Get all converters
+    if converters is None:
+        converters = all_subclasses(BaseConverter)
+
     if isinstance(obj, Output):
         mimetype = obj.mimeType
         extension = Path(obj.fileName or "").suffix[1:]
@@ -360,15 +456,13 @@ def convert(
     objs
       Python object or file's content as bytes.
     """
-    # Get all converters
-    if converters is None:
-        converters = all_subclasses(BaseConverter)
 
-    # Find converters matching mime type or extension.
+     # Find converters matching mime type or extension.
     convs = find_converter(output, converters)
 
     # Try converters in order of priority
     for cls in convs:
+        print(cls)
         try:
             converter = cls(output, path=path, verify=verify)
             out = converter.convert()
