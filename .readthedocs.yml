@@ -12,7 +12,7 @@ sphinx:
 formats: all
 
 python:
-    version: 3.6
+    version: 3.9
 
 conda:
     environment: environment-docs.yml
