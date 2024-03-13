@@ -8,7 +8,6 @@ version: 2
 sphinx:
     configuration: docs/source/conf.py
 
-
 build:
   os: ubuntu-22.04
   tools:
@@ -16,9 +15,6 @@ build:
 
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: all
-
-python:
-    version: "3.9"
 
 conda:
     environment: environment-docs.yml
