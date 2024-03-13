@@ -25,7 +25,7 @@ jobs:
           pip install black
       - name: Check formatting with black ⚙️
         run: |
-          black --check --target-version py37 birdy tests
+          black --check --target-version py39 birdy tests
 
   build:
     name: Testing with Python${{ matrix.python-version }}
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
     - uses: actions/checkout@v4
     - name: Install packages
