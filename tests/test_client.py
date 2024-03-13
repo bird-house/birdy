@@ -20,8 +20,6 @@ from .common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
 
 # 52 north WPS
 url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501
-# flyingpigeon WPS at Ouranos
-url_fly = "https://pavics.ouranos.ca/twitcher/ows/proxy/flyingpigeon/wps"
 
 
 @pytest.fixture(scope="module")
@@ -70,14 +68,9 @@ def test_52north_offline():
     )
 
 
-@pytest.mark.online
-def test_flyingpigeon():  # noqa: D103
-    WPSClient(url_fly)
-
-
 def test_flyingpigeon_offline():  # noqa: D103
     WPSClient(
-        url_fly,
+        "https://test.org",
         caps_xml=open(resource_file("wps_fly_caps.xml"), "rb").read(),
         desc_xml=open(resource_file("wps_fly_desc.xml"), "rb").read(),
     )
@@ -308,13 +301,17 @@ def test_xarray_converter(wps):  # noqa: D103
 
 @pytest.mark.online
 def test_geojson_geotiff_converters(wps):  # noqa: D103
-    pytest.importorskip("rasterio")
+    pytest.importorskip("rioxarray")
+    pytest.importorskip("xarray")
+    pytest.importorskip("geojson")
+
+    import xarray as xr
 
     result = wps.geodata()
     raster, vector = result.get(asobj=True)
 
     assert isinstance(vector, dict)
-    assert hasattr(raster, "shape")
+    assert isinstance(raster, xr.Dataset)
 
     # Checking input validation
     shape = {

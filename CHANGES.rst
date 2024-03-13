@@ -1,6 +1,15 @@
 Change History
 **************
 
+0.8.5 (unreleased)
+==================
+
+Changes:
+
+* Update how TIFF files are converted to xarray datasets because `open_rasterio` is deprecated. See issue `239`.
+* Remove `GeotiffRasterioConverter`
+
+
 0.8.4 (2023-05-24)
 ==================
 

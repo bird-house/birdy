@@ -49,6 +49,7 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+        if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
     - name: Test with pytest ⚙️
       run: |
         make test
