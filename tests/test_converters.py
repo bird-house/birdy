@@ -98,7 +98,7 @@ def test_jpeg_imageconverter():  # noqa: D103
 
 
 def test_raster_tif():
-    # Note: Since the format is not supported, bytes will be returned
+    pytest.importorskip("rioxarray")
     fn = resource_file("Olympus.tif")
 
     ds = converters.convert(fn, path="/tmp")
