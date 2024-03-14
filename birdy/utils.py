@@ -44,12 +44,11 @@ def is_url(url):
 
 
 def is_opendap_url(url):
-    """
-    Check if a provided url is an OpenDAP url.
+    """Check if a provided url is an OpenDAP url.
 
     The DAP Standard specifies that a specific tag must be included in the
     Content-Description header of every request. This tag is one of:
-        "dods-dds" | "dods-das" | "dods-data" | "dods-error"
+    "dods-dds" | "dods-das" | "dods-data" | "dods-error"
 
     So we can check if the header starts with `dods`.
 

@@ -38,6 +38,11 @@ clean-build: ## remove build artifacts
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
+clean-docs: ## remove docs artifacts
+	rm -f docs/apidoc/birdy*.rst
+	rm -f docs/apidoc/modules.rst
+	$(MAKE) -C docs clean
+
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
@@ -72,8 +77,11 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	$(MAKE) -C docs clean
+autodoc: clean-docs ## create sphinx-apidoc files
+	mkdir -p docs/source/apidoc/
+	sphinx-apidoc -o docs/source/apidoc/ --private --module-first birdy
+
+docs: autodoc ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
 
 servedocs: docs ## compile the docs watching for changes

@@ -65,6 +65,7 @@ docs/make.bat
 docs/doctrees/
 docs/html/
 docs/build/
+docs/source/apidoc
 
 # External Sources
 #src/external
