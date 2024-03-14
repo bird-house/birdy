@@ -1,14 +1,14 @@
 Change History
 **************
 
-0.8.5 (unreleased)
+0.8.5 (2024-03-13)
 ==================
 
 Changes:
 
 * Update how TIFF files are converted to xarray datasets because `open_rasterio` is deprecated. See issue `239`.
 * Remove `GeotiffRasterioConverter`
-
+* Remove Python 3.7 and 3.8 from CI test suite
 
 0.8.4 (2023-05-24)
 ==================
