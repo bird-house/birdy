@@ -6,8 +6,11 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  black:
+  lint:
     name: Black (Python${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
@@ -20,43 +23,64 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install black
+      - name: Install flake8 and black
         run: |
-          pip install black
-      - name: Check formatting with black ⚙️
+          python -m pip install flake8 black
+      - name: Check formatting with flake8 and black ⚙️
         run: |
-          black --check --target-version py39 birdy tests
+          make lint
+
+  docs:
+    name: Build docs 🏗️
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pandoc
+        run: |
+          sudo apt-get -y install pandoc
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install requirements 📦
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+          if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
+      - name: Build docs 🏗️
+        run: |
+          make docs
 
   build:
     name: Testing with Python${{ matrix.python-version }}
-    needs: black
+    needs:
+     - lint
+     - docs
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
     steps:
-    - uses: actions/checkout@v4
-    - name: Install packages
-      run: |
-        sudo apt-get -y install pandoc
-      if: matrix.python-version == 3.9
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install requirements 📦
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-        if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
-    - name: Test with pytest ⚙️
-      run: |
-        make test
-    - name: Lint with flake8 ⚙️
-      run: |
-        make lint
-    - name: Build docs 🏗️
-      if: matrix.python-version == 3.9
-      run: |
-        make docs
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install requirements 📦
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+          if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
+      - name: Test with pytest ⚙️
+        run: |
+          make test
