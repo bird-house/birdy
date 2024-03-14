@@ -1,10 +1,11 @@
 # noqa: D100
 
 import tempfile
+from collections.abc import Sequence
 from distutils.version import StrictVersion
 from importlib import import_module
 from pathlib import Path
-from typing import Sequence, Union
+from typing import Union
 
 from owslib.wps import Output
 

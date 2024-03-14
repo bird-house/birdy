@@ -5,11 +5,21 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: read
+
 jobs:
   build-n-publish-testpypi:
     name: Build and publish Python 🐍 distributions 📦 to TestPyPI
     runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      id-token: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
       - uses: actions/checkout@v3
       - name: Set up Python3
         uses: actions/setup-python@v4
@@ -24,7 +34,5 @@ jobs:
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
-          skip_existing: true
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true

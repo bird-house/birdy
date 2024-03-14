@@ -13,6 +13,7 @@ dependencies:
   - lxml
   - owslib>=0.19
   - packaging
+  - pyopenssl
   - wrapt
   # optional
   - netcdf4
