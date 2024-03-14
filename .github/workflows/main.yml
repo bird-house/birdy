@@ -60,7 +60,6 @@ jobs:
     name: Testing with Python${{ matrix.python-version }}
     needs:
      - lint
-     - docs
     runs-on: ubuntu-latest
     strategy:
       matrix:
