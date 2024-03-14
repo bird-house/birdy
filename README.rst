@@ -2,7 +2,7 @@
 Birdy
 =====
 
-|PyPI| |Docs| |Build| |Codacy| |License| |Gitter|
+|PyPI| |Docs| |Build| |License| |Gitter|
 
 Birdy (the bird)
    *Birdy is not a bird but likes to play with them.*
@@ -31,13 +31,9 @@ Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDoc
         :target: http://birdy.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. |Build| image:: https://github.com/bird-house/birdy/workflows/build/badge.svg
-        :target: https://github.com/bird-house/birdy/actions
+.. |Build| image:: https://github.com/bird-house/birdy/actions/workflows/main.yml/badge.svg
+        :target: https://github.com/bird-house/birdy/actions/workflows/main.yml
         :alt: Build Status
-
-.. |Codacy| image:: https://api.codacy.com/project/badge/Grade/da14405a9a6d4c2e9c405d9c0c8babe7
-        :target: https://www.codacy.com/app/cehbrecht/birdy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bird-house/birdy&amp;utm_campaign=Badge_Grade
-        :alt: Codacy Code Checks
 
 .. |License| image:: https://img.shields.io/github/license/bird-house/birdy.svg
         :target: https://github.com/bird-house/birdy/blob/master/LICENSE.txt
