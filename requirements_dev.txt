@@ -7,7 +7,6 @@ ipykernel
 nbconvert
 nbsphinx >=0.7.0
 nbval >=0.9.6
-pandoc
 pip >=23.3.0
 pre-commit>=3.6.2
 pytest-runner>=4.2
