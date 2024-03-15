@@ -1,12 +1,11 @@
-# noqa
+# noqa: D100
 
 from pathlib import Path
 
 import pytest
+from common import resource_file
 
 from birdy import utils
-
-from .common import resource_file
 
 
 def test_is_url():  # noqa: D103
