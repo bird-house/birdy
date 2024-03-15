@@ -54,7 +54,7 @@ jobs:
           if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
       - name: Install Birdy 🐦
         run: |
-          python pip install --editable .
+          python -m pip install --editable .
       - name: Check dependencies
         run: |
           python -m pip list
@@ -89,7 +89,7 @@ jobs:
           if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
       - name: Install Birdy 🐦
         run: |
-          python pip install --editable .
+          python -m pip install --editable .
       - name: Check dependencies
         run: |
           python -m pip list
