@@ -33,6 +33,7 @@ long_description = (
 
 requirements = parse_reqs("requirements.txt")
 dev_requirements = parse_reqs("requirements_dev.txt")
+extra_requirements = parse_reqs("requirements_extra.txt")
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -71,6 +72,7 @@ setup(
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,  # pip install ".[dev]"
+        "extra": extra_requirements,  # pip install ".[extra]"
     },
     entry_points={"console_scripts": ["birdy=birdy.cli.run:cli"]},
     zip_safe=False,
