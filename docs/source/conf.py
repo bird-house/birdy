@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = "1.8"
+needs_sphinx = "7.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -108,11 +108,11 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
     ".DS_Store",
-    "owslib-esgfwps.ipynb",
     # Undocumented notebooks
-    "rook-demo.ipynb",
-    "twitcher-c3s-magic-demo.ipynb",
-    "twitcher-magic-cexp-demo.ipynb",
+    "notebooks/examples/owslib-esgfwps.ipynb",
+    "notebooks/examples/rook-demo.ipynb",
+    "notebooks/examples/twitcher-c3s-magic-demo.ipynb",
+    "notebooks/examples/twitcher-magic-cexp-demo.ipynb",
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
