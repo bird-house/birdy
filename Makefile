@@ -39,8 +39,8 @@ clean-build: ## remove build artifacts
 	find . -name '*.egg' -exec rm -f {} +
 
 clean-docs: ## remove docs artifacts
-	rm -f docs/apidoc/birdy*.rst
-	rm -f docs/apidoc/modules.rst
+	rm -f docs/source/apidoc/birdy*.rst
+	rm -f docs/source/apidoc/modules.rst
 	$(MAKE) -C docs clean
 
 clean-pyc: ## remove Python file artifacts
@@ -79,7 +79,7 @@ coverage: ## check code coverage quickly with the default Python
 
 autodoc: clean-docs ## create sphinx-apidoc files
 	mkdir -p docs/source/apidoc/
-	sphinx-apidoc -o docs/source/apidoc/ --private --module-first birdy
+	sphinx-apidoc -o docs/source/apidoc/ --private --module-first --separate birdy
 
 docs: autodoc ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
