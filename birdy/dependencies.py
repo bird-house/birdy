@@ -1,9 +1,13 @@
+# noqa: D205,D400
 """
+Dependencies Module
+===================
+
 Module for managing optional dependencies.
 
 Example usage::
 
-    from birdy.dependencies import ipywidgets as widgets
+    >>> from birdy.dependencies import ipywidgets as widgets
 """
 
 import warnings
