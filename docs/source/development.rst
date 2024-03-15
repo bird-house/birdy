@@ -9,19 +9,19 @@ Get Started!
 
 Check out code from the birdy GitHub repo and start the installation::
 
-   $ git clone https://github.com/bird-house/birdy.git
-   $ cd birdy
-   $ conda env create -f environment.yml
-   $ pip install --editable .
+    $ git clone https://github.com/bird-house/birdy.git
+    $ cd birdy
+    $ conda env create -f environment.yml
+    $ pip install --editable .
 
 Install additional dependencies::
 
-  $ pip install -r requirements_dev.txt
+    $ pip install -r requirements_dev.txt
 
 When you're done making changes, check that your changes pass `black`, `flake8` and the tests::
 
-    $ black birdy tests
     $ flake8 birdy tests
+    $ black --check --target-version py39 birdy tests
     $ pytest -v tests
 
 Or use the Makefile::
@@ -46,7 +46,7 @@ Write Documentation
 You can find the documentation in the `docs/source` folder. To generate the Sphinx
 documentation locally you can use the `Makefile`::
 
-  $ make docs
+    $ make docs
 
 Bump a new version
 ===================
@@ -63,6 +63,19 @@ Make a new version of Birdy in the following steps:
 See the bumpversion_ documentation for details.
 
 .. _bumpversion: https://pypi.org/project/bumpversion/
+
+Build a source distribution and wheel
+=====================================
+
+To build a source distribution (`.sdist`) and wheel (`.whl`) locally, run the following command::
+
+    $ python -m build
+
+This will create a `dist` folder with the source distribution and wheel.
+
+See the `build`_ documentation for details.
+
+.. _build: https://build.pypa.io/en/latest/
 
 Release a new version
 =====================
