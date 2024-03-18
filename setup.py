@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, setup
 
 
 def parse_reqs(file):
@@ -33,6 +33,7 @@ long_description = (
 
 requirements = parse_reqs("requirements.txt")
 dev_requirements = parse_reqs("requirements_dev.txt")
+extra_requirements = parse_reqs("requirements_extra.txt")
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -62,12 +63,17 @@ setup(
     license="Apache License v2.0",
     # This qualifier can be used to selectively exclude Python versions -
     # in this case early Python 2 and 3 releases
-    python_requires=">=3.6.0",
-    packages=find_packages(),
+    python_requires=">=3.9.0",
+    packages=find_namespace_packages(exclude=["docs", "docs.*", "tests", "tests.*"]),
     include_package_data=True,
+    package_data={
+        "birdy": ["ipyleafletwps/examples/*.ipynb"],
+    },
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,  # pip install ".[dev]"
+        "extra": extra_requirements,  # pip install ".[extra]"
     },
     entry_points={"console_scripts": ["birdy=birdy.cli.run:cli"]},
+    zip_safe=False,
 )

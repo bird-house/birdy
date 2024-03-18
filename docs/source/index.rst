@@ -8,3 +8,8 @@
    development
    api
    changes
+
+.. toctree::
+   :maxdepth: 3
+
+   apidoc/modules

@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = "1.8"
+needs_sphinx = "7.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -32,12 +32,20 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx_codeautolink",
+    "sphinx_copybutton",
 ]
 
 autoapi_type = "python"
 autoapi_dirs = ["../../birdy"]
 autoapi_file_pattern = "*.py"
 autoapi_options = ["members", "undoc-members", "private-members"]
+
+autosectionlabel_prefix_document = True
+autosectionlabel_maxdepth = 2
 
 # To avoid having to install these and burst memory limit on ReadTheDocs.
 autodoc_mock_imports = [
@@ -86,7 +94,7 @@ release = "0.8.5"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -96,7 +104,16 @@ language = None
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    # Undocumented notebooks
+    "notebooks/examples/owslib-esgfwps.ipynb",
+    "notebooks/examples/rook-demo.ipynb",
+    "notebooks/examples/twitcher-c3s-magic-demo.ipynb",
+    "notebooks/examples/twitcher-magic-cexp-demo.ipynb",
+]
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.

@@ -2,10 +2,9 @@
 
 import pytest
 from click.testing import CliRunner
+from common import EMU_CAPS_XML, URL_EMU
 
 import birdy.cli.run
-
-from .common import EMU_CAPS_XML, URL_EMU
 
 cli = birdy.cli.run.cli
 cli.url = URL_EMU

@@ -7,16 +7,12 @@ from unittest import mock
 
 import owslib.wps
 import pytest
+from common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
 
 from birdy import WPSClient
 from birdy.client import nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
-
-from .common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
-
-# from owslib import crs
-
 
 # 52 north WPS
 url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501

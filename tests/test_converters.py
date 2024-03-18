@@ -5,10 +5,9 @@ import os
 import tempfile
 
 import pytest
+from common import resource_file
 
 from birdy.client import converters
-
-from .common import resource_file
 
 
 def test_all_subclasses():  # noqa: D103

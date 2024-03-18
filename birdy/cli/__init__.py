@@ -1,4 +1,8 @@
+# noqa: D205, D400
 """
+Birdy CLI module
+================
+
 Birdy has a command line interface to interact with a Web Processing Service.
 
 Example

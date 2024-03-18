@@ -6,15 +6,18 @@
 version: 2
 
 sphinx:
-    configuration: docs/source/conf.py
+  configuration: docs/source/conf.py
 
 build:
   os: ubuntu-22.04
   tools:
     python: "mambaforge-22.9"
+  jobs:
+    pre_build:
+      - sphinx-apidoc -o docs/source/apidoc/ --private --module-first --separate birdy
 
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: all
 
 conda:
-    environment: environment-docs.yml
+  environment: environment-docs.yml

@@ -6,4 +6,6 @@ channels:
 dependencies:
   - ipython
   - nbsphinx
-  - sphinx
+  - sphinx >=7.0.0
+  - sphinx-codeautolink >=0.15.0
+  - sphinx-copybutton >=0.5.2
