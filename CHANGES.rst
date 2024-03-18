@@ -1,6 +1,21 @@
 Change History
 **************
 
+v0.8.6 (2024-xx-xx)
+===================
+
+Changes:
+
+* Restructure the package so that the wheel does not install the testing and docs as non-importable packages.
+* Ensure that data required to run tests and build docs is present in the source distribution (via `Manifest.in` changes).
+* Documentation now includes a `sphinx-apidoc`-based listing of all installed modules and functions
+* Add `sphinx-copybutton` and `sphinx-codeautolink` in order to increase the usefulness of code-blocks in the example documentation (copying of code blocks and ability to click on `birdy` objects and go straight to the documentation entry for the object).
+* All documentation build warnings have been addressed.
+* Add the `birdy[extra]` pip install recipe to be able to install all extras needed more directly.
+* Raise the minimum Python required to 3.9 in the setup block.
+* Remove the Python package for `pandoc` (unmaintained).
+* Add a documentation entry on using `build` to build the documentation.
+
 0.8.5 (2024-03-14)
 ==================
 
