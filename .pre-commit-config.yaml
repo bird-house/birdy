@@ -20,10 +20,10 @@ repos:
       - id: nbstripout
         files: '.ipynb'
   - repo: https://github.com/psf/black
-    rev: 24.3.0
+    rev: 24.4.0
     hooks:
       - id: black
-        args: [ '--target-version=py37' ]
+        args: [ '--target-version=py39' ]
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
@@ -39,10 +39,10 @@ repos:
     hooks:
       - id: nbqa-pyupgrade
         args: [ '--py39-plus' ]
-        additional_dependencies: [ 'pyupgrade==v3.15.1' ]
+        additional_dependencies: [ 'pyupgrade==v3.15.2' ]
       - id: nbqa-black
         args: [ '--target-version=py39' ]
-        additional_dependencies: [ 'black==24.2.0' ]
+        additional_dependencies: [ 'black==24.4.0' ]
       - id: nbqa-isort
         args: [ '--profile=black' ]
         additional_dependencies: [ 'isort==5.13.2' ]
