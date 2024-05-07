@@ -263,7 +263,7 @@ class GeotiffRioxarrayConverter(BaseConverter):  # noqa: D101
         import xarray  # isort: skip
         import rioxarray  # noqa
 
-        return xarray.open_dataset(self.file, engine="rasterio")
+        return xarray.open_dataarray(self.file, engine="rasterio")
 
 
 # TODO: Add test for this.
