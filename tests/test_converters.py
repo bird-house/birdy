@@ -5,6 +5,7 @@ import os
 import tempfile
 
 import pytest
+import xarray as xr
 from common import resource_file
 
 from birdy.client import converters
@@ -101,5 +102,5 @@ def test_raster_tif():
     pytest.importorskip("rioxarray")
     fn = resource_file("Olympus.tif")
 
-    ds = converters.convert(fn, path="/tmp")
-    assert "band_data" in ds.variables
+    da = converters.convert(fn, path="/tmp")
+    assert isinstance(da, xr.DataArray)

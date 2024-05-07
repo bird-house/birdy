@@ -1,6 +1,12 @@
 Change History
 **************
 
+v0.8.7 (unreleased)
+===================
+
+* Fix regression, where loading TIFF files would return a Dataset instead of a DataArray, the behavior prior to 0.8.5.
+
+
 v0.8.6 (2024-03-18)
 ===================
 
