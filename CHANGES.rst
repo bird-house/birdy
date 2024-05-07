@@ -1,10 +1,10 @@
 Change History
 **************
 
-v0.8.7 (unreleased)
+v0.8.7 (2024-05-07)
 ===================
 
-* Fix regression, where loading TIFF files would return a Dataset instead of a DataArray, the behavior prior to 0.8.5.
+* Fix regression, where loading TIFF files would return a Dataset instead of a DataArray, the behavior prior to 0.8.5. Loading a multi-band TIFF file will now return a DataArray with the bands as dimensions.
 
 
 v0.8.6 (2024-03-18)
