@@ -44,10 +44,10 @@ Full `documentation <http://birdy.readthedocs.org/en/latest/>`_ is on ReadTheDoc
         :alt: Join the chat at https://gitter.im/bird-house/birdhouse
 
 .. |Binder| image:: https://mybinder.org/badge_logo.svg
-        :target: https://mybinder.org/v2/gh/bird-house/birdy.git/v0.8.6?filepath=notebooks
+        :target: https://mybinder.org/v2/gh/bird-house/birdy.git/v0.8.7?filepath=notebooks
         :alt: Binder Launcher
 
 .. |NBViewer| image:: https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg
-        :target: https://nbviewer.jupyter.org/github/bird-house/birdy/tree/v0.8.6/notebooks/
+        :target: https://nbviewer.jupyter.org/github/bird-house/birdy/tree/v0.8.7/notebooks/
         :alt: NBViewer
         :height: 20
