@@ -108,11 +108,6 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
     ".DS_Store",
-    # Undocumented notebooks
-    "notebooks/examples/owslib-esgfwps.ipynb",
-    "notebooks/examples/rook-demo.ipynb",
-    "notebooks/examples/twitcher-c3s-magic-demo.ipynb",
-    "notebooks/examples/twitcher-magic-cexp-demo.ipynb",
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
