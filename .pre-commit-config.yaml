@@ -3,12 +3,12 @@ default_language_version:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [ '--py39-plus' ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -20,7 +20,7 @@ repos:
       - id: nbstripout
         files: '.ipynb'
   - repo: https://github.com/psf/black
-    rev: 24.4.0
+    rev: 24.4.2
     hooks:
       - id: black
         args: [ '--target-version=py39' ]
@@ -30,7 +30,7 @@ repos:
     - id: isort
       args: [ '--profile=black' ]
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
       - id: flake8
         args: [ '--config=setup.cfg' ]
@@ -52,7 +52,7 @@ repos:
       - id: pydocstyle
         args: [ '--convention=numpy' ]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
   - repo: meta
