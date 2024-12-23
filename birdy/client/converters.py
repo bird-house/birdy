@@ -2,12 +2,12 @@
 
 import tempfile
 from collections.abc import Sequence
-from distutils.version import StrictVersion
 from importlib import import_module
 from pathlib import Path
 from typing import Union
 
 from owslib.wps import Output
+from packaging.version import Version
 
 from birdy.utils import is_opendap_url
 
@@ -170,8 +170,8 @@ class Netcdf4Converter(BaseConverter):  # noqa: D101
         self._check_import("netCDF4")
         from netCDF4 import getlibversion
 
-        version = StrictVersion(getlibversion().split(" ")[0])
-        if version < StrictVersion("4.5"):
+        version = Version(getlibversion().split(" ")[0])
+        if version < Version("4.5"):
             raise ImportError("netCDF4 library must be at least version 4.5")
 
     def convert(self):  # noqa: D102
