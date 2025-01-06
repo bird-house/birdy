@@ -3,7 +3,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.19.1
     hooks:
       - id: pyupgrade
         args: [ '--py39-plus' ]
@@ -15,7 +15,7 @@ repos:
       - id: check-yaml
       - id: debug-statements
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.7.1
+    rev: 0.8.1
     hooks:
       - id: nbstripout
         files: '.ipynb'
@@ -35,7 +35,7 @@ repos:
       - id: flake8
         args: [ '--config=setup.cfg' ]
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.8.7
+    rev: 1.9.1
     hooks:
       - id: nbqa-pyupgrade
         args: [ '--py39-plus' ]
@@ -52,7 +52,7 @@ repos:
       - id: pydocstyle
         args: [ '--convention=numpy' ]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.19.1
     hooks:
       - id: pyupgrade
   - repo: meta
