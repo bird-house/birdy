@@ -14,6 +14,7 @@ dependencies:
   - pyopenssl >=23.0
   - python-dateutil >=2.8.1
   - requests >=2.24.0
+  - urllib3 >=2.0.2
   - wrapt >=1.14.0
   # extra
   - fiona >=1.9.0
