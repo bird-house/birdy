@@ -51,6 +51,10 @@ repos:
     hooks:
       - id: pydocstyle
         args: [ '--convention=numpy' ]
+  - repo: https://github.com/numpy/numpydoc
+    rev: v1.8.0
+    hooks:
+      - id: numpydoc-validation
   - repo: meta
     hooks:
       - id: check-hooks-apply
