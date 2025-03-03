@@ -1,11 +1,10 @@
-boltons
-click
-funcsigs
-jinja2
-lxml
-owslib>=0.19.2
-packaging
-python-dateutil>=2.8.1
-requests>=2.0
-wrapt
-pyOpenSSL
+boltons >=23.0
+click >=8.1.0
+jinja2 >=3.0.0
+lxml >=5.0.0
+owslib >=0.19.2
+packaging >=23.0
+pyOpenSSL >=23.0
+python-dateutil >=2.8.1
+requests >=2.24.0
+wrapt >=1.14.0

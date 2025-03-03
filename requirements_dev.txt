@@ -1,18 +1,18 @@
-black>=24.2.0
-build>=1.0.0
-bumpversion>=0.5.3
-coverage>=4.5.1
-flake8>=7.0
-ipykernel
-nbconvert
-nbsphinx >=0.7.0
+black >=24.2.0
+build >=1.0
+bump-my-version >=1.0.0
+coverage >=7.5.0
+flake8 >=7.0
+ipykernel >=6.25.0
+nbconvert >=7.3.0
+nbsphinx >=0.9.5
 nbval >=0.9.6
-pip >=23.3.0
-pre-commit>=3.6.2
-pytest-runner>=4.2
-pytest>=3.8.2
-sphinx-codeautolink>=0.15.0
-sphinx-copybutton>=0.5.2
-sphinx>=7.0.0
-twine>=4.0.0
-watchdog>=3.0.0
+pip >=23.3
+pre-commit >=3.6.2
+pytest >=8.0.0
+pytest-notebook >=0.6.0
+sphinx-codeautolink
+sphinx-copybutton
+sphinx >=7.0.0,<8.2.0
+twine >=4.0.0
+watchdog >=4.0.0
