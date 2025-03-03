@@ -72,7 +72,7 @@ def cli(ctx, cert, send, sync, token):
     Birdy is a command line client for Web Processing Services.
 
     Documentation is available on readthedocs:
-    http://birdy.readthedocs.org/en/latest/
+    https://birdy.readthedocs.org/en/latest/
     """
     ctx.obj = ctx.obj or dict()
     ctx.obj["verify"] = get_ssl_verify()

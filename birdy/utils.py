@@ -5,6 +5,7 @@ import collections
 import keyword
 import re
 from pathlib import Path
+from typing import Any, Optional, Union
 from urllib.parse import urlparse
 
 # These mimetypes will be encoded in base64 when embedded in requests.
@@ -27,12 +28,12 @@ XML_MIMETYPES = ["application/xml", "application/gml+xml", "text/xml"]
 DEFAULT_ENCODING = "utf-8"
 
 
-def fix_url(url):
+def fix_url(url: str) -> str:
     """If url is a local path, add a file:// scheme."""
     return urlparse(url, scheme="file").geturl()
 
 
-def is_url(url):
+def is_url(url: Optional[str]) -> bool:
     """Return whether value is a valid URL."""
     if url is None:
         return False
@@ -43,7 +44,7 @@ def is_url(url):
         return True
 
 
-def is_opendap_url(url):
+def is_opendap_url(url: str):
     """Check if a provided url is an OpenDAP url.
 
     The DAP Standard specifies that a specific tag must be included in the
@@ -70,22 +71,22 @@ def is_opendap_url(url):
         return False
 
 
-def is_file(path):
+def is_file(path: Optional[str]) -> bool:
     """Return True if `path` is a valid file."""
     if not path:
-        ok = False
+        return False
     elif isinstance(path, Path):
         p = path
     else:
         p = Path(path[:255])
     try:
         ok = p.is_file()
-    except Exception:
+    except (OSError, ValueError):
         ok = False
     return ok
 
 
-def sanitize(name):
+def sanitize(name: str):
     """Lower-case name and replace all non-ascii chars by `_`.
 
     If name is a Python keyword (like `return`) then add a trailing `_`.
@@ -96,7 +97,7 @@ def sanitize(name):
     return new_name
 
 
-def delist(data):
+def delist(data: Any):
     """If data is a sequence with a single element, returns this element, otherwise return the sequence."""
     if (
         isinstance(data, collections.abc.Iterable)
@@ -107,7 +108,7 @@ def delist(data):
     return data
 
 
-def embed(value, mimetype=None, encoding=None):
+def embed(value: Any, mimetype: Optional[str] = None, encoding: Optional[str] = None):
     """Return the content of the file, either as a string or base64 bytes.
 
     Returns
@@ -156,21 +157,24 @@ def _encode(content, mimetype, encoding):
         # return u'<![CDATA[{}]]>'.format(content)
 
 
-def guess_type(url, supported):
+def guess_type(
+    url: Union[str, Path], supported: Union[list[str], tuple[str]]
+) -> tuple[str, str]:
     """Guess the mime type of the file link.
 
     If the mimetype is not recognized, default to the first supported value.
 
     Parameters
     ----------
-    url : str, Path
-      Path or URL to file.
-    supported : list, tuple
-      Supported mimetypes.
+    url : str or Path
+        A path or URL to a file.
+    supported : list or tuple
+        Supported mimetypes.
 
     Returns
     -------
-    mimetype, encoding
+    (str, str)
+        mimetype, encoding
     """
     import mimetypes
 
@@ -201,7 +205,7 @@ def guess_type(url, supported):
         mime = "application/geo+json"
 
     # FIXME: Verify whether this code is needed. Remove if not.
-    # # GeoTIFF (workaround since this mimetype isn't correctly understoud)
+    # # GeoTIFF (workaround since this mimetype isn't correctly understood)
     # if mime == "image/tiff" and (".tif" in url or ".tiff" in "url"):
     #     mime = "image/tiff; subtype=geotiff"
     #

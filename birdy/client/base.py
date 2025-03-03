@@ -4,6 +4,7 @@ import logging
 import types
 from collections import OrderedDict
 from textwrap import dedent
+from typing import Callable
 from warnings import warn
 
 import owslib
@@ -17,7 +18,9 @@ from owslib.wps import (
     SYNC,
     WPS_DEFAULT_VERSION,
     ComplexData,
+    Input,
     WebProcessingService,
+    WPSExecution,
 )
 
 from birdy.client import notebook, utils
@@ -60,35 +63,35 @@ class WPSClient:
 
         Parameters
         ----------
-        url: str
-          Link to WPS provider. config (Config): an instance
-        processes:
-          Specify a subset of processes to bind. Defaults to all processes.
-        converters: dict
-          Correspondence of {mimetype: class} to convert this mimetype to a python object.
-        username: str
-          passed to :class:`owslib.wps.WebProcessingService`
-        password: str
-          passed to :class:`owslib.wps.WebProcessingService`
-        headers: str
-          passed to :class:`owslib.wps.WebProcessingService`
-        auth: requests.auth.AuthBase
-          requests-style auth class to authenticate.
-          see https://2.python-requests.org/en/master/user/authentication/
-        verify: bool
-          passed to :class:`owslib.wps.WebProcessingService`
-        cert: str
-          passed to :class:`owslib.wps.WebProcessingService`
+        url : str
+            Link to WPS provider. config (Config): an instance.
+        processes : any, optional
+            Specify a subset of processes to bind. Defaults to all processes.
+        converters : dict, optional
+            Correspondence of {mimetype: class} to convert this mimetype to a python object.
+        username : str, optional
+            Passed to :class:`owslib.wps.WebProcessingService`.
+        password : str, optional
+            Passed to :class:`owslib.wps.WebProcessingService`.
+        headers : str, optional
+            Passed to :class:`owslib.wps.WebProcessingService`.
+        auth : requests.auth.AuthBase
+            Requests-style auth class to authenticate.
+            See https://2.python-requests.org/en/master/user/authentication/.
+        verify : bool
+            Passed to :class:`owslib.wps.WebProcessingService`.
+        cert : str
+            Passed to :class:`owslib.wps.WebProcessingService`.
         verbose: bool
-          Deprecated. passed to :class:`owslib.wps.WebProcessingService` for owslib < 0.29
-        progress: bool
-          If True, enable interactive user mode.
-        version: str
-          WPS version to use.
-        language: str
-          passed to :class:`owslib.wps.WebProcessingService` (ex: 'fr-CA', 'en_US').
-        lineage: bool
-          If True, the Execute operation includes lineage information.
+            Deprecated. passed to :class:`owslib.wps.WebProcessingService` for owslib < 0.29.
+        progress : bool
+            If True, enable interactive user mode.
+        version : str
+            WPS version to use.
+        language : str
+            Passed to :class:`owslib.wps.WebProcessingService` (ex: 'fr-CA', 'en_US').
+        lineage : bool
+            If True, the Execute operation includes lineage information.
         """
         self._converters = converters
         self._interactive = progress
@@ -227,20 +230,20 @@ class WPSClient:
         fh.setFormatter(logging.Formatter("%(asctime)s: %(message)s"))
         self.logger.addHandler(fh)
 
-    def _method_factory(self, pid):
+    def _method_factory(self, pid: str) -> Callable:
         """Create a custom function signature with docstring, instantiate it and pass it to a wrapper.
 
         The wrapper will call the process on reception.
 
         Parameters
         ----------
-        pid: str
-          Identifier of the WPS process.
+        pid : str
+            Identifier of the WPS process.
 
         Returns
         -------
         func
-          A Python function calling the remote process, complete with docstring and signature.
+            A Python function calling the remote process, complete with docstring and signature.
         """
         process = self._processes[pid]
 
@@ -404,15 +407,15 @@ class WPSClient:
         wps_response.attach(wps_outputs=self._outputs[pid], converters=self._converters)
         return wps_response
 
-    def _console_monitor(self, execution, sleep=3):
+    def _console_monitor(self, execution: WPSExecution, sleep: int = 3):
         """Monitor the execution of a process.
 
         Parameters
         ----------
-        execution : WPSExecution instance
-          The execute response to monitor.
-        sleep: float
-          Number of seconds to wait before each status check.
+        execution : WPSExecution
+            The execute response to monitor.
+        sleep : int
+            Number of seconds to wait before each status check.
         """
         import signal
 
@@ -438,7 +441,7 @@ class WPSClient:
             self.logger.info(f"{execution.process.identifier} failed.")
 
 
-def sort_inputs_key(i):
+def sort_inputs_key(i: Input):
     """Key function for sorting process inputs.
 
     The order is:
@@ -448,8 +451,8 @@ def sort_inputs_key(i):
 
     Parameters
     ----------
-    i: owslib.wps.Input
-      An owslib Input
+    i : owslib.wps.Input
+        An owslib Input
 
     Notes
     -----

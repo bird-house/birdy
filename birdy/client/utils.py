@@ -2,24 +2,25 @@
 
 import datetime as dt
 from pathlib import Path
+from typing import Any, Optional, Union
 from urllib.parse import urlparse
 
 import dateutil.parser
-from owslib.wps import ComplexDataInput
+from owslib.wps import ComplexDataInput, Process, WebProcessingService
 
 from ..utils import is_file, sanitize
 
 
-def filter_case_insensitive(names, complete_list):
+def filter_case_insensitive(
+    names: Union[str, list[str]], complete_list: list[str]
+) -> tuple[list[str], list[str]]:
     """Filter a sequence of process names into a `known` and `unknown` list."""
     contained = []
     missing = []
-    complete_list_lower = set(map(str.lower, complete_list))
+    complete_list_lower = {name.lower() for name in complete_list}
 
     if isinstance(names, str):
-        names = [
-            names,
-        ]
+        names = [names]
 
     for name in names:
         if name.lower() in complete_list_lower:
@@ -30,14 +31,15 @@ def filter_case_insensitive(names, complete_list):
     return contained, missing
 
 
-def pretty_repr(obj, linebreaks=True):
+def pretty_repr(obj: Any, linebreaks: bool = True):
     """Output pretty repr for an Output.
 
     Parameters
     ----------
-    obj : any type
+    obj : Any
+        An object.
     linebreaks : bool
-        If True, split attributes with linebreaks
+        If True, split attributes with linebreaks.
     """
     class_name = obj.__class__.__name__
 
@@ -68,7 +70,9 @@ def pretty_repr(obj, linebreaks=True):
     return joiner.join([class_name + "(", attributes, ")"])
 
 
-def build_wps_client_doc(wps, processes):
+def build_wps_client_doc(
+    wps: WebProcessingService, processes: dict[str, Process]
+) -> str:
     """Create WPSClient docstring.
 
     Parameters
@@ -99,7 +103,7 @@ def build_wps_client_doc(wps, processes):
     return "\n".join(doc)
 
 
-def build_process_doc(process):
+def build_process_doc(process: Process) -> str:
     """Create docstring from process metadata."""
     doc = [process.abstract or "", ""]
 
@@ -126,7 +130,7 @@ def build_process_doc(process):
     return "\n".join(doc)
 
 
-def format_type(obj):
+def format_type(obj: Any) -> str:
     """Create docstring entry for input parameter from an OWSlib object."""
     nmax = 10
 
@@ -169,15 +173,18 @@ def format_type(obj):
     return doc
 
 
-def is_embedded_in_request(url, value):
-    """Whether or not to encode the value as raw data content.
+def is_embedded_in_request(url: str, value: Any) -> bool:
+    """Whether to encode the value as raw data content.
 
-    Returns True if
-      - value is a file:/// URI or a local path
-      - value is a File-like instance
-      - url is not localhost
-      - value is a File object
-      - value is already the string content
+    Returns
+    -------
+    bool
+        True if:
+        - value is a file:/// URI or a local path
+        - value is a File-like instance
+        - url is not localhost
+        - value is a File object
+        - value is already the string content
     """
     if hasattr(value, "read"):  # File-like
         return True
@@ -206,7 +213,13 @@ def is_embedded_in_request(url, value):
         return False
 
 
-def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
+def to_owslib(
+    value: Any,
+    data_type: str,
+    encoding: Optional[Any] = None,
+    mimetype: Optional[Any] = None,
+    schema: Optional[Any] = None,
+) -> Any:
     """Convert value into OWSlib objects."""
     # owslib only accepts literaldata, complexdata and boundingboxdata
 
@@ -221,7 +234,7 @@ def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
         return str(value)
 
 
-def from_owslib(value, data_type):
+def from_owslib(value: Any, data_type: str) -> Any:
     """Convert a string into another data type."""
     if value is None:
         return None
@@ -250,7 +263,7 @@ def from_owslib(value, data_type):
     return value
 
 
-def py_type(data_type):
+def py_type(data_type: str) -> Any:
     """Return the python data type matching the WPS dataType."""
     if data_type is None:
         return None
@@ -283,20 +296,25 @@ def extend_instance(obj, cls):
     obj.__class__ = type(base_cls_name, (cls, base_cls), {})
 
 
-def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetype=None):
+def add_output_format(
+    output_dictionary: dict,
+    output_identifier: str,
+    as_ref: Optional[bool] = None,
+    mimetype: Optional[str] = None,
+) -> None:
     """Add an output format to an already existing dictionary.
 
     Parameters
     ----------
-    output_dictionary: dict
+    output_dictionary : dict
         The dictionary (created with create_output_dictionary()) to which this
         output format will be added.
-    output_identifier: str
+    output_identifier : str
         Identifier of the output.
-    as_ref: True, False or None
+    as_ref : bool, optional
         Determines if this output will be returned as a reference or not.
         None for process default.
-    mimetype: str or None
+    mimetype : str or None
         If the process supports multiple MIME types, it can be specified with this argument.
         None for process default.
     """
@@ -306,23 +324,28 @@ def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetyp
     }
 
 
-def create_output_dictionary(output_identifier, as_ref=None, mimetype=None):
+def create_output_dictionary(
+    output_identifier: str,
+    as_ref: Optional[bool] = None,
+    mimetype: Optional[str] = None,
+) -> dict:
     """Create an output format dictionary.
 
     Parameters
     ----------
-    output_identifier: str
+    output_identifier : str
         Identifier of the output.
-    as_ref: True, False or None
+    as_ref : bool, optional
         Determines if this output will be returned as a reference or not.
         None for process default.
-    mimetype: str or None
+    mimetype : str, optional
         If the process supports multiple MIME types, it can be specified with this argument.
         None for process default.
 
     Returns
     -------
-    output_dictionary: dict
+    dict
+        Output dictionary.
     """
     output_dictionary = {
         output_identifier: {

@@ -1,6 +1,7 @@
 # noqa: D100
 
 import json
+from typing import Any, Optional
 
 from owslib.wfs import WebFeatureService
 
@@ -23,8 +24,8 @@ def _map_extent_to_bbox_filter(source_map):
 
     Parameters
     ----------
-    source_map: Map instance
-        The map instance from which the extent will calculated
+    source_map : Map instance
+        The map instance from which the extent will be calculated.
 
     Returns
     -------
@@ -60,15 +61,15 @@ class IpyleafletWFS:
 
     Parameters
     ----------
-    url: str
-      The url of the WFS service
-    wfs_version: str
-      The version of the WFS service to use. Defaults to 2.0.0.
+    url : str
+        The url of the WFS service.
+    wfs_version : str
+        The version of the WFS service to use. Defaults to 2.0.0.
 
     Returns
     -------
     IpyleafletWFS
-      Instance from which the WFS layers can be created.
+        Instance from which the WFS layers can be created.
     """
 
     def __init__(self, url, wfs_version="2.0.0"):
@@ -99,7 +100,7 @@ class IpyleafletWFS:
     # # # # # # # # # # # # # # #
 
     def build_layer(
-        self, layer_typename, source_map, layer_style=None, feature_property=None
+        self, layer_typename: str, source_map, layer_style=None, feature_property=None
     ):
         """Return an ipyleaflet GeoJSON layer from a geojson wfs request.
 
@@ -109,24 +110,19 @@ class IpyleafletWFS:
 
         Parameters
         ----------
-        layer_typename: string
-          Typename of the layer to display. Listed as Layer_ID by get_layer_list().
-          Must include namespace and layer name, separated  by a colon.
-
-          ex: public:canada_forest_layer
-
-        source_map: Map instance
+        layer_typename : str
+            Typename of the layer to display. Listed as Layer_ID by `get_layer_list()`.
+            Must include namespace and layer name, separated by a colon.
+            e.g. public:canada_forest_layer
+        source_map : Map instance
           The map instance on which the layer is to be added.
-
-        layer_style: dictionnary
-          ipyleaflet GeoJSON style format, for example
+        layer_style : dict
+          ipyleaflet GeoJSON style format, for example:
           `{ 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }`.
           See ipyleaflet documentation for more information.
-
-        feature_property: string
-          The property key to be used by the widget. Use the property_list() function
+        feature_property : str
+          The property key to be used by the widget. Use the `property_list()` function
           to get a list of the available properties.
-
         """
         # Check if dependency is installed
         if ipyl is None:
@@ -178,7 +174,9 @@ class IpyleafletWFS:
         # Create refresh button
         self._create_refresh_widget()
 
-    def create_wfsgeojson_layer(self, layer_typename, source_map, layer_style=None):
+    def create_wfsgeojson_layer(
+        self, layer_typename: str, source_map, layer_style: Optional[dict] = None
+    ):
         """Create a static ipyleaflett GeoJSON layer from a WFS service.
 
         Simple wrapper for a WFS => GeoJSON layer, using owslib.
@@ -191,19 +189,16 @@ class IpyleafletWFS:
 
         Parameters
         ----------
-        layer_typename: string
-          Typename of the layer to display. Listed as Layer_ID by get_layer_list().
+        layer_typename: str
+          Typename of the layer to display. Listed as Layer_ID by `get_layer_list()`.
           Must include namespace and layer name, separated  by a colon.
-
-          ex: public:canada_forest_layer
-
-        source_map: Map instance
-          The map instance from which the extent will be used to filter the request.
-
-        layer_style: dictionnary
-          ipyleaflet GeoJSON style format, for example
-          `{ 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }`.
-          See ipyleaflet documentation for more information.
+            e.g. `public:canada_forest_layer`
+        source_map : Map instance
+            The map instance from which the extent will be used to filter the request.
+        layer_style : dict, optional
+            ipyleaflet GeoJSON style format, for example:
+            `{ 'color': 'white', 'opacity': 1, 'dashArray': '9', 'fillOpacity': 0.1, 'weight': 1 }`.
+            See ipyleaflet documentation for more information.
 
         Returns
         -------
@@ -232,15 +227,15 @@ class IpyleafletWFS:
 
         return layer
 
-    def _refresh_layer(self, placeholder=None):
+    def _refresh_layer(self, placeholder: Optional[str] = None):
         """Refresh the wfs layer for the current map extent.
 
         Also updates the existing widgets.
 
         Parameters
         ----------
-        placeholder: string
-          Parameter is only there so that button.on_click() will work properly.
+        placeholder : str, optional
+            Parameter is only there so that button.on_click() will work properly.
         """
         if self._layer:
             self.build_layer(
@@ -278,23 +273,22 @@ class IpyleafletWFS:
     # Layer information functions #
     # # # # # # # # # # # # # # # #
 
-    def feature_properties_by_id(self, feature_id):
+    def feature_properties_by_id(self, feature_id: int) -> Optional[Any]:
         """Return the properties of a feature.
 
-        The id field is usually the first field. Since the name is
-        always different, this is the only assumption that can be
-        made to automate this process. Hence, this will not work if
-        the layer in question does not follow this formatting.
+        The id field is usually the first field.
+        Since the name is always different, this is the only assumption that can be made to automate this process.
+        Hence, this will not work if the layer in question does not follow this formatting.
 
         Parameters
         ----------
-        feature_id: int
-          The feature id.
+        feature_id : int
+            The feature id.
 
         Returns
         -------
-        Dict
-          A dictionary  of the layer's properties
+        dict
+            A dictionary of the layer's properties.
         """
         for feature in self._geojson["features"]:
             # The id field is usually the first field. Since the name is
@@ -312,18 +306,18 @@ class IpyleafletWFS:
         return self._geojson
 
     @property
-    def layer_list(self):
+    def layer_list(self) -> list:
         """Return a simple layer list available to the WFS service.
 
         Returns
         -------
-        List
-          A List of the WFS layers available
+        list
+          A list of the WFS layers available.
         """
         return sorted(self._wfs.contents.keys())
 
     @property
-    def property_list(self):
+    def property_list(self) -> dict:
         """Return a list containing the properties of the first feature.
 
         Retrieves the available properties for use subsequent use
@@ -331,8 +325,8 @@ class IpyleafletWFS:
 
         Returns
         -------
-        Dict
-          A dictionary  of the layer properties.
+        dict
+            A dictionary of the layer properties.
         """
         return self._geojson["features"][0]["properties"]
 
@@ -377,11 +371,6 @@ class IpyleafletWFS:
 
         This function will remove the property widgets from a given map, without
         affecting other widgets.
-
-        Parameters
-        ----------
-        src_map: Map instance
-          The map instance from which the widgets are to be removed.
         """
         if self._property_widgets:
             for widget in self._property_widgets:
@@ -391,7 +380,10 @@ class IpyleafletWFS:
             self._property_widgets = None
 
     def create_feature_property_widget(
-        self, widget_name, feature_property=None, widget_position="bottomright"
+        self,
+        widget_name: str,
+        feature_property: Optional[str] = None,
+        widget_position: str = "bottomright",
     ):
         """Create a visualization widget for a specific feature property.
 
@@ -402,16 +394,14 @@ class IpyleafletWFS:
 
         Parameters
         ----------
-        widget_name: string
-          Name of the widget. Must be unique or will overwrite existing widget.
-
-        feature_property: string
-          The property key to be used by the widget. Use the property_list() function
-          to get a list of the available properties. If left empty, it will default to
-          the first property attribute in the list.
-
-        widget_position: string
-          Position on the map for the widget. Choose between ‘bottomleft’, ‘bottomright’, ‘topleft’, or ‘topright’.
+        widget_name : str
+            Name of the widget. Must be unique or will overwrite existing widget.
+        feature_property : str, optional
+            The property key to be used by the widget. Use the property_list() function
+            to get a list of the available properties. If left empty, it will default to
+            the first property attribute in the list.
+        widget_position : {‘bottomleft’, ‘bottomright’, ‘topleft’, ‘topright’}
+            Position on the map for the widget.
 
         Notes
         -----

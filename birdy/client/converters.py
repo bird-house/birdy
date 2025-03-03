@@ -4,7 +4,7 @@ import tempfile
 from collections.abc import Sequence
 from importlib import import_module
 from pathlib import Path
-from typing import Union
+from typing import Any, Optional, Union
 
 from owslib.wps import Output
 from packaging.version import Version
@@ -20,13 +20,18 @@ class BaseConverter:  # noqa: D101
     priority = None
     nested = False
 
-    def __init__(self, output=None, path=None, verify=True):
+    def __init__(
+        self,
+        output: Output = None,
+        path: Optional[Union[str, Path]] = None,
+        verify: bool = True,
+    ) -> None:
         """Instantiate the conversion class.
 
         Parameters
         ----------
-        output: owslib.wps.Output
-          Output object to be converted.
+        output : owslib.wps.Output
+            Output object to be converted.
         """
         self.path = path or tempfile.mkdtemp()
         self.output = output
@@ -39,7 +44,7 @@ class BaseConverter:  # noqa: D101
             self.url = output
             self._file = Path(output)
         else:
-            raise NotImplementedError
+            raise NotImplementedError()
 
     @property
     def file(self):
@@ -60,15 +65,15 @@ class BaseConverter:  # noqa: D101
     def check_dependencies(self):  # noqa: D102
         pass
 
-    def _check_import(self, name, package=None):
+    def _check_import(self, name: str, package: Optional[str] = None):
         """Check if libraries can be imported.
 
         Parameters
         ----------
-        name: str
-          module name to try to import
-        package: str
-          package of the module
+        name : str
+          module name to try to import.
+        package : str
+          package of the module.
         """
         try:
             import_module(name, package)
@@ -78,7 +83,7 @@ class BaseConverter:  # noqa: D101
 
     def convert(self):
         """To be subclassed."""
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class GenericConverter(BaseConverter):  # noqa: D101
@@ -307,7 +312,7 @@ def _find_converter(mimetype=None, extension=None, converters=()):
     return select
 
 
-def find_converter(obj, converters):
+def find_converter(obj: Any, converters):
     """Find converters for a WPS output or a file on disk."""
     if isinstance(obj, Output):
         mimetype = obj.mimeType
@@ -332,18 +337,18 @@ def convert(
     Parameters
     ----------
     output : owslib.wps.Output, Path, str
-      Item to convert to an object.
+        Item to convert to an object.
     path : str, Path
-      Path on disk where temporary files are stored.
+        Path on disk where temporary files are stored.
     converters : sequence of BaseConverter subclasses
-      Converter classes to search within for a match.
+        Converter classes to search within for a match.
     verify : bool
-
+        Whether to perform verification. Default: True.
 
     Returns
     -------
-    objs
-      Python object or file's content as bytes.
+    Any
+        Python object or file's content as bytes.
     """
     # Get all converters
     if converters is None:

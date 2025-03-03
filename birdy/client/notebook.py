@@ -10,11 +10,9 @@ from birdy.utils import sanitize
 
 from . import utils
 
-# from traitlets import Dict, Unicode
-
 
 def is_notebook():
-    """Return whether or not this function is executed in a notebook environment."""
+    """Return whether this function is executed in a notebook environment."""
     if not IPython:
         return False
 
@@ -166,15 +164,15 @@ class Form:
         return ui
 
 
-def monitor(execution, sleep=3):
+def monitor(execution: WPSExecution, sleep: int = 3):
     """Monitor the execution of a process using a notebook progress bar widget.
 
     Parameters
     ----------
     execution : WPSExecution instance
-      The execute response to monitor.
-    sleep: float
-      Number of seconds to wait before each status check.
+        The execute response to monitor.
+    sleep : int
+        Number of seconds to wait before each status check.
     """
     progress = widgets.IntProgress(
         value=0,
@@ -225,10 +223,10 @@ def monitor(execution, sleep=3):
     thread.start()
 
 
-def input2widget(inpt):
+def input2widget(inpt: Input):
     """Return a Notebook widget to enter values for the input."""
     if not isinstance(inpt, Input):
-        raise ValueError
+        raise ValueError()
 
     typ = inpt.dataType
     opt = inpt.allowedValues

@@ -5,7 +5,9 @@ Dependencies Module
 
 Module for managing optional dependencies.
 
-Example usage::
+Example usage:
+
+.. code-block:: python
 
     >>> from birdy.dependencies import ipywidgets as widgets
 """
