@@ -326,12 +326,15 @@ def test_sort_inputs(process):  # noqa: D103
 
 
 def test_sort_inputs_conditions():
-    """Test for the input sorting function.
+    """
+    Test for the input sorting function.
 
+    Notes
+    -----
     The order should be:
-     - Inputs that have minOccurs >= 1 and no default value
-     - Inputs that have minOccurs >= 1 and a default value
-     - Every other input
+        - Inputs that have minOccurs >= 1 and no default value
+        - Inputs that have minOccurs >= 1 and a default value
+        - Every other input
     """
     i = mock.Mock()
     i.minOccurs = 1

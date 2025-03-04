@@ -1,5 +1,3 @@
-# noqa: D100
-
 import tempfile
 from collections import namedtuple
 from typing import Optional
@@ -14,26 +12,28 @@ from birdy.utils import delist, sanitize
 
 class WPSResult(WPSExecution):  # noqa: D101
     def attach(self, wps_outputs: Output, converters: Optional[dict] = None):
-        """Attach the outputs according to converters.
+        """
+        Attach the outputs according to converters.
 
         Parameters
         ----------
         wps_outputs : owslib.wps.Output
             The WPS outputs.
         converters : dict, optional
-            Converter dictionary (`{name: object}`)
+            Converter dictionary (`{name: object}`).
         """
         self._wps_outputs = wps_outputs
         self._converters = converters
         self._path = tempfile.mkdtemp()
 
     def get(self, asobj: bool = False):
-        """Return the process response outputs.
+        """
+        Return the process response outputs.
 
         Parameters
         ----------
         asobj : bool
-            If True, object_converters will be used.
+            If True, object_converters will be used. Default is False.
         """
         if not self.isComplete():
             raise ProcessIsNotComplete("Please wait ...")
@@ -53,7 +53,8 @@ class WPSResult(WPSExecution):  # noqa: D101
         )
 
     def _process_output(self, output: Output, convert_objects: bool = False):
-        """Process the output response.
+        """
+        Process the output response.
 
         Determine whether it is actual data or a URL to a file.
 

@@ -1,4 +1,3 @@
-# noqa: D205, D400
 """
 Birdy CLI module
 ================
@@ -7,7 +6,9 @@ Birdy has a command line interface to interact with a Web Processing Service.
 
 Example
 -------
-Here is an example with Emu_ WPS service::
+Here is an example with Emu_ WPS service:
+
+.. code-block:: console
 
     $ birdy -h
     $ birdy hello -h
@@ -17,14 +18,18 @@ Here is an example with Emu_ WPS service::
 Configure WPS service URL
 -------------------------
 By default Birdy talks to a WPS service on URL http://localhost:5000/wps.
-You can change this URL by setting the enivronment variable ``WPS_SERVICE``::
+You can change this URL by setting the environment variable ``WPS_SERVICE``:
+
+.. code-block:: console
 
     $ export WPS_SERVICE=http://localhost:5000/wps
 
 Configure SSL verification for HTTPS
 ------------------------------------
-In case you have a WPS serive using HTTPS with a self-signed certificate you need to configure
-the environment variable ``WPS_SSL_VERIFY``::
+In case you have a WPS service using HTTPS with a self-signed certificate you need to configure
+the environment variable ``WPS_SSL_VERIFY``:
+
+.. code-block:: console
 
   # deactivate SSL server validation for a self-signed certificate.
   $ export WPS_SSL_VERIFY=false
@@ -36,7 +41,9 @@ Use an OAuth2 access token
 --------------------------
 
 If the WPS service is secured by an OAuth2 access tokens
-then you can provide an access token with the ``--token`` option::
+then you can provide an access token with the ``--token`` option:
+
+.. code-block:: console
 
     $ birdy --token abc123 hello --name stranger
 
@@ -44,7 +51,9 @@ Use client certificate to access WPS service
 --------------------------------------------
 
 If the WPS service is secured by x509 certificates you can add a certificate
-with the ``--cert`` option to a request::
+with the ``--cert`` option to a request:
+
+.. code-block:: console
 
    # run hello with certificate
    $ birdy --cert cert.pem hello --name stranger
@@ -66,19 +75,23 @@ The MIME type: of which MIME type is the output.
 Unless the process has multiple supported mime types, this can be left to None.
 
 Looking at the emu process `output_formats`, the JSON output's default's the ``as reference``
-parameter to False and returns the content directly::
+parameter to False and returns the content directly:
+
+.. code-block:: console
 
     $ birdy output_formats
       Output:
       netcdf=http://localhost:5000/outputs/d9abfdc4-08d6-11eb-9334-0800274cd70c/dummy.nc
       json=['{"testing": [1, 2]}']
 
-We can then use the output_formats option to redefine it::
+We can then use the output_formats option to redefine it:
+
+.. code-block:: console
 
     $ birdy output_formats --output_formats json True None
       Output:
       netcdf=http://localhost:5000/outputs/38e9aefe-08db-11eb-9334-0800274cd70c/dummy.nc
       json=http://localhost:5000/outputs/38e9aefe-08db-11eb-9334-0800274cd70c/dummy.json
 
-.. _requests: http://docs.python-requests.org/en/master/user/advanced/#ssl-cert-verification
+.. _requests: https://docs.python-requests.org/en/latest/user/advanced/#ssl-cert-verification
 """

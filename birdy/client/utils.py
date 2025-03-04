@@ -14,7 +14,21 @@ from ..utils import is_file, sanitize
 def filter_case_insensitive(
     names: Union[str, list[str]], complete_list: list[str]
 ) -> tuple[list[str], list[str]]:
-    """Filter a sequence of process names into a `known` and `unknown` list."""
+    """
+    Filter a sequence of process names into a `known` and `unknown` list.
+
+    Parameters
+    ----------
+    names : str or list of str
+        Process names.
+    complete_list : list of str
+        List of all available process names.
+
+    Returns
+    -------
+    tuple
+        Tuple of two lists: `contained` and `missing`.
+    """
     contained = []
     missing = []
     complete_list_lower = {name.lower() for name in complete_list}
@@ -32,7 +46,8 @@ def filter_case_insensitive(
 
 
 def pretty_repr(obj: Any, linebreaks: bool = True):
-    """Output pretty repr for an Output.
+    """
+    Output pretty repr for an Output.
 
     Parameters
     ----------
@@ -73,17 +88,20 @@ def pretty_repr(obj: Any, linebreaks: bool = True):
 def build_wps_client_doc(
     wps: WebProcessingService, processes: dict[str, Process]
 ) -> str:
-    """Create WPSClient docstring.
+    """
+    Create WPSClient docstring.
 
     Parameters
     ----------
     wps : owslib.wps.WebProcessingService
+        A WPS service.
     processes : Dict[str, owslib.wps.Process]
+        A dictionary of available processes.
 
     Returns
     -------
     str
-        The formatted docstring for this WPSClient
+        The formatted docstring for this WPSClient.
     """
     doc = [wps.identification.abstract or "", "", "Processes", "---------", ""]
 
@@ -104,7 +122,19 @@ def build_wps_client_doc(
 
 
 def build_process_doc(process: Process) -> str:
-    """Create docstring from process metadata."""
+    """
+    Create docstring from process metadata.
+
+    Parameters
+    ----------
+    process : owslib.wps.Process
+        A WPS process.
+
+    Returns
+    -------
+    str
+        The formatted docstring for this process.
+    """
     doc = [process.abstract or "", ""]
 
     # Inputs
@@ -131,7 +161,19 @@ def build_process_doc(process: Process) -> str:
 
 
 def format_type(obj: Any) -> str:
-    """Create docstring entry for input parameter from an OWSlib object."""
+    """
+    Create docstring entry for input parameter from an OWSlib object.
+
+    Parameters
+    ----------
+    obj : Any
+        An OWSlib object.
+
+    Returns
+    -------
+    str
+        The formatted docstring entry for this object.
+    """
     nmax = 10
 
     doc = ""
@@ -174,7 +216,15 @@ def format_type(obj: Any) -> str:
 
 
 def is_embedded_in_request(url: str, value: Any) -> bool:
-    """Whether to encode the value as raw data content.
+    """
+    Whether to encode the value as raw data content.
+
+    Parameters
+    ----------
+    url : str
+        URL to the WPS server.
+    value : Any
+        Value to be sent to the WPS server.
 
     Returns
     -------
@@ -220,7 +270,27 @@ def to_owslib(
     mimetype: Optional[Any] = None,
     schema: Optional[Any] = None,
 ) -> Any:
-    """Convert value into OWSlib objects."""
+    """
+    Convert value into OWSlib objects.
+
+    Parameters
+    ----------
+    value : Any
+        Value to be converted.
+    data_type : str
+        The WPS dataType.
+    encoding : Any, optional
+        Encoding of the data.
+    mimetype : Any, optional
+        MIME type of the data.
+    schema : Any, optional
+        Schema of the data.
+
+    Returns
+    -------
+    Any
+        The converted value.
+    """
     # owslib only accepts literaldata, complexdata and boundingboxdata
 
     if data_type == "ComplexData":
@@ -235,7 +305,21 @@ def to_owslib(
 
 
 def from_owslib(value: Any, data_type: str) -> Any:
-    """Convert a string into another data type."""
+    """
+    Convert a string into another data type.
+
+    Parameters
+    ----------
+    value : Any
+        Value to be converted.
+    data_type : str
+        The WPS dataType.
+
+    Returns
+    -------
+    Any
+        The converted value.
+    """
     if value is None:
         return None
 
@@ -264,7 +348,19 @@ def from_owslib(value: Any, data_type: str) -> Any:
 
 
 def py_type(data_type: str) -> Any:
-    """Return the python data type matching the WPS dataType."""
+    """
+    Return the python data type matching the WPS dataType.
+
+    Parameters
+    ----------
+    data_type : str
+        The WPS dataType.
+
+    Returns
+    -------
+    Any
+        The python data type.
+    """
     if data_type is None:
         return None
     if "string" in data_type:
@@ -289,8 +385,17 @@ def py_type(data_type: str) -> Any:
         return str
 
 
-def extend_instance(obj, cls):
-    """Apply mixins to a class instance after creation."""
+def extend_instance(obj: Any, cls: Any) -> None:
+    """
+    Apply mixins to a class instance after creation.
+
+    Parameters
+    ----------
+    obj : Any
+        The object to be extended.
+    cls : Any
+        The class to be added.
+    """
     base_cls = obj.__class__
     base_cls_name = obj.__class__.__name__
     obj.__class__ = type(base_cls_name, (cls, base_cls), {})
@@ -302,12 +407,13 @@ def add_output_format(
     as_ref: Optional[bool] = None,
     mimetype: Optional[str] = None,
 ) -> None:
-    """Add an output format to an already existing dictionary.
+    """
+    Add an output format to an already existing dictionary.
 
     Parameters
     ----------
     output_dictionary : dict
-        The dictionary (created with create_output_dictionary()) to which this
+        The dictionary (created with `create_output_dictionary()`) to which this
         output format will be added.
     output_identifier : str
         Identifier of the output.
@@ -329,7 +435,8 @@ def create_output_dictionary(
     as_ref: Optional[bool] = None,
     mimetype: Optional[str] = None,
 ) -> dict:
-    """Create an output format dictionary.
+    """
+    Create an output format dictionary.
 
     Parameters
     ----------

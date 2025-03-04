@@ -1,10 +1,8 @@
-# noqa: D100
-
 import tempfile
 from collections.abc import Sequence
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Optional, Union
 
 from owslib.wps import Output
 from packaging.version import Version
@@ -312,8 +310,24 @@ def _find_converter(mimetype=None, extension=None, converters=()):
     return select
 
 
-def find_converter(obj: Any, converters):
-    """Find converters for a WPS output or a file on disk."""
+def find_converter(
+    obj: Union[Output, str, Path], converters: Sequence[BaseConverter]
+) -> list:
+    """
+    Find converters for a WPS output or a file on disk.
+
+    Parameters
+    ----------
+    obj : owslib.wps.Output or str or Path
+        Object to convert.
+    converters : sequence of BaseConverter subclasses
+        Converter classes to search within for a match.
+
+    Returns
+    -------
+    list
+        A list of compatible converters ordered by priority.
+    """
     if isinstance(obj, Output):
         mimetype = obj.mimeType
         extension = Path(obj.fileName or "").suffix[1:]
@@ -321,7 +335,7 @@ def find_converter(obj: Any, converters):
         mimetype = None
         extension = Path(obj).suffix[1:]
     else:
-        raise NotImplementedError
+        raise NotImplementedError()
 
     return _find_converter(mimetype, extension, converters=converters)
 
@@ -332,7 +346,8 @@ def convert(
     converters: Sequence[BaseConverter] = None,
     verify: bool = True,
 ):
-    """Convert a file to an object.
+    """
+    Convert a file to an object.
 
     Parameters
     ----------

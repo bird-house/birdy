@@ -7,7 +7,19 @@ from setuptools import find_namespace_packages, setup
 
 
 def parse_reqs(file):
-    """Parse dependencies from requirements file with regex."""
+    """
+    Parse dependencies from requirements file with regex.
+
+    Parameters
+    ----------
+    file : str
+        Path to requirements file.
+
+    Returns
+    -------
+    list
+        The list of dependencies.
+    """
     egg_regex = re.compile(r"#egg=(\w+)")
     reqs = list()
     for req in open(file):

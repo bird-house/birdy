@@ -1,8 +1,6 @@
-# noqa: D100
-
 import threading
 
-from owslib.wps import Input
+from owslib.wps import Input, WPSExecution
 
 from birdy.dependencies import IPython
 from birdy.dependencies import ipywidgets as widgets
@@ -29,7 +27,19 @@ def is_notebook():
 
 
 def gui(func):
-    """Return a Notebook form to enter input values and launch process."""
+    """
+    Return a Notebook form to enter input values and launch process.
+
+    Parameters
+    ----------
+    func : function
+        A function.
+
+    Returns
+    -------
+    Form
+        A form to enter input values and launch the process.
+    """
     if func.__self__._notebook:
         return Form(func)
     else:
@@ -39,7 +49,14 @@ def gui(func):
 
 
 class Form:
-    """Create notebook form to launch WPS process."""
+    """
+    Create notebook form to launch WPS process.
+
+    Parameters
+    ----------
+    func : function
+        A function.
+    """
 
     def __init__(self, func):
         self.result = None
@@ -81,12 +98,13 @@ class Form:
         ui = self.build_ui(iw, ofw, go)
         IPython.display(ui, out)
 
-    def get(self, asobj=False):
-        """Return the process response outputs.
+    def get(self, asobj: bool = False):
+        """
+        Return the process response outputs.
 
         Parameters
         ----------
-        asobj: bool
+        asobj : bool
           If True, object_converters will be used.
         """
         # Mimicks the `WPSResult.get` method, to provide a consistent look and feel to all user interfaces.
@@ -94,16 +112,52 @@ class Form:
             raise ValueError("The process has not yet been executed.")
         return self.result.get(asobj)
 
-    def input_widgets(self, inputs):
-        """Return input parameter widgets."""
+    def input_widgets(self, inputs: dict) -> dict:
+        """
+        Return input parameter widgets.
+
+        Parameters
+        ----------
+        inputs : dict
+            A dictionary of input parameters.
+
+        Returns
+        -------
+        dict
+            A dictionary of input widgets.
+        """
         return {sanitize(key): input2widget(inpt) for key, inpt in inputs}
 
-    def input_widget_values(self, widgets):
-        """Return values from input widgets."""
+    def input_widget_values(self, widgets: dict) -> dict:
+        """
+        Return values from input widgets.
+
+        Parameters
+        ----------
+        widgets : dict
+            A dictionary of input widgets.
+
+        Returns
+        -------
+        dict
+            A dictionary of input values.
+        """
         return {k: v.value for (k, v) in widgets.items()}
 
-    def output_formats_widgets(self, outputs):
-        """Return output formats parameter widgets for ComplexData outputs that have multiple supported formats."""
+    def output_formats_widgets(self, outputs: dict) -> dict:
+        """
+        Return output formats parameter widgets for ComplexData outputs that have multiple supported formats.
+
+        Parameters
+        ----------
+        outputs : dict
+            A dictionary of output parameters.
+
+        Returns
+        -------
+        dict
+            A dictionary of output format widgets.
+        """
         of = {}
         style = {"description_width": "initial"}
         if any(
@@ -123,8 +177,20 @@ class Form:
 
         return of
 
-    def output_format_widget_values(self, widgets):
-        """Return the `output_formats` dict from output_formats widgets."""
+    def output_format_widget_values(self, widgets: dict) -> dict:
+        """
+        Return the `output_formats` dict from output_formats widgets.
+
+        Parameters
+        ----------
+        widgets : dict
+            `output_formats` widgets.
+
+        Returns
+        -------
+        dict
+            A dictionary of `output_formats`.
+        """
         out = {}
         for key, val in widgets.items():
             utils.add_output_format(
@@ -135,7 +201,23 @@ class Form:
         return {}
 
     def build_ui(self, input_widgets, of_widgets, go):
-        """Create the form."""
+        """
+        Create the form.
+
+        Parameters
+        ----------
+        input_widgets : dict
+            Input widgets.
+        of_widgets : dict
+            Output form widgets.
+        go : str
+            Footer.
+
+        Returns
+        -------
+        AppLayout
+            An instance of the UI.
+        """
         iw = list(input_widgets.values())
         ofw = list(of_widgets.values())
 
@@ -165,7 +247,8 @@ class Form:
 
 
 def monitor(execution: WPSExecution, sleep: int = 3):
-    """Monitor the execution of a process using a notebook progress bar widget.
+    """
+    Monitor the execution of a process using a notebook progress bar widget.
 
     Parameters
     ----------
@@ -191,21 +274,21 @@ def monitor(execution: WPSExecution, sleep: int = 3):
         tooltip="Send `dismiss` request to WPS server.",
     )
 
-    def cancel_handler(b):
+    def _cancel_handler(b):
         b.value = True
         b.disabled = True
         progress.description = "Interrupted"
         # TODO: Send dismiss signal to server
 
     cancel.value = False
-    cancel.on_click(cancel_handler)
+    cancel.on_click(_cancel_handler)
 
     box = widgets.HBox(
         [progress, cancel], layout=widgets.Layout(justify_content="space-between")
     )
     IPython.display.display(box)
 
-    def check(execution, progress, cancel):
+    def _check(execution, progress, cancel):
         while not execution.isComplete() and not cancel.value:
             execution.checkStatus(sleepSecs=sleep)
             progress.value = execution.percentCompleted
@@ -219,12 +302,24 @@ def monitor(execution: WPSExecution, sleep: int = 3):
         else:
             progress.bar_style = "danger"
 
-    thread = threading.Thread(target=check, args=(execution, progress, cancel))
+    thread = threading.Thread(target=_check, args=(execution, progress, cancel))
     thread.start()
 
 
 def input2widget(inpt: Input):
-    """Return a Notebook widget to enter values for the input."""
+    """
+    Return a Notebook widget to enter values for the input.
+
+    Parameters
+    ----------
+    inpt : Input
+        A WPS Input instance.
+
+    Returns
+    -------
+    Any
+        Widget.
+    """
     if not isinstance(inpt, Input):
         raise ValueError()
 
@@ -286,5 +381,12 @@ def input2widget(inpt: Input):
 
 
 def output2widget(output):
-    """Return notebook widget based on output mime-type."""
+    """
+    Return notebook widget based on output mime-type.
+
+    Parameters
+    ----------
+    output : Any
+        Unused.
+    """
     pass

@@ -46,11 +46,6 @@ repos:
       - id: nbqa-isort
         args: [ '--profile=black' ]
         additional_dependencies: [ 'isort==6.0.1' ]
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        args: [ '--convention=numpy' ]
   - repo: https://github.com/numpy/numpydoc
     rev: v1.8.0
     hooks:

@@ -1,5 +1,3 @@
-# noqa: D100
-
 import click
 from owslib.util import ServiceException
 
