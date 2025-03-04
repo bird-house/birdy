@@ -180,7 +180,7 @@ def delist(data: Any) -> Any:
 
 def embed(
     value: Any, mimetype: Optional[str] = None, encoding: Optional[str] = None
-) -> tuple[bytes, str] | tuple[str, str | Any] | tuple[Any, str | Any]:
+) -> Union[tuple[bytes, str], tuple[str, Union[str, Any]], tuple[Any, Union[str, Any]]]:
     """
     Return the content of the file, either as a string or base64 bytes.
 
