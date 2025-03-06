@@ -5,7 +5,6 @@ import os
 import tempfile
 
 import pytest
-import xarray as xr
 from common import resource_file
 
 from birdy.client import converters
@@ -99,7 +98,9 @@ def test_jpeg_imageconverter():  # noqa: D103
 
 
 def test_raster_tif():
+    xr = pytest.importorskip("xarray")
     pytest.importorskip("rioxarray")
+
     fn = resource_file("Olympus.tif")
 
     da = converters.convert(fn, path="/tmp")

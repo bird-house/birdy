@@ -28,8 +28,8 @@ def get_ssl_verify():  # noqa: D103
 
         urllib3.disable_warnings()
         click.echo(
-            "Warning: Unverified HTTPS request is being made."
-            " Adding certificate verification is strongly advised.\n"
+            "Warning: Unverified HTTPS request is being made. "
+            "Adding certificate verification is strongly advised.\n"
         )
         verify = False
     else:

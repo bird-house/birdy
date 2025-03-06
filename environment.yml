@@ -2,30 +2,47 @@
 name: birdy
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - pip
-  #- openssl
-  - boltons
-  - click
-  - funcsigs
-  - jinja2
-  - lxml
-  - owslib>=0.19
-  - packaging
-  - pyopenssl
-  - wrapt
-  # optional
-  - netcdf4
-  - xarray
+  - python >=3.9,<3.13
+  - pip >=23.3
+  - boltons >=23.0
+  - click >=8.1.0
+  - jinja2 >=3.0.0
+  - lxml >=5.0.0
+  - owslib >=0.19.2
+  - packaging >=23.0
+  - pyopenssl >=23.0
+  - python-dateutil >=2.8.1
+  - requests >=2.24.0
+  - urllib3 >=2.0.2
+  - wrapt >=1.14.0
+  # extra
+  - fiona >=1.9.0
+  - geojson >=3.0.0
+  - ipyleaflet >=0.18.0
+  - ipython >8.5.0,!=9.0.0
+  - ipywidgets >=8.0.5
+  - netcdf4 >=1.6.0
+  - pymetalink >=6.5.3
+  - rioxarray >=0.15.0
+  - xarray >=2023.1.0
+  # dev
+  - black >=24.2.0
+  - bump-my-version >=1.0.0
+  - pre-commit >=3.6.2
+  - python-build >=1.0
+  - twine >=4.0.0
+  - watchdog >=4.0.0
   # tests
-  - flake8>=3.8.4
-  - nbval
-  - pytest
-  - pytest-notebook
+  - coverage >=7.5.0
+  - flake8 >=7.0.0
+  - nbval >=0.9.5
+  - pytest >=8.0.0
+  - pytest-notebook >=0.6.0
   # sphinx for rtd
-  - ipykernel
-  - nbconvert
-  - nbsphinx
-  - pandoc
-  - sphinx
+  - ipykernel >=6.25.0
+  - nbconvert >=7.3.0
+  - nbsphinx >=0.9.5
+  - sphinx >=7.0.0,<8.2.0
+  - sphinx-codeautolink
+  - sphinx-copybutton

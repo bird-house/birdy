@@ -7,7 +7,19 @@ from setuptools import find_namespace_packages, setup
 
 
 def parse_reqs(file):
-    """Parse dependencies from requirements file with regex."""
+    """
+    Parse dependencies from requirements file with regex.
+
+    Parameters
+    ----------
+    file : str
+        Path to requirements file.
+
+    Returns
+    -------
+    list
+        The list of dependencies.
+    """
     egg_regex = re.compile(r"#egg=(\w+)")
     reqs = list()
     for req in open(file):
@@ -33,6 +45,7 @@ long_description = (
 
 requirements = parse_reqs("requirements.txt")
 dev_requirements = parse_reqs("requirements_dev.txt")
+docs_requirements = parse_reqs("requirements_docs.txt")
 extra_requirements = parse_reqs("requirements_extra.txt")
 
 classifiers = [
@@ -46,6 +59,8 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
 ]
 
@@ -72,6 +87,7 @@ setup(
     install_requires=requirements,
     extras_require={
         "dev": dev_requirements,  # pip install ".[dev]"
+        "docs": docs_requirements,  # pip install ".[docs]"
         "extra": extra_requirements,  # pip install ".[extra]"
     },
     entry_points={"console_scripts": ["birdy=birdy.cli.run:cli"]},

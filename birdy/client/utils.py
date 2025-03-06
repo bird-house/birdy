@@ -2,24 +2,39 @@
 
 import datetime as dt
 from pathlib import Path
+from typing import Any, Optional, Union
 from urllib.parse import urlparse
 
 import dateutil.parser
-from owslib.wps import ComplexDataInput
+from owslib.wps import ComplexDataInput, Process, WebProcessingService
 
 from ..utils import is_file, sanitize
 
 
-def filter_case_insensitive(names, complete_list):
-    """Filter a sequence of process names into a `known` and `unknown` list."""
+def filter_case_insensitive(
+    names: Union[str, list[str]], complete_list: list[str]
+) -> tuple[list[str], list[str]]:
+    """
+    Filter a sequence of process names into a `known` and `unknown` list.
+
+    Parameters
+    ----------
+    names : str or list of str
+        Process names.
+    complete_list : list of str
+        List of all available process names.
+
+    Returns
+    -------
+    tuple
+        Tuple of two lists: `contained` and `missing`.
+    """
     contained = []
     missing = []
-    complete_list_lower = set(map(str.lower, complete_list))
+    complete_list_lower = {name.lower() for name in complete_list}
 
     if isinstance(names, str):
-        names = [
-            names,
-        ]
+        names = [names]
 
     for name in names:
         if name.lower() in complete_list_lower:
@@ -30,14 +45,16 @@ def filter_case_insensitive(names, complete_list):
     return contained, missing
 
 
-def pretty_repr(obj, linebreaks=True):
-    """Output pretty repr for an Output.
+def pretty_repr(obj: Any, linebreaks: bool = True):
+    """
+    Output pretty repr for an Output.
 
     Parameters
     ----------
-    obj : any type
+    obj : Any
+        An object.
     linebreaks : bool
-        If True, split attributes with linebreaks
+        If True, split attributes with linebreaks.
     """
     class_name = obj.__class__.__name__
 
@@ -68,18 +85,23 @@ def pretty_repr(obj, linebreaks=True):
     return joiner.join([class_name + "(", attributes, ")"])
 
 
-def build_wps_client_doc(wps, processes):
-    """Create WPSClient docstring.
+def build_wps_client_doc(
+    wps: WebProcessingService, processes: dict[str, Process]
+) -> str:
+    """
+    Create WPSClient docstring.
 
     Parameters
     ----------
     wps : owslib.wps.WebProcessingService
+        A WPS service.
     processes : Dict[str, owslib.wps.Process]
+        A dictionary of available processes.
 
     Returns
     -------
     str
-        The formatted docstring for this WPSClient
+        The formatted docstring for this WPSClient.
     """
     doc = [wps.identification.abstract or "", "", "Processes", "---------", ""]
 
@@ -99,8 +121,20 @@ def build_wps_client_doc(wps, processes):
     return "\n".join(doc)
 
 
-def build_process_doc(process):
-    """Create docstring from process metadata."""
+def build_process_doc(process: Process) -> str:
+    """
+    Create docstring from process metadata.
+
+    Parameters
+    ----------
+    process : owslib.wps.Process
+        A WPS process.
+
+    Returns
+    -------
+    str
+        The formatted docstring for this process.
+    """
     doc = [process.abstract or "", ""]
 
     # Inputs
@@ -126,8 +160,20 @@ def build_process_doc(process):
     return "\n".join(doc)
 
 
-def format_type(obj):
-    """Create docstring entry for input parameter from an OWSlib object."""
+def format_type(obj: Any) -> str:
+    """
+    Create docstring entry for input parameter from an OWSlib object.
+
+    Parameters
+    ----------
+    obj : Any
+        An OWSlib object.
+
+    Returns
+    -------
+    str
+        The formatted docstring entry for this object.
+    """
     nmax = 10
 
     doc = ""
@@ -169,15 +215,26 @@ def format_type(obj):
     return doc
 
 
-def is_embedded_in_request(url, value):
-    """Whether or not to encode the value as raw data content.
+def is_embedded_in_request(url: str, value: Any) -> bool:
+    """
+    Whether to encode the value as raw data content.
 
-    Returns True if
-      - value is a file:/// URI or a local path
-      - value is a File-like instance
-      - url is not localhost
-      - value is a File object
-      - value is already the string content
+    Parameters
+    ----------
+    url : str
+        URL to the WPS server.
+    value : Any
+        Value to be sent to the WPS server.
+
+    Returns
+    -------
+    bool
+        True if:
+        - value is a file:/// URI or a local path
+        - value is a File-like instance
+        - url is not localhost
+        - value is a File object
+        - value is already the string content
     """
     if hasattr(value, "read"):  # File-like
         return True
@@ -206,8 +263,34 @@ def is_embedded_in_request(url, value):
         return False
 
 
-def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
-    """Convert value into OWSlib objects."""
+def to_owslib(
+    value: Any,
+    data_type: str,
+    encoding: Optional[Any] = None,
+    mimetype: Optional[Any] = None,
+    schema: Optional[Any] = None,
+) -> Any:
+    """
+    Convert value into OWSlib objects.
+
+    Parameters
+    ----------
+    value : Any
+        Value to be converted.
+    data_type : str
+        The WPS dataType.
+    encoding : Any, optional
+        Encoding of the data.
+    mimetype : Any, optional
+        MIME type of the data.
+    schema : Any, optional
+        Schema of the data.
+
+    Returns
+    -------
+    Any
+        The converted value.
+    """
     # owslib only accepts literaldata, complexdata and boundingboxdata
 
     if data_type == "ComplexData":
@@ -221,8 +304,22 @@ def to_owslib(value, data_type, encoding=None, mimetype=None, schema=None):
         return str(value)
 
 
-def from_owslib(value, data_type):
-    """Convert a string into another data type."""
+def from_owslib(value: Any, data_type: str) -> Any:
+    """
+    Convert a string into another data type.
+
+    Parameters
+    ----------
+    value : Any
+        Value to be converted.
+    data_type : str
+        The WPS dataType.
+
+    Returns
+    -------
+    Any
+        The converted value.
+    """
     if value is None:
         return None
 
@@ -250,8 +347,20 @@ def from_owslib(value, data_type):
     return value
 
 
-def py_type(data_type):
-    """Return the python data type matching the WPS dataType."""
+def py_type(data_type: str) -> Any:
+    """
+    Return the python data type matching the WPS dataType.
+
+    Parameters
+    ----------
+    data_type : str
+        The WPS dataType.
+
+    Returns
+    -------
+    Any
+        The python data type.
+    """
     if data_type is None:
         return None
     if "string" in data_type:
@@ -276,27 +385,42 @@ def py_type(data_type):
         return str
 
 
-def extend_instance(obj, cls):
-    """Apply mixins to a class instance after creation."""
+def extend_instance(obj: Any, cls: Any) -> None:
+    """
+    Apply mixins to a class instance after creation.
+
+    Parameters
+    ----------
+    obj : Any
+        The object to be extended.
+    cls : Any
+        The class to be added.
+    """
     base_cls = obj.__class__
     base_cls_name = obj.__class__.__name__
     obj.__class__ = type(base_cls_name, (cls, base_cls), {})
 
 
-def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetype=None):
-    """Add an output format to an already existing dictionary.
+def add_output_format(
+    output_dictionary: dict,
+    output_identifier: str,
+    as_ref: Optional[bool] = None,
+    mimetype: Optional[str] = None,
+) -> None:
+    """
+    Add an output format to an already existing dictionary.
 
     Parameters
     ----------
-    output_dictionary: dict
-        The dictionary (created with create_output_dictionary()) to which this
+    output_dictionary : dict
+        The dictionary (created with `create_output_dictionary()`) to which this
         output format will be added.
-    output_identifier: str
+    output_identifier : str
         Identifier of the output.
-    as_ref: True, False or None
+    as_ref : bool, optional
         Determines if this output will be returned as a reference or not.
         None for process default.
-    mimetype: str or None
+    mimetype : str or None
         If the process supports multiple MIME types, it can be specified with this argument.
         None for process default.
     """
@@ -306,23 +430,29 @@ def add_output_format(output_dictionary, output_identifier, as_ref=None, mimetyp
     }
 
 
-def create_output_dictionary(output_identifier, as_ref=None, mimetype=None):
-    """Create an output format dictionary.
+def create_output_dictionary(
+    output_identifier: str,
+    as_ref: Optional[bool] = None,
+    mimetype: Optional[str] = None,
+) -> dict:
+    """
+    Create an output format dictionary.
 
     Parameters
     ----------
-    output_identifier: str
+    output_identifier : str
         Identifier of the output.
-    as_ref: True, False or None
+    as_ref : bool, optional
         Determines if this output will be returned as a reference or not.
         None for process default.
-    mimetype: str or None
+    mimetype : str, optional
         If the process supports multiple MIME types, it can be specified with this argument.
         None for process default.
 
     Returns
     -------
-    output_dictionary: dict
+    dict
+        Output dictionary.
     """
     output_dictionary = {
         output_identifier: {

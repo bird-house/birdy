@@ -9,10 +9,19 @@ updates:
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: pip
     directory: /
     schedule:
       interval: monthly
-    open-pull-requests-limit: 5
+    groups:
+      ci:
+        patterns:
+          - "CI/*"
+      python:
+        patterns:
+          - "requirements*.txt"

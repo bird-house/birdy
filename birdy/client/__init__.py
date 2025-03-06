@@ -1,4 +1,3 @@
-# noqa: D205, D400
 """
 WPSClient Class
 ===============
@@ -23,31 +22,32 @@ Simply set the input to a valid path or file object and the client will take car
 
 Example
 -------
-If a WPS server with a simple `hello` process is running on the local host on port 5000::
+If a WPS server with a simple `hello` process is running on the local host on port 5000:
 
-  >>> from birdy import WPSClient
-  >>> emu = WPSClient('http://localhost:5000/')
-  >>> emu.hello
-  <bound method hello of <birdy.client.base.WPSClient object>>
-  >>> print(emu.hello.__doc__)
+.. code-block:: python
 
-  # Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
+    >>> from birdy import WPSClient
+    >>> emu = WPSClient('http://localhost:5000/')
+    >>> emu.hello
+    <bound method hello of <birdy.client.base.WPSClient object>>
+    >>> print(emu.hello.__doc__)
+    # Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
 
-  # Parameters
-  # ----------
-  # name : string
-  #     Please enter your name.
-  #
-  # Returns
-  # -------
-  # output : string
-  #     A friendly Hello from us.
-  #
-  # ""
-  #
-  # # Call the function. The output is a namedtuple
-  # >>> emu.hello('stranger')
-  # hello(output='Hello stranger')
+    # Parameters
+    # ----------
+    # name : string
+    #     Please enter your name.
+    #
+    # Returns
+    # -------
+    # output : string
+    #     A friendly Hello from us.
+    #
+    # ""
+    #
+    # # Call the function. The output is a namedtuple
+    # >>> emu.hello('stranger')
+    # hello(output='Hello stranger')
 
 Authentication
 --------------
@@ -56,7 +56,9 @@ an `auth` argument that behaves exactly like in the popular `requests` module (s
 
 The simplest form of authentication is HTTP Basic Auth. Although
 wps processes are not commonly protected by this authentication method,
-here is a simple example of how to use it::
+here is a simple example of how to use it:
+
+.. code-block :: python
 
     >>> from birdy import WPSClient
     >>> from requests.auth import HTTPBasicAuth
@@ -66,7 +68,9 @@ here is a simple example of how to use it::
 Because any `requests`-compatible class is accepted, custom authentication methods are implemented
 the same way as in `requests`.
 
-For example, to connect to a magpie_ protected wps, you can use the requests-magpie_ module::
+For example, to connect to a magpie_ protected wps, you can use the requests-magpie_ module:
+
+.. code-block :: python
 
     >>> from birdy import WPSClient
     >>> from requests_magpie import MagpieAuth
@@ -79,7 +83,9 @@ Output format
 Birdy automatically manages process output to reflect its default values or Birdy's own defaults.
 
 However, it's possible to customize the output of a process. Each process has an input
-named ``output_formats``, that takes a dictionary as a parameter::
+named ``output_formats``, that takes a dictionary as a parameter:
+
+.. code-block :: python
 
     # example format = {
     #     'output_identifier': {
@@ -100,12 +106,16 @@ named ``output_formats``, that takes a dictionary as a parameter::
     >>>     }
     >>> }
 
-Utility functions can also be used to create this dictionary::
+Utility functions can also be used to create this dictionary:
+
+.. code-block:: python
 
     >>> custom_format = create_output_dictionary('netcdf', True, 'application/json')
     >>> add_output_format(custom_format, 'json', False, None)
 
-The created dictionary can then be used with a process::
+The created dictionary can then be used with a process:
+
+.. code-block:: python
 
     >>> cli = WPSClient("http://localhost:5000")
     >>> z = cli.output_formats(output_formats=custom_format).get()

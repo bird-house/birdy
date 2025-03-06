@@ -16,11 +16,17 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.9"
+          - "3.x"
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Set up Python${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install flake8 and black
@@ -38,23 +44,23 @@ jobs:
         python-version:
           - "3.9"
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Install pandoc
         run: |
           sudo apt-get -y install pandoc
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install requirements 📦
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-          if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
       - name: Install Birdy 🐦
         run: |
-          python -m pip install --editable .
+          python -m pip install --editable ".[docs]"
       - name: Check dependencies
         run: |
           python -m pip list
@@ -70,26 +76,22 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
         with:
           egress-policy: audit
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install requirements 📦
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
-          if [ -f requirements_extra.txt ]; then pip install -r requirements_extra.txt; fi
       - name: Install Birdy 🐦
         run: |
-          python -m pip install --editable .
+          python -m pip install --editable ".[dev]"
       - name: Check dependencies
         run: |
           python -m pip list

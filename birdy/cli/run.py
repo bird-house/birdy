@@ -40,7 +40,7 @@ def _set_language(ctx, param, value):
     "--send",
     "-S",
     is_flag=True,
-    help="Send client side certificate to WPS. Default: false",
+    help="Send client side certificate to WPS. Default: false.",
 )
 @click.option(
     "--sync",
@@ -71,8 +71,23 @@ def cli(ctx, cert, send, sync, token):
     """
     Birdy is a command line client for Web Processing Services.
 
+    Parameters
+    ----------
+    ctx : click.Context
+        Click context object.
+    cert : str
+        Client side certificate containing both certificate and private key.
+    send : bool
+        Send client side certificate to WPS. Default: false.
+    sync : bool
+        Execute process in sync mode. Default: async mode.
+    token : str
+        Token to access the WPS service.
+
+    Notes
+    -----
     Documentation is available on readthedocs:
-    http://birdy.readthedocs.org/en/latest/
+    https://birdy.readthedocs.org/en/latest/
     """
     ctx.obj = ctx.obj or dict()
     ctx.obj["verify"] = get_ssl_verify()

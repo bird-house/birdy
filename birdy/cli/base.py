@@ -19,18 +19,23 @@ template_env = Environment(
 
 
 class BirdyCLI(click.MultiCommand):
-    """BirdyCLI is an implementation of :class:`click.MultiCommand`.
+    """
+    BirdyCLI is an implementation of :class:`click.MultiCommand`.
 
     Adds each process of a Web Processing Service as command to the command-line interface.
 
     Parameters
     ----------
-    url: str
-      URL of the Web Processing Service.
-    caps_xml: str
-      A WPS GetCapabilities response for testing.
-    desc_xml: str
-      A WPS DescribeProcess response with "identifier=all" for testing.
+    name : str
+        Name of the process.
+    url : str
+        URL of the Web Processing Service.
+    caps_xml : str
+        A WPS GetCapabilities response for testing.
+    desc_xml : str
+        A WPS DescribeProcess response with "identifier=all" for testing.
+    **attrs : dict
+        Additional attributes.
     """
 
     def __init__(self, name=None, url=None, caps_xml=None, desc_xml=None, **attrs):
