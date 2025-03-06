@@ -7,24 +7,33 @@ Development
 Get Started!
 ============
 
-Check out code from the birdy GitHub repo and start the installation::
+Check out code from the birdy GitHub repo and start the installation:
+
+.. code-block:: console
 
     $ git clone https://github.com/bird-house/birdy.git
     $ cd birdy
     $ conda env create -f environment.yml
     $ pip install --editable .
 
-Install additional dependencies::
+Install additional dependencies:
+
+.. code-block:: console
 
     $ pip install -r requirements_dev.txt
 
-When you're done making changes, check that your changes pass `black`, `flake8` and the tests::
+When you're done making changes, check that your changes pass `black`, `flake8` and the tests:
+
+.. code-block:: console
 
     $ flake8 birdy tests
     $ black --check --target-version py39 birdy tests
+
     $ pytest -v tests
 
-Or use the Makefile::
+Or use the Makefile:
+
+.. code-block:: console
 
      $ make lint
      $ make test
@@ -35,7 +44,9 @@ Add pre-commit hooks
 
 Before committing your changes, we ask that you install `pre-commit` in your environment.
 `Pre-commit` runs git hooks that ensure that your code resembles that of the project
-and catches and corrects any small errors or inconsistencies when you `git commit`::
+and catches and corrects any small errors or inconsistencies when you `git commit`:
+
+.. code-block:: console
 
      $ conda install -c conda-forge pre-commit
      $ pre-commit install
@@ -44,7 +55,9 @@ Write Documentation
 ===================
 
 You can find the documentation in the `docs/source` folder. To generate the Sphinx
-documentation locally you can use the `Makefile`::
+documentation locally you can use the `Makefile`:
+
+.. code-block:: console
 
     $ make docs
 
@@ -53,11 +66,12 @@ Bump a new version
 
 Make a new version of Birdy in the following steps:
 
-* Make sure everything is commit to GitHub.
-* Update ``CHANGES.rst`` with the next version.
-* Dry Run: ``bumpversion --dry-run --verbose --new-version 0.3.1 patch``
-* Do it: ``bumpversion --new-version 0.3.1 patch``
-* ... or: ``bumpversion --new-version 0.4.0 minor``
+* Make sure everything has been committed to the `master` branch of the GitHub repository.
+* In a new branch, update ``CHANGES.rst`` with the information needed for the next version.
+* Dry Run: ``bump-my-version bump --dry-run --verbose patch|minor|major``
+* Do it: ``bump-my-version bump patch``
+    * ... or: ``bumpversion bump minor``
+* Tag it: ``git tag -a v{new_version} -m "Version {new_version}"``
 * Push it: ``git push --tags``
 
 See the bumpversion_ documentation for details.
@@ -67,7 +81,9 @@ See the bumpversion_ documentation for details.
 Build a source distribution and wheel
 =====================================
 
-To build a source distribution (`.sdist`) and wheel (`.whl`) locally, run the following command::
+To build a source distribution (`.sdist`) and wheel (`.whl`) locally, run the following command:
+
+.. code-block:: console
 
     $ python -m build
 

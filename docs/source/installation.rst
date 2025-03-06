@@ -7,7 +7,7 @@ Installation
 Install from PyPI
 =================
 
-|pypi|
+|pypi| |pypi downloads|
 
 .. code-block:: console
 
@@ -16,7 +16,7 @@ Install from PyPI
 Install from Anaconda
 =====================
 
-|conda install| |conda version| |conda downloads|
+|conda version| |conda downloads|
 
 .. code-block:: console
 
@@ -32,16 +32,26 @@ Check out code from the birdy GitHub repo and start the installation:
     $ git clone https://github.com/bird-house/birdy.git
     $ cd birdy
     $ conda env create -f environment.yml
-    $ python setup.py install
 
+For a non-interactive installation:
+
+.. code-block:: console
+
+    $ python -m pip install .
+
+Or, for an editable (development) installation:
+
+.. code-block:: console
+
+    $ python -m pip install --editable .
 
 .. |pypi| image:: https://img.shields.io/pypi/v/birdhouse-birdy.svg
         :target: https://pypi.python.org/pypi/birdhouse-birdy
-        :alt: Python Package Index Build
+        :alt: Python Package Index Version
 
-.. |conda install| image:: https://anaconda.org/conda-forge/birdy/badges/installer/conda.svg
-        :target: https://anaconda.org/conda-forge/birdy
-        :alt: Anaconda Install
+.. |pypi downloads| image:: https://img.shields.io/pypi/dm/birdhouse-birdy
+        :target: https://pypi.python.org/pypi/birdhouse-birdy
+        :alt: Python Package Index Downloads
 
 .. |conda version| image:: https://anaconda.org/conda-forge/birdy/badges/version.svg
         :target: https://anaconda.org/conda-forge/birdy
