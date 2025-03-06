@@ -13,6 +13,6 @@ pytest >=8.0.0
 pytest-notebook >=0.6.0
 sphinx-codeautolink
 sphinx-copybutton
-sphinx >=7.0.0,<8.2.0
+sphinx >=7.0.0,<8.3.0
 twine >=4.0.0
 watchdog >=4.0.0
