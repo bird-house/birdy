@@ -1,6 +1,6 @@
 # noqa: D100, D104
 
-__version__ = "0.8.7"
+__version__ = "0.9.0"
 
 from .client import WPSClient
 from .ipyleafletwfs import IpyleafletWFS  # noqa: F401
