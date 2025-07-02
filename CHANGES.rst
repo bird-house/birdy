@@ -1,14 +1,36 @@
 Change History
-**************
+==============
+
+v0.9.0 (2025-07-02)
+^^^^^^^^^^^^^^^^^^^
+
+Changes:
+
+* Added a Dependabot configuration file (#250).
+* Removed obsolete example notebooks (#254).
+* Removed `distutils` from the setup.py file (#263).
+* Several modernization fixes for the codebase (#267):
+    * Added support for Python3.12 and Python3.13.
+    * Updated the authors file and Zenodo configuration to reflect contributors.
+    * Replaced `bumpversion` (obsolete) with `bump-my-version`.
+    * Added dependencies that were missing from the `requirements*.txt` and `environment*.yml` files.
+    * Set base versions for most dependencies.
+    * Updated the build setup for ReadTheDocs.
+    * Updated the `pre-commit` hook versions.
+    * Added security hardening steps to workflows.
+    * Replaced `pydocstyle` with `numpydoc-validation`
+    * Added missing docstrings for all public functions, classes, and methods.
+    * Updated the documentation to reflect the new installation methods and add relevant badges.
 
 v0.8.7 (2024-05-07)
-===================
+^^^^^^^^^^^^^^^^^^^
+
+Changes:
 
 * Fix regression, where loading TIFF files would return a Dataset instead of a DataArray, the behavior prior to 0.8.5. Loading a multi-band TIFF file will now return a DataArray with the bands as dimensions.
 
-
 v0.8.6 (2024-03-18)
-===================
+^^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -23,33 +45,33 @@ Changes:
 * Add a documentation entry on using `build` to build the documentation.
 
 0.8.5 (2024-03-14)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
-* Update how TIFF files are converted to xarray datasets because `open_rasterio` is deprecated. See issue `239`.
+* Update how TIFF files are converted to xarray datasets because `open_rasterio` is deprecated (#239).
 * Remove `GeotiffRasterioConverter`.
 * Remove Python 3.7 and 3.8 from CI test suite.
 * Now using Trusted Publisher for TestPyPI/PyPI releases.
 * Update `black` to v24.2.0 and code formatting conventions to Python3.9+.
 
 0.8.4 (2023-05-24)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
-* Fix docstring creation error occurring when the server identification abstract is None. See issue `228`.
-* Handle case where the server `describeProcess` does not understand "ALL" as the process identifier. See issue `229`.
+* Fix docstring creation error occurring when the server identification abstract is None (#228).
+* Handle case where the server `describeProcess` does not understand "ALL" as the process identifier (#229).
 
 0.8.3 (2023-05-03)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Added the `packaging` library to the list of requirements.
 
 0.8.2 (2023-04-28)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -59,7 +81,7 @@ Changes:
 * Handle the removal of the `verbose` argument in `OWSLib.WebProcessingService` 0.29.0.
 
 0.8.1 (2021-12-01)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -67,7 +89,7 @@ Changes:
 
 
 0.8.0 (2021-05-25)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -83,7 +105,7 @@ API changes:
 
 
 0.7.0 (2021-01-15)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -96,7 +118,7 @@ Changes:
 * Use black formatting (#186, #187).
 
 0.6.9 (2020-03-10)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -104,7 +126,7 @@ Changes:
 * Trying to guess mime type of inputs rather than taking the first value (#171)
 
 0.6.6 (2020-03-03)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -121,7 +143,7 @@ Changes:
 * Added missing files in MANIFEST.in for pypi install (#166).
 
 0.6.5 (2019-08-19)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -134,14 +156,14 @@ Changes:
 * Skip Python 2.7 (#146).
 
 0.6.4 (2019-07-03)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Fix default converter to return bytes (#137).
 
 0.6.3 (2019-06-21)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -149,14 +171,14 @@ Changes:
 * Fix nested conversion (#135).
 
 0.6.2 (2019-06-06)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Added support for passing sequences (list, tuple) as WPS inputs (#128).
 
 0.6.1 (2019-05-27)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -164,7 +186,7 @@ Changes:
 * Bugfixes: #118, #121
 
 0.6.0 (2019-04-04)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -178,14 +200,14 @@ Changes:
 * Various Bugfixes: #83, #91, #99
 
 0.5.1 (2018-12-18)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Added support to launch Jupyter notebooks with birdy examples on binder (#94, #95).
 
 0.5.0 (2018-12-03)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -195,7 +217,7 @@ Changes:
 * Updated notebooks with examples for `WPSClient`.
 
 0.4.2 (2018-09-26)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -203,7 +225,7 @@ Changes:
 * Using ``WPS_SSL_VERIFY`` environment variable (#50).
 
 0.4.1 (2018-09-14)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -213,7 +235,7 @@ Changes:
 * Updated docs for native client (#43).
 
 0.4.0 (2018-09-06)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Release for Dar Es Salaam.
 
@@ -223,28 +245,28 @@ Changes:
 * Fix optional input (#41).
 
 0.3.3 (2018-07-18)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Added initial native client (#24, #37).
 
 0.3.2 (2018-06-06)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Fix MANIFEST.in.
 
 0.3.1 (2018-06-06)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
 * Fix bumpversion.
 
 0.3.0 (2018-06-05)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Changes:
 
@@ -253,7 +275,7 @@ Changes:
 * Using GitHub templates for issues, PRs and contribution guide.
 
 0.2.2 (2018-05-08)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Fixes:
 
@@ -265,7 +287,7 @@ New Features:
 * using ``mode`` for async execution in OWSLib (#22).
 
 0.2.1 (2018-03-14)
-==================
+^^^^^^^^^^^^^^^^^^
 
 Fixes:
 
@@ -276,7 +298,7 @@ New Features:
 * Fix #14: added ``--cert`` option to use x509 certificates.
 
 0.2.0 (2017-09-25)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * removed buildout ... just using conda.
 * cleaned up docs.
@@ -285,7 +307,7 @@ New Features:
 * added compat module for python 3.x
 
 0.1.9 (2017-04-07)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * updated buildout and Makefile.
 * updated conda environment.
@@ -297,53 +319,53 @@ New Features:
 * show status message in log.
 
 0.1.8 (2016-05-02)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * added backward compatibility for owslib.wps without headers and verify parameter.
 
 0.1.7 (2016-05-02)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * added twitcher token parameter.
 * using ssl verify option again.
 
 0.1.6 (2016-03-22)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * added support for bbox parameters.
 
 0.1.5 (2016-03-15)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * fixed wps init (using standard owslib).
 * update makefile.
 
 0.1.4 (2015-10-29)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * using ssl verify option of WebProcessingSerivce
 * moved python requirements to requirements/deploy.txt
 
 0.1.3 (2015-08-20)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * more unit tests.
 * fixed unicode error in wps description.
 * using latest ComplexDataInput from owslib.wps.
 
 0.1.2 (2015-08-14)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * fixed encoding of input text files.
 * more unit tests.
 
 0.1.1 (2015-08-13)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * allow local file path for complex inputs.
 * send complex data inline with requet to remote wps service.
 
 0.1.0 (2014-12-02)
-==================
+^^^^^^^^^^^^^^^^^^
 
 * Initial Release.
