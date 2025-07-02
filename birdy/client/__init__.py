@@ -32,7 +32,7 @@ If a WPS server with a simple `hello` process is running on the local host on po
     <bound method hello of <birdy.client.base.WPSClient object>>
     >>> print(emu.hello.__doc__)
     # Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.
-
+    #
     # Parameters
     # ----------
     # name : string
@@ -58,7 +58,7 @@ The simplest form of authentication is HTTP Basic Auth. Although
 wps processes are not commonly protected by this authentication method,
 here is a simple example of how to use it:
 
-.. code-block :: python
+.. code-block:: python
 
     >>> from birdy import WPSClient
     >>> from requests.auth import HTTPBasicAuth
@@ -70,7 +70,7 @@ the same way as in `requests`.
 
 For example, to connect to a magpie_ protected wps, you can use the requests-magpie_ module:
 
-.. code-block :: python
+.. code-block:: python
 
     >>> from birdy import WPSClient
     >>> from requests_magpie import MagpieAuth
@@ -85,7 +85,7 @@ Birdy automatically manages process output to reflect its default values or Bird
 However, it's possible to customize the output of a process. Each process has an input
 named ``output_formats``, that takes a dictionary as a parameter:
 
-.. code-block :: python
+.. code-block:: python
 
     # example format = {
     #     'output_identifier': {
@@ -93,7 +93,7 @@ named ``output_formats``, that takes a dictionary as a parameter:
     #         'mimetype': <MIME type as a string or None>,
     #     },
     # }
-
+    #
     # A dictionary defining netcdf and json outputs
     >>> custom_format = {
     >>>     'netcdf': {
@@ -102,7 +102,7 @@ named ``output_formats``, that takes a dictionary as a parameter:
     >>>     },
     >>>     'json': {
     >>>         'as_ref': False,
-    >>>         'mimetype': None
+    >>>         'mimetype': None,
     >>>     }
     >>> }
 

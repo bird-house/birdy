@@ -10,7 +10,7 @@
 #
 # All configuration values have a default; values that are commented out
 # serve to show the default.
-
+import datetime
 import os
 import sys
 
@@ -47,6 +47,8 @@ autoapi_options = ["members", "undoc-members", "private-members"]
 autosectionlabel_prefix_document = True
 autosectionlabel_maxdepth = 2
 
+suppress_warnings = ["codeautolink.parse_block"]
+
 # To avoid having to install these and burst memory limit on ReadTheDocs.
 autodoc_mock_imports = [
     "click",
@@ -66,8 +68,7 @@ templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -77,7 +78,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Birdy"
-copyright = "2018, Birdhouse"
+copyright = f"2018-{datetime.datetime.now().year}, Birdhouse"
 author = "Birdhouse"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -347,9 +348,9 @@ nbsphinx_execute = "never"
 
 # Link references always present on RST page.
 rst_epilog = """
-.. _Sphinx: http://sphinx-doc.org/
-.. _reStructuredText: http://sphinx-doc.org/rest.html
+.. _Sphinx: https://www.sphinx-doc.org/en/master/
+.. _reStructuredText: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 .. _Read the Docs: https://readthedocs.org
 .. _Anaconda: https://www.continuum.io/
-.. _Emu: http://emu.readthedocs.io/en/latest/
+.. _Emu: https://emu.readthedocs.io/en/latest/
 """
