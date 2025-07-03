@@ -1,6 +1,13 @@
 Change History
 ==============
 
+v0.9.1 (2025-07-03)
+^^^^^^^^^^^^^^^^^^^
+
+Changes:
+
+* Fixed the `birdy[docs]` pip installation recipe to include the necessary `requirements_docs.txt` file.
+
 v0.9.0 (2025-07-02)
 ^^^^^^^^^^^^^^^^^^^
 
