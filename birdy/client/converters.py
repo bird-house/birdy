@@ -46,7 +46,7 @@ class BaseConverter:  # noqa: D101
 
     @property
     def file(self):
-        """Return output Path object. Download from server if not found."""
+        """Return the output Path object. Download from server if not found."""
         if self._file is None:
             self.output.writeToDisk(path=self.path, verify=self.verify)
             self._file = Path(self.output.filePath)
@@ -385,8 +385,20 @@ def convert(
             pass
 
 
-def all_subclasses(cls):
-    """Return all subclasses of a class."""
+def all_subclasses(cls: object) -> set:
+    """
+    Return all subclasses of a class.
+
+    Parameters
+    ----------
+    cls : object
+        Class to find subclasses of.
+
+    Returns
+    -------
+    set
+        The set of all subclasses of the given class.
+    """
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in all_subclasses(c)]
     )
