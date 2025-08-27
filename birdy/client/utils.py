@@ -142,7 +142,7 @@ def build_process_doc(process: Process) -> str:
         doc.append("Parameters")
         doc.append("----------")
         for i in process.dataInputs:
-            doc.append(f"{sanitize(i.identifier)} : {format_type(i)}")
+            doc.append(f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}")
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
@@ -158,6 +158,45 @@ def build_process_doc(process: Process) -> str:
 
     doc.append("")
     return "\n".join(doc)
+
+
+def format_allowed_values(process: Process, input_id: str) -> str:
+    """
+    Parse AllowedValues manually from raw XML for the given Process and Input.
+
+    Parameters
+    ----------
+    process : owslib.wps.Process
+        A WPS process.
+    input_id: str 
+        An Input identifier. 
+
+    Returns
+    -------
+    str
+        The AllowedValues for the given Input.
+    """
+    root = process._xml 
+    nmax = 10
+    doc = ""
+    for input_elem in process.xpath("DataInputs/Input"):
+        if input_elem.find("ows:Identifier", namespaces=ns).text == input_id: 
+            if input_elem.find(".//ows:AllowedValues", namespaces=ns) is not None:
+                if input_elem.find(".//ows:Range", namespaces=ns) is not None:
+                    min_val = input_elem.find(".//ows:MinimumValue", namespaces=ns).text
+                    max_val = input_elem.find(".//ows:MaximumValue", namespaces=ns).text
+                    doc += "{" + f"'{min_val}'" + "->" + f"'{max_val}'" + "}"
+                else:
+                    values = input_elem.xpath(".//ows:Value", namespaces=ns)
+                    allowed = [v.text for v in values]
+                    av = ", ".join([f"'{i}'" for i in allowed[:nmax]])
+                    if len(allowed) > nmax:
+                        av += ", ..."
+                    doc += "{" + av + "}"
+            else:
+                doc += "{" + f"'{None}'" + "}"
+            break
+    return doc
 
 
 def format_type(obj: Any) -> str:
@@ -178,12 +217,6 @@ def format_type(obj: Any) -> str:
 
     doc = ""
     try:
-        if getattr(obj, "allowedValues", None):
-            av = ", ".join([f"'{i}'" for i in obj.allowedValues[:nmax]])
-            if len(obj.allowedValues) > nmax:
-                av += ", ..."
-            doc += "{" + av + "}"
-
         if getattr(obj, "dataType", None):
             doc += obj.dataType
 
