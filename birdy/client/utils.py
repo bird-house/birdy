@@ -142,7 +142,9 @@ def build_process_doc(process: Process) -> str:
         doc.append("Parameters")
         doc.append("----------")
         for i in process.dataInputs:
-            doc.append(f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}")
+            doc.append(
+                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}"
+            )
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
@@ -168,19 +170,19 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     ----------
     process : owslib.wps.Process
         A WPS process.
-    input_id: str 
-        An Input identifier. 
+    input_id: str
+        An Input identifier.
 
     Returns
     -------
     str
         The AllowedValues for the given Input.
     """
-    root = process._xml 
+    root = process._xml
     nmax = 10
     doc = ""
     for input_elem in process.xpath("DataInputs/Input"):
-        if input_elem.find("ows:Identifier", namespaces=ns).text == input_id: 
+        if input_elem.find("ows:Identifier", namespaces=ns).text == input_id:
             if input_elem.find(".//ows:AllowedValues", namespaces=ns) is not None:
                 if input_elem.find(".//ows:Range", namespaces=ns) is not None:
                     min_val = input_elem.find(".//ows:MinimumValue", namespaces=ns).text
