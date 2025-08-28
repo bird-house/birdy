@@ -143,7 +143,7 @@ def build_process_doc(process: Process) -> str:
         doc.append("----------")
         for i in process.dataInputs:
             doc.append(
-                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier) + format_type(i)}"
+                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}{format_type(i)}"
             )
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
@@ -170,7 +170,7 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     ----------
     process : owslib.wps.Process
         A WPS process.
-    input_id: str
+    input_id : str
         An Input identifier.
 
     Returns
@@ -178,9 +178,11 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     str
         The AllowedValues for the given Input.
     """
-    root = process._xml
     nmax = 10
     doc = ""
+    ns = {"wps": "http://www.opengis.net/wps/1.0.0",
+          "ows": "http://www.opengis.net/ows/1.1",
+    }
     for input_elem in process.xpath("DataInputs/Input"):
         if input_elem.find("ows:Identifier", namespaces=ns).text == input_id:
             if input_elem.find(".//ows:AllowedValues", namespaces=ns) is not None:
