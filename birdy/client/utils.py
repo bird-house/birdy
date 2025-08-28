@@ -180,8 +180,9 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     """
     nmax = 10
     doc = ""
-    ns = {"wps": "http://www.opengis.net/wps/1.0.0",
-          "ows": "http://www.opengis.net/ows/1.1",
+    ns = {
+        "wps": "http://www.opengis.net/wps/1.0.0",
+        "ows": "http://www.opengis.net/ows/1.1",
     }
     xml_tree = process._processDescription
     for input_elem in xml_tree.xpath("DataInputs/Input"):
