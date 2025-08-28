@@ -180,11 +180,11 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     """
     nmax = 10
     doc = ""
-    ns = {
-        "wps": "http://www.opengis.net/wps/1.0.0",
-        "ows": "http://www.opengis.net/ows/1.1",
+    ns = {"wps": "http://www.opengis.net/wps/1.0.0",
+          "ows": "http://www.opengis.net/ows/1.1",
     }
-    for input_elem in process.xpath("DataInputs/Input"):
+    xml_tree = process._processDescription
+    for input_elem in xml_tree.xpath("DataInputs/Input"):
         if input_elem.find("ows:Identifier", namespaces=ns).text == input_id:
             if input_elem.find(".//ows:AllowedValues", namespaces=ns) is not None:
                 if input_elem.find(".//ows:Range", namespaces=ns) is not None:
