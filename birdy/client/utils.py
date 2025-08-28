@@ -180,8 +180,9 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     """
     nmax = 10
     doc = ""
-    ns = {"wps": "http://www.opengis.net/wps/1.0.0",
-          "ows": "http://www.opengis.net/ows/1.1",
+    ns = {
+        "wps": "http://www.opengis.net/wps/1.0.0",
+        "ows": "http://www.opengis.net/ows/1.1",
     }
     for input_elem in process.xpath("DataInputs/Input"):
         if input_elem.find("ows:Identifier", namespaces=ns).text == input_id:
