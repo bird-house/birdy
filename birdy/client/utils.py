@@ -143,7 +143,7 @@ def build_process_doc(process: Process) -> str:
         doc.append("----------")
         for i in process.dataInputs:
             doc.append(
-                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}"
+                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier) + format_type(i)}"
             )
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
