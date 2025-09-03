@@ -121,12 +121,14 @@ def build_wps_client_doc(
     return "\n".join(doc)
 
 
-def build_process_doc(process: Process) -> str:
+def build_process_doc(wps: WebProcessingService, process: Process) -> str:
     """
     Create docstring from process metadata.
 
     Parameters
     ----------
+    wps : owslib.wps.WebProcessingService
+        A WPS service.
     process : owslib.wps.Process
         A WPS process.
 
@@ -136,6 +138,7 @@ def build_process_doc(process: Process) -> str:
         The formatted docstring for this process.
     """
     doc = [process.abstract or "", ""]
+    _process = wps.describeprocess(process.identifier)
 
     # Inputs
     if process.dataInputs:
@@ -143,7 +146,7 @@ def build_process_doc(process: Process) -> str:
         doc.append("----------")
         for i in process.dataInputs:
             doc.append(
-                f"{sanitize(i.identifier)} : {format_allowed_values(process, i.identifier)}{format_type(i)}"
+                f"{sanitize(i.identifier)} : {format_allowed_values(_process, i.identifier)}{format_type(i)}"
             )
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
@@ -180,9 +183,8 @@ def format_allowed_values(process: Process, input_id: str) -> str:
     """
     nmax = 10
     doc = ""
-    ns = {
-        "wps": "http://www.opengis.net/wps/1.0.0",
-        "ows": "http://www.opengis.net/ows/1.1",
+    ns = {"wps": "http://www.opengis.net/wps/1.0.0",
+          "ows": "http://www.opengis.net/ows/1.1",
     }
     xml_tree = process._processDescription
     for input_elem in xml_tree.xpath("DataInputs/Input"):
