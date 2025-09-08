@@ -196,8 +196,19 @@ def format_allowed_values(process: Process, input_id: str) -> str:
                     for r in ranges:
                         min_val = r.find(".//ows:MinimumValue", namespaces=ns).text
                         max_val = r.find(".//ows:MaximumValue", namespaces=ns).text
-                        spacing = r.find(".//ows:Spacing", namespaces=ns).text if r.find(".//ows:Spacing", namespaces=ns) is not None else 1
-                        doc += "{" + f"'{min_val}'" + "->" + f"'{max_val}'" + f" steps: '{spacing}'" + "}"
+                        spacing = (
+                            r.find(".//ows:Spacing", namespaces=ns).text
+                            if r.find(".//ows:Spacing", namespaces=ns) is not None
+                            else 1
+                        )
+                        doc += (
+                            "{"
+                            + f"'{min_val}'"
+                            + "->"
+                            + f"'{max_val}'"
+                            + f" steps: '{spacing}'"
+                            + "}"
+                        )
                 else:
                     values = input_elem.xpath(".//ows:Value", namespaces=ns)
                     allowed = [v.text for v in values]
