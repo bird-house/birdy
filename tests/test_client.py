@@ -48,6 +48,7 @@ def test_wps_supported_languages(wps_offline):  # noqa: D103
 def test_method_factory(wps_offline):
     """Check the order of AllowedValues in the docstring of a WPSClient instance's method."""
     func_doc = wps_offline._method_factory(pid="inout").__doc__
+    assert "{'1', '2', '3', '5', '7', '11'}" in func_doc
     assert "{'rock', 'paper', 'scissor'}" in func_doc
     assert "{'1'->'10' steps: '1'}{'100'->'200' steps: '10'}" in func_doc
 
