@@ -12,7 +12,7 @@ from common import EMU_CAPS_XML, EMU_DESC_XML, URL_EMU, resource_file
 from birdy import WPSClient
 from birdy.client import nb_form
 from birdy.client.base import sort_inputs_key
-from birdy.client.utils import is_embedded_in_request
+from birdy.client.utils import is_embedded_in_request, format_allowed_values
 
 # 52 north WPS
 url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501
@@ -43,6 +43,13 @@ def test_emu_offline(wps_offline):  # noqa: D103
 
 def test_wps_supported_languages(wps_offline):  # noqa: D103
     assert wps_offline.languages.supported == ["en-US", "fr-CA"]
+
+
+def test_method_factory(wps_offline):
+    """Check the order of AllowedValues in the docstring of a WPSClient instance's method."""
+    func_doc = wps_offline._method_factory(pid="inout").__doc__
+    assert "{'rock', 'paper', 'scissor'}" in func_doc
+    assert "{'1'->'10' steps: '1'}{'100'->'200' steps: '10'}" in func_doc
 
 
 @pytest.mark.online
