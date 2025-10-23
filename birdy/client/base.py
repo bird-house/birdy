@@ -284,7 +284,7 @@ class WPSClient:
 
         func_builder = FunctionBuilder(
             name=sanitize(pid),
-            doc=utils.build_process_doc(process),
+            doc=utils.build_process_doc(self._wps, process),
             args=["self"] + input_names,
             defaults=defaults,
             body=body,
