@@ -121,12 +121,14 @@ def build_wps_client_doc(
     return "\n".join(doc)
 
 
-def build_process_doc(process: Process) -> str:
+def build_process_doc(wps: WebProcessingService, process: Process) -> str:
     """
     Create docstring from process metadata.
 
     Parameters
     ----------
+    wps : owslib.wps.WebProcessingService
+        A WPS service.
     process : owslib.wps.Process
         A WPS process.
 
@@ -136,13 +138,16 @@ def build_process_doc(process: Process) -> str:
         The formatted docstring for this process.
     """
     doc = [process.abstract or "", ""]
+    _process = wps.describeprocess(process.identifier)
 
     # Inputs
     if process.dataInputs:
         doc.append("Parameters")
         doc.append("----------")
         for i in process.dataInputs:
-            doc.append(f"{sanitize(i.identifier)} : {format_type(i)}")
+            doc.append(
+                f"{sanitize(i.identifier)} : {format_allowed_values(_process, i.identifier)}{format_type(i)}"
+            )
             doc.append(f"    {i.abstract or i.title}")
             # if i.metadata:
             #    doc[-1] += " ({})".format(', '.join(['`{} <{}>`_'.format(m.title, m.href) for m in i.metadata]))
@@ -158,6 +163,63 @@ def build_process_doc(process: Process) -> str:
 
     doc.append("")
     return "\n".join(doc)
+
+
+def format_allowed_values(process: Process, input_id: str) -> str:
+    """
+    Parse AllowedValues manually from raw XML for the given Process and Input.
+
+    Parameters
+    ----------
+    process : owslib.wps.Process
+        A WPS process.
+    input_id : str
+        An Input identifier.
+
+    Returns
+    -------
+    str
+        The AllowedValues for the given Input.
+    """
+    nmax = 10
+    doc = ""
+    ns = {
+        "wps": "http://www.opengis.net/wps/1.0.0",
+        "ows": "http://www.opengis.net/ows/1.1",
+    }
+    xml_tree = process._processDescription
+    for input_elem in xml_tree.xpath("DataInputs/Input"):
+        if input_elem.find("ows:Identifier", namespaces=ns).text == input_id:
+            if input_elem.find(".//ows:AllowedValues", namespaces=ns) is not None:
+                if input_elem.find(".//ows:Range", namespaces=ns) is not None:
+                    ranges = process.xpath(".//ows:Range", namespaces=ns)
+                    for r in ranges:
+                        min_val = r.find(".//ows:MinimumValue", namespaces=ns).text
+                        max_val = r.find(".//ows:MaximumValue", namespaces=ns).text
+                        spacing = (
+                            r.find(".//ows:Spacing", namespaces=ns).text
+                            if r.find(".//ows:Spacing", namespaces=ns) is not None
+                            else 1
+                        )
+                        doc += (
+                            "{"
+                            + f"'{min_val}'"
+                            + "->"
+                            + f"'{max_val}'"
+                            + f" steps: '{spacing}'"
+                            + "}"
+                        )
+                else:
+                    values = input_elem.xpath(".//ows:Value", namespaces=ns)
+                    allowed = [v.text for v in values]
+                    av = ", ".join([f"'{i}'" for i in allowed[:nmax]])
+                    if len(allowed) > nmax:
+                        av += ", ..."
+                    doc += "{" + av + "}"
+            else:
+                doc += "{" + f"'{None}'" + "}"
+            break
+    return doc
 
 
 def format_type(obj: Any) -> str:
@@ -178,12 +240,6 @@ def format_type(obj: Any) -> str:
 
     doc = ""
     try:
-        if getattr(obj, "allowedValues", None):
-            av = ", ".join([f"'{i}'" for i in obj.allowedValues[:nmax]])
-            if len(obj.allowedValues) > nmax:
-                av += ", ..."
-            doc += "{" + av + "}"
-
         if getattr(obj, "dataType", None):
             doc += obj.dataType
 
