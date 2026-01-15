@@ -6,22 +6,27 @@
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directory: /
+    directory: /.github/workflows
     schedule:
-      interval: monthly
+      interval: "quarterly"
     groups:
       actions:
         patterns:
           - "*"
+        update-types:
+          - patch
+          - minor
+          - major
 
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: monthly
+      interval: "quarterly"
     groups:
-      ci:
-        patterns:
-          - "CI/*"
       python:
         patterns:
           - "requirements*.txt"
+        update-types:
+          - patch
+          - minor
+          - major
