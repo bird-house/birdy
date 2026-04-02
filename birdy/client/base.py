@@ -274,13 +274,11 @@ class WPSClient:
         # convert defaults
         defaults = tuple(defaults)  # if defaults else None
 
-        body = dedent(
-            """
+        body = dedent("""
             inputs = locals()
             inputs.pop('self')
             return self._execute('{pid}', **inputs)
-        """
-        ).format(pid=pid)
+        """).format(pid=pid)
 
         func_builder = FunctionBuilder(
             name=sanitize(pid),
