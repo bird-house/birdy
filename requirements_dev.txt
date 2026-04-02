@@ -1,4 +1,4 @@
-black >=24.2.0
+black[jupyter] >=24.2.0
 build >=1.0
 bump-my-version >=1.0.0
 coverage >=7.5.0
