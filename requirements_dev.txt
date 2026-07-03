@@ -10,7 +10,6 @@ nbval >=0.9.6
 pip >=23.3
 pre-commit >=3.6.2
 pytest >=8.0.0
-pytest-notebook >=0.6.0
 sphinx-codeautolink
 sphinx-copybutton
 sphinx >=7.0.0,<8.2.0

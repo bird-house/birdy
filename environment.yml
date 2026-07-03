@@ -38,7 +38,6 @@ dependencies:
   - flake8 >=7.0.0
   - nbval >=0.9.5
   - pytest >=8.0.0
-  - pytest-notebook >=0.6.0
   # sphinx for rtd
   - ipykernel >=6.25.0
   - nbconvert >=7.3.0
