@@ -415,11 +415,9 @@ class IpyleafletWFS:
         -----
         Widgets created by this function are unique by their widget_name variable.
         """
-        textbox = ipyw.HTML(
-            """
+        textbox = ipyw.HTML("""
             Click on a feature
-        """
-        )
+        """)
         textbox.layout.margin = "20px 20px 20px 20px"
 
         self._set_widget(
@@ -439,8 +437,6 @@ class IpyleafletWFS:
             textbox.value = """
                 <h4>{}<h4>
                 <b style="font-size:10px">{}<b>
-            """.format(
-                key, properties[key]
-            )
+            """.format(key, properties[key])
 
         self._layer.on_click(_update_textbox)

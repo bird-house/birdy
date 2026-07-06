@@ -86,7 +86,7 @@ author = "Birdhouse"
 # built documents.
 #
 # The short X.Y version.
-version = ""
+version = "0.9.1"
 # The full version, including alpha/beta/rc tags.
 release = "0.9.1"
 
@@ -107,8 +107,9 @@ language = "en"
 # directories to ignore when looking for source files.
 exclude_patterns = [
     "_build",
-    "Thumbs.db",
     ".DS_Store",
+    "README.txt",
+    "Thumbs.db",
 ]
 
 # The reST default role (used for this markup: `text`) to use for all
