@@ -15,13 +15,13 @@ repos:
       - id: check-yaml
       - id: debug-statements
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
       - id: black
         args: [ '--target-version=py39' ]
       - id: black-jupyter
   - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
+    rev: 9.0.0a3
     hooks:
     - id: isort
       args: [ '--profile=black' ]
@@ -45,7 +45,7 @@ repos:
         args: [ '--profile=black' ]
         additional_dependencies: [ 'isort==8.0.1' ]
   - repo: https://github.com/numpy/numpydoc
-    rev: v1.10.0
+    rev: v1.11.0rc0
     hooks:
       - id: numpydoc-validation
   - repo: meta
