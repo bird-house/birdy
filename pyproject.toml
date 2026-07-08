@@ -220,6 +220,10 @@ extend_exclude = ["extras"]
 
 [tool.deptry.package_module_name_map]
 "gdal" = "osgeo"
+"netCDF4" = "netCDF4"
+"ipython" = "IPython"
+"pymetalink" = "metalink"
+"python-dateutil" = "dateutil"
 
 [tool.deptry.per_rule_ignores]
 DEP002 = ["cryptography", "lxml", "pyOpenSSL", "wrapt"]
