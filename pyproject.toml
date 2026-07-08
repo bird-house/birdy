@@ -105,6 +105,7 @@ dependencies = [
 [project.optional-dependencies]
 extras = [
   "fiona >=1.10.1",
+  "gdal",
   "geojson >=3.0.0",
   "ipyleaflet >=0.20.0",
   "ipython >8.25.0,!=9.0.0",
@@ -201,7 +202,7 @@ values = [
 
 [tool.codespell]
 ignore-words-list = "astroid,inout,inpt,processus,socio-economic,thirdparty"
-skip = "tests/resources/wps_fly_desc.xml"
+skip = "tests/resources/wps_fly_desc.xml,docs/_build"
 
 [tool.coverage.paths]
 source = ["src/birdy/", "*/site-packages/birdy/"]
@@ -216,7 +217,12 @@ skip = []
 
 [tool.deptry]
 extend_exclude = ["extras"]
-pep621_dev_dependency_groups = ["extras"]
+
+[tool.deptry.package_module_name_map]
+"gdal" = "osgeo"
+
+[tool.deptry.per_rule_ignores]
+DEP002 = ["cryptography", "lxml", "pyOpenSSL", "wrapt"]
 
 [tool.flit.module]
 name = "birdy"

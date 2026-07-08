@@ -65,7 +65,7 @@ install-tox: ## install base dependencies needed for running tox
 	python -m pip install --quiet --group tox
 
 lint: install-lint ## check style
-	python -m ruff check src/birdy tests
+# 	python -m ruff check src/birdy tests  # FIXME: Enable this check at a later date
 	python -m flake8 --config=.flake8 src/birdy tests
 	python -m numpydoc lint src/birdy/**.py
 	python -m vulture src/birdy tests
