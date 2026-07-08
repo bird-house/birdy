@@ -38,7 +38,6 @@ docs = [
   "sphinx-click",
   "sphinx-codeautolink >=0.16.2",
   "sphinx-copybutton >=0.5.2",
-  "sphinx-rtd-theme >=1.0",
   {include-group = "notebooks"}
 ]
 tox = [
