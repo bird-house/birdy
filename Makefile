@@ -1,13 +1,10 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help test test-nb
+.PHONY: clean clean-build clean-pyc clean-test coverage development dist docs help install lint release test test-nb
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
 
-try:
-	from urllib import pathname2url
-except:
-	from urllib.request import pathname2url
+from urllib.request import pathname2url
 
 webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
 endef
@@ -39,8 +36,8 @@ clean-build: ## remove build artifacts
 	find . -name '*.egg' -exec rm -f {} +
 
 clean-docs: ## remove docs artifacts
-	rm -f docs/source/apidoc/birdy*.rst
-	rm -f docs/source/apidoc/modules.rst
+	rm -f docs/apidoc/birdy*.rst
+	rm -f docs/apidoc/modules.rst
 	$(MAKE) -C docs clean
 
 clean-pyc: ## remove Python file artifacts
@@ -50,53 +47,75 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 
 clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
 	rm -f .coverage
-	rm -fr htmlcov/
 	rm -fr .pytest_cache
+	rm -fr .tox/
+	rm -fr htmlcov/
 
-lint: ## check style with flake8
-	flake8 birdy tests
-	black --check --target-version py39 birdy tests notebooks
+install-lint: ## install dependencies needed for linting
+	python -m pip install --quiet --group lint
 
-test: ## run tests quickly with the default Python
-	# py.test
-	pytest -v -m 'not slow and not online'
+install-docs: ## install dependencies needed for building the docs
+	python -m pip install --quiet --group docs
 
-test-nb: ## run tests quickly with the default Python
-	#py.test for notebooks
+install-test: ## install dependencies needed for standard testing
+	python -m pip install --quiet --group test
+
+install-tox: ## install base dependencies needed for running tox
+	python -m pip install --quiet --group tox
+
+lint: install-lint ## check style
+	python -m ruff check src/birdy tests
+	python -m flake8 --config=.flake8 src/birdy tests
+	python -m numpydoc lint src/birdy/**.py
+	python -m vulture src/birdy tests
+	codespell src/birdy tests docs
+	python -m deptry src
+	python -m yamllint --config-file=.yamllint.yaml src/birdy
+
+test: install-test ## run tests quickly with the default Python
+	python -m pytest -v -m 'not slow and not online'
+
+test-nb: install-test ## run notebook tests quickly with the default Python
 	pytest --nbval $(CURDIR)/notebooks/demo --sanitize-with $(CURDIR)/notebooks/output_sanitize.cfg
 
-test-all: ## run tests on every Python version with tox
-	# tox
-	pytest -v
+test-all: install-tox ## run tests on every Python version with tox
+	python -m tox
 
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source birdy -m pytest
-	coverage report -m
-	coverage html
+coverage: install-test ## check code coverage quickly with the default Python
+	python -m coverage run --source src/birdy -m pytest
+	python -m coverage report -m
+	python -m coverage html
 	$(BROWSER) htmlcov/index.html
 
-autodoc: clean-docs ## create sphinx-apidoc files
-	mkdir -p docs/source/apidoc/
-	sphinx-apidoc -o docs/source/apidoc/ --private --module-first --separate birdy
+autodoc: install-docs clean-docs ## create sphinx-apidoc files:
+	sphinx-apidoc -o docs/apidoc --private --module-first --separate src/birdy
 
-docs: autodoc ## generate Sphinx HTML documentation, including API docs
+linkcheck: autodoc ## run checks over all external links found throughout the documentation
+	$(MAKE) -C docs linkcheck
+
+build-docs: autodoc ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+docs: build-docs  ## open the built documentation in a web browser
+ifndef READTHEDOCS
+	$(BROWSER) docs/_build/html/index.html
+endif
 
-release: dist ## package and upload a release
-	twine upload dist/*
+servedocs: autodoc ## compile the docs while watching for changes
+	$(MAKE) -C docs livehtml
 
 dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
+	python -m flit build
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
-	pip install -e .
+release: dist ## package and upload a release
+	python -m flit publish dist/*
 
-develop: clean ## like install but with testing packages
-	pip install -e .[dev]
+install: clean ## install the package to the active Python's site-packages
+	python -m pip install --no-user .
+
+development: clean ## install the package to the active Python's site-packages
+	python -m pip install --group dev
+	python -m pip install --no-user --editable .[extras]
+	prek install

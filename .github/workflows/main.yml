@@ -1,101 +1,155 @@
-name: Build Tests ⚙️
+name: birdy Testing Suite
 
 on:
   push:
     branches:
-      - master
+      - main
+    paths-ignore:
+      - .cruft.json
+      - CHANGELOG.rst
+      - README.rst
+      - pyproject.toml
+      - tests/test_birdy.py
+      - src/birdy/__init__.py
   pull_request:
+
+concurrency:
+  # For a given workflow, if we push to the same branch, cancel all previous builds on that branch except on master.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
 
 jobs:
   lint:
-    name: Black (Python${{ matrix.python-version }})
+    name: Lint (Python${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version:
-          - "3.x"
+        python-version: [ "3.14" ]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - name: Set up Python${{ matrix.python-version }}
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install flake8 and black
+          cache: pip
+      - name: Install CI libraries
         run: |
-          python -m pip install flake8 black
-      - name: Check formatting with flake8 and black ⚙️
+          python -m pip install --require-hashes -r CI/requirements_ci.txt
+      - name: Environment Caching
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            .tox
+          key: ${{ hashFiles('pyproject.toml', 'tox.toml') }}-lint
+      - name: Run linting suite
         run: |
-          make lint
+          python -m tox -e lint
 
-  docs:
-    name: Build docs 🏗️
-    runs-on: ubuntu-latest
+  test-pypi:
+    name: Test with Python${{ matrix.python-version }} (tox, ${{ matrix.os }})
+    needs: lint
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version:
-          - "3.10"
+        os: [ 'ubuntu-latest' ]
+        python-version: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-      - name: Install pandoc
-        run: |
-          sudo apt-get -y install pandoc
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - name: Set up Python${{ matrix.python-version }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Birdy 🐦
+          cache: pip
+      - name: Install CI libraries
         run: |
-          python -m pip install --editable ".[docs]"
-      - name: Check dependencies
+          python -m pip install --require-hashes -r CI/requirements_ci.txt
+      - name: Environment Caching
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: .tox
+          key: ${{ matrix.os }}-Python${{ matrix.python-version }}-${{ hashFiles('pyproject.toml', 'tox.toml') }}
+      - name: Test with tox
         run: |
-          python -m pip list
-          python -m pip check
-      - name: Build docs 🏗️
-        run: |
-          make docs
+          python -m tox
+      - name: Report Coverage
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
+        with:
+          flag-name: run-${{ matrix.python-version }}-pypi
+          parallel: true
 
-  build:
-    name: Testing with Python${{ matrix.python-version }}
+  test-conda:
+    name: Test with Python${{ matrix.python-version }} (Anaconda, ${{ matrix.os }})
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest' ]
+        python-version: [ 3.10", "3.11", "3.12", "3.13", "3.14" ]
+    defaults:
+      run:
+        shell: bash -l {0}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        with:
+          egress-policy: audit
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Setup Conda (Micromamba) with Python${{ matrix.python-version }}
+        uses: mamba-org/setup-micromamba@0dea6379afdaffa5d528b3d1dabc45da37f443fc # v2.0.4
+        with:
+          cache-downloads: true
+          cache-environment: true
+          environment-file: environment-dev.yml
+          create-args: >-
+            python=${{ matrix.python-version }}
+      - name: Install birdy
+        run: |
+          python -m pip install --no-deps .
+      - name: Check versions
+        run: |
+          micromamba list
+          python -m pip check || true
+      - name: Test with pytest
+        run: |
+          python -m pytest --cov birdy --cov-report=lcov
+      - name: Report Coverage
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
+        with:
+          flag-name: run-${{ matrix.python-version }}-conda
+          parallel: true
+
+  finish:
     needs:
-     - lint
+      - test-pypi
+      - test-conda
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.9", "3.10", "3.11", "3.12", "3.13" ]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
+          disable-sudo: true
           egress-policy: audit
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
         with:
-          persist-credentials: false
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Birdy 🐦
-        run: |
-          python -m pip install --editable ".[dev]"
-      - name: Check dependencies
-        run: |
-          python -m pip list
-          python -m pip check
-      - name: Test with pytest ⚙️
-        run: |
-          make test
+          parallel-finished: true

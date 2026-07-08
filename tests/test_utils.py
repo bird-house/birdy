@@ -65,7 +65,7 @@ class TestEncode:  # noqa: D101
         assert isinstance(nc, bytes)
 
     def test_file(self):  # noqa: D102
-        with open(self.nc, "rb") as fp:
+        with Path(self.nc).open("rb") as fp:
             nc, enc = utils.embed(fp, "application/x-netcdf")
             assert isinstance(nc, bytes)
 
@@ -100,14 +100,10 @@ class TestGuessType:  # noqa: D101
     def test_path(self):  # noqa: D102
         from pathlib import Path
 
-        mime, enc = utils.guess_type(
-            Path("shape.json"), ["wrong", "application/geo+json"]
-        )
+        mime, enc = utils.guess_type(Path("shape.json"), ["wrong", "application/geo+json"])
         assert mime == "application/geo+json"
 
-        mime, enc = utils.guess_type(
-            Path("data.nc"), ["application/x-ogc-dods", "application/x-netcdf"]
-        )
+        mime, enc = utils.guess_type(Path("data.nc"), ["application/x-ogc-dods", "application/x-netcdf"])
         assert mime == "application/x-netcdf"
 
         mime, enc = utils.guess_type(
@@ -122,10 +118,7 @@ def test_is_opendap_url():
     # This test uses online requests, and the servers are not as stable as hoped.
     # We should record these requests so that the tests don't break when the servers are down.
 
-    url = (
-        "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/dodsC/"
-        "birdhouse/nrcan/nrcan_canada_daily_v2/tasmin/nrcan_canada_daily_tasmin_2017.nc"
-    )
+    url = "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/dodsC/birdhouse/nrcan/nrcan_canada_daily_v2/tasmin/nrcan_canada_daily_tasmin_2017.nc"
     assert utils.is_opendap_url(url)
 
     url = url.replace("dodsC", "fileServer")

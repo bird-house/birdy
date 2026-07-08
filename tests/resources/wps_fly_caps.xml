@@ -124,7 +124,7 @@
     <wps:Process wps:processVersion="0.2">
       <ows:Identifier>sdm_gbiffetch</ows:Identifier>
       <ows:Title>Species distribution Model (GBIF data fetch only)</ows:Title>
-      <ows:Abstract>Species occurence search in Global Biodiversity              Infrastructure Facillity (GBIF)</ows:Abstract>
+      <ows:Abstract>Species occurrence search in Global Biodiversity              Infrastructure Facillity (GBIF)</ows:Abstract>
       <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
       <ows:Metadata xlink:href="http://gbif.org/" xlink:title="GBIF" xlink:type="simple"/>
     </wps:Process>
@@ -253,13 +253,13 @@
     <wps:Process wps:processVersion="0.1">
       <ows:Identifier>EO_COPERNICUS_search</ows:Identifier>
       <ows:Title>EO COPERNICUS search products</ows:Title>
-      <ows:Abstract>Search for EO Data in the scihub.copernicus archiveoutput is a list of Product according to the querry and a graphical visualisation.</ows:Abstract>
+      <ows:Abstract>Search for EO Data in the scihub.copernicus archive. Output is a list of Product according to the query and a graphical visualisation.</ows:Abstract>
       <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     </wps:Process>
     <wps:Process wps:processVersion="0.1">
       <ows:Identifier>EO_COPERNICUS_fetch</ows:Identifier>
       <ows:Title>EO COPERNICUS search products and fetch them into the compute provider</ows:Title>
-      <ows:Abstract>Search for EO Data in the scihub.copernicus archiveproducts will be fechted into the local disc system.outuput is a list of produces and a graphical visualisation.</ows:Abstract>
+      <ows:Abstract>Search for EO Data in the scihub.copernicus archive. Products will be fechted into the local disc system. Output is a list of produces and a graphical visualisation.</ows:Abstract>
       <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     </wps:Process>
     <wps:Process wps:processVersion="0.10">
@@ -271,13 +271,13 @@
     <wps:Process wps:processVersion="0.2">
       <ows:Identifier>EO_COPERNICUS_rgb</ows:Identifier>
       <ows:Title>SENTINEL RGB images</ows:Title>
-      <ows:Abstract>Based on a search querry the appropriate products are ploted as RGB graphics</ows:Abstract>
+      <ows:Abstract>Based on a search query the appropriate products are plotted as RGB graphics.</ows:Abstract>
       <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     </wps:Process>
     <wps:Process wps:processVersion="0.1">
       <ows:Identifier>EO_COPERNICUS_indices</ows:Identifier>
       <ows:Title>EO indices</ows:Title>
-      <ows:Abstract>Derivateing indices like NDVI based on</ows:Abstract>
+      <ows:Abstract>Derivateing indices like NDVI based on.</ows:Abstract>
       <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     </wps:Process>
     <wps:Process wps:processVersion="1.0">

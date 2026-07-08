@@ -1,0 +1,21 @@
+# This CITATION.cff file was generated with cffinit and templated with cookiecutter.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: "1.2.0"
+title: "birdy"
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: "software"
+authors:
+  - given-names: 'Carsten'
+    family-names: 'Ehbrecht'
+    email: 'ehbrecht@dkrz.de'
+contact:
+  - given-names: 'Carsten'
+    family-names: 'Ehbrecht'
+    email: 'ehbrecht@dkrz.de'
+repository-code: "https://github.com/bird-house/birdy"
+abstract: "Birdy provides a command-line tool to work with Web Processing Services."
+license: "Apache-2.0"
+version: "0.10.0"

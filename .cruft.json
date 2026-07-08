@@ -1,0 +1,42 @@
+{
+  "template": "https://github.com/Ouranosinc/cookiecutter-pypackage",
+  "commit": "ff6aa7897fd726714c530e1ef16d1c4cae2c6293",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "full_name": "Carsten Ehbrecht",
+      "email": "ehbrecht@dkrz.de",
+      "github_username": "bird-house",
+      "orcid_id": "N/A",
+      "project_name": "birdy",
+      "project_slug": "birdy",
+      "project_short_description": "Birdy provides a command-line tool to work with Web Processing Services.",
+      "pypi_username": "Ouranos",
+      "version": "0.10.0",
+      "use_pytest": "y",
+      "use_conda": "y",
+      "make_docs": "y",
+      "add_translations": "n",
+      "command_line_interface": "Click",
+      "create_author_file": "y",
+      "open_source_license": "Apache Software License 2.0",
+      "ai_tools_policy": "Strict",
+      "generated_with_cruft": "y",
+      "__gh_slug": "https://github.com/bird-house/birdy",
+      "_copy_without_render": [
+        ".github/workflows/auto-accept-ci-changes.yml",
+        ".github/workflows/cache-cleaner.yml",
+        ".github/workflows/codeql.yml",
+        ".github/workflows/dependency-review.yml",
+        ".github/workflows/label.yml",
+        ".github/workflows/publish-pypi.yml",
+        ".github/workflows/scorecard.yml",
+        ".github/workflows/tag-testpypi.yml",
+        ".github/workflows/workflow-warning.yml"
+      ],
+      "_template": "https://github.com/Ouranosinc/cookiecutter-pypackage",
+      "_commit": "ff6aa7897fd726714c530e1ef16d1c4cae2c6293"
+    }
+  },
+  "directory": null
+}

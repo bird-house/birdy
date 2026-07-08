@@ -135,7 +135,7 @@
     <ProcessDescription wps:processVersion="1.5" storeSupported="true" statusSupported="true">
         <ows:Identifier>hello</ows:Identifier>
         <ows:Title>Say Hello</ows:Title>
-        <ows:Abstract>Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.</ows:Abstract>
+        <ows:Abstract>Just says a friendly Hello. Returns a literal string output with Hello plus the inputted name.</ows:Abstract>
         <ows:Metadata xlink:title="User Guide" xlink:type="simple"
             xlink:href="https://emu.readthedocs.io/en/latest/processes.html"
         />
@@ -198,7 +198,7 @@
             </Output>
             <Output>
                 <ows:Identifier>output2</ows:Identifier>
-                <ows:Title>Output2 substract 1 result</ows:Title>
+                <ows:Title>Output2 subtract 1 result</ows:Title>
                 <ows:Abstract></ows:Abstract>
                 <LiteralOutput>
                 <ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#string">string</ows:DataType>
@@ -685,7 +685,7 @@
                 <ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#string">string</ows:DataType>
                 <ows:AllowedValues>
                     <ows:Value>add</ows:Value>
-                    <ows:Value>substract</ows:Value>
+                    <ows:Value>subtract</ows:Value>
                     <ows:Value>divide</ows:Value>
                     <ows:Value>multiply</ows:Value>
                 </ows:AllowedValues>

@@ -14,6 +14,7 @@ from birdy.client import nb_form
 from birdy.client.base import sort_inputs_key
 from birdy.client.utils import is_embedded_in_request
 
+
 # 52 north WPS
 url_52n = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService?service=WPS&version=1.0.0&request=GetCapabilities"  # noqa: E501
 
@@ -32,7 +33,7 @@ def wps_offline():  # noqa: D103
 def process():
     """Return an owslib.Process instance taken from Finch.subset_gridpoint."""
     reader = owslib.wps.WPSDescribeProcessReader()
-    root = reader.readFromString(open(resource_file("process_description.xml")).read())
+    root = reader.readFromString(Path(resource_file("process_description.xml")).open().read())
     xml = root.findall("ProcessDescription")[0]
     return owslib.wps.Process(xml)
 
@@ -59,16 +60,16 @@ def test_52north_offline():
     """Check offline 52north processes."""
     WPSClient(
         url_52n,
-        caps_xml=open(resource_file("wps_52n_caps.xml"), "rb").read(),
-        desc_xml=open(resource_file("wps_52n_desc.xml"), "rb").read(),
+        caps_xml=Path(resource_file("wps_52n_caps.xml")).open("rb").read(),
+        desc_xml=Path(resource_file("wps_52n_desc.xml")).open("rb").read(),
     )
 
 
 def test_flyingpigeon_offline():  # noqa: D103
     WPSClient(
         "https://test.org",
-        caps_xml=open(resource_file("wps_fly_caps.xml"), "rb").read(),
-        desc_xml=open(resource_file("wps_fly_desc.xml"), "rb").read(),
+        caps_xml=Path(resource_file("wps_fly_caps.xml")).open("rb").read(),
+        desc_xml=Path(resource_file("wps_fly_desc.xml")).open("rb").read(),
     )
 
 
@@ -117,7 +118,7 @@ def test_wps_client_dummy_process(wps):  # noqa: D103
 @pytest.mark.online
 def test_wps_wordcounter(wps):  # noqa: D103
     fn = "/tmp/text.txt"
-    with open(fn, "w") as f:
+    with Path(fn).open("w") as f:
         f.write("Just an example")
     out = wps.wordcounter(text=fn).get(asobj=True)
     assert len(out.output) == 3
@@ -179,7 +180,7 @@ def test_asobj(wps):  # noqa: D103
     out = resp.get(asobj=True)
     assert "URL" in out.output
 
-    with open(resource_file("dummy.nc"), "rb") as fp:
+    with Path(resource_file("dummy.nc")).open("rb") as fp:
         resp = wps.ncmeta(dataset=fp)
         out = resp.get(asobj=True)
         assert "URL" in out.output
@@ -359,13 +360,7 @@ def test_sort_inputs_conditions():
 def count_class_methods(class_):  # noqa: D103
     import types
 
-    return len(
-        [
-            f
-            for f in list(class_.__dict__.values())
-            if isinstance(f, types.MethodType) and not f.__name__.startswith("_")
-        ]
-    )
+    return len([f for f in list(class_.__dict__.values()) if isinstance(f, types.MethodType) and not f.__name__.startswith("_")])
 
 
 class TestIsEmbedded:  # noqa: D101
@@ -409,6 +404,4 @@ class TestIsEmbedded:  # noqa: D101
 
 def test_verbose_deprecation():  # noqa: D103
     with pytest.warns(DeprecationWarning):
-        WPSClient(
-            url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, verbose=True
-        )
+        WPSClient(url=URL_EMU, caps_xml=EMU_CAPS_XML, desc_xml=EMU_DESC_XML, verbose=True)

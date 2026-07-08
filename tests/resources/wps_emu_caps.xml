@@ -121,7 +121,7 @@
         <wps:Process wps:processVersion="1.5">
             <ows:Identifier>hello</ows:Identifier>
             <ows:Title>Say Hello</ows:Title>
-            <ows:Abstract>Just says a friendly Hello. Returns a literal string output with Hello plus the inputed name.</ows:Abstract>
+            <ows:Abstract>Just says a friendly Hello. Returns a literal string output with Hello plus the inputted name.</ows:Abstract>
             <ows:Keywords>
                 <ows:Keyword>hello</ows:Keyword>
                 <ows:Keyword>demo</ows:Keyword>
