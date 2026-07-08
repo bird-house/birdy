@@ -1,7 +1,7 @@
 Welcome to birdy's documentation!
 =================================
 
-**birdy**: Birdy provides a command-line tool to work with Web Processing Services.
+**Birdy**: Birdy provides a command-line tool to work with Web Processing Services.
 
 Need help?
 ^^^^^^^^^^

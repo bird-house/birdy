@@ -22,6 +22,7 @@ Simply set the input to a valid path or file object and the client will take car
 
 Example
 -------
+
 If a WPS server with a simple `hello` process is running on the local host on port 5000:
 
 .. code-block:: python
@@ -51,6 +52,7 @@ If a WPS server with a simple `hello` process is running on the local host on po
 
 Authentication
 --------------
+
 If you want to connect to a server that requires authentication, the :py:class:`WPSClient` class accepts
 an `auth` argument that behaves exactly like in the popular `requests` module (see `requests Authentication`_)
 
@@ -82,10 +84,10 @@ Output format
 
 Birdy automatically manages process output to reflect its default values or Birdy's own defaults.
 
-However, it's possible to customize the output of a process. Each process has an input
-named ``output_formats``, that takes a dictionary as a parameter:
+However, it's possible to customize the output of a process.
+Each process has an input named ``output_formats``, that takes a dictionary as a parameter:
 
-.. code-block:: python
+.. code-block::
 
     # example format = {
     #     'output_identifier': {
@@ -95,6 +97,9 @@ named ``output_formats``, that takes a dictionary as a parameter:
     # }
     #
     # A dictionary defining netcdf and json outputs
+
+.. code-block:: python
+
     >>> custom_format = {
     >>>     'netcdf': {
     >>>         'as_ref': True,

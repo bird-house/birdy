@@ -20,7 +20,7 @@ template_env = Environment(
 
 
 class BirdyCLI(click.Group):
-    """
+    r"""
     BirdyCLI is an implementation of :py:class:`click.MultiCommand`.
 
     Adds each process of a Web Processing Service as command to the command-line interface.
@@ -35,7 +35,7 @@ class BirdyCLI(click.Group):
         A WPS GetCapabilities response for testing.
     desc_xml : str
         A WPS DescribeProcess response with "identifier=all" for testing.
-    **attrs : dict
+    \*\*attrs : dict
         Additional attributes.
     """
 

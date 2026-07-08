@@ -17,6 +17,7 @@
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
+import datetime
 import os
 import sys
 from typing import Any
@@ -123,7 +124,7 @@ html_theme = "alabaster"
 # theme further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {"style_external_links": True}
+html_theme_options = {}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -29,7 +29,7 @@ from birdy.utils import embed, fix_url, guess_type, sanitize
 
 # TODO: Support passing ComplexInput's data using POST.
 class WPSClient:
-    """
+    r"""
     Returns a class where every public method is a WPS process available at the given url.
 
     Parameters
@@ -65,7 +65,7 @@ class WPSClient:
         Passed to :py:class:`owslib.wps.WebProcessingService` (e.g. 'fr-CA', 'en_US').
     lineage : bool
         If True, the Execute operation includes lineage information.
-    **kwds : dict
+    \*\*kwds : dict
         Passed to :py:class:`owslib.wps.WebProcessingService`.
 
     Examples
