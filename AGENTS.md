@@ -15,7 +15,7 @@ Rules for AI coding agents assisting with this repository. AI-generated code is 
 
 ## Setup
 
-> Add your project's setup commands here (npm install, go build, make, etc.)
+The development environment can be set up in Python using the following command: `$ make development`
 
 ## Testing
 
