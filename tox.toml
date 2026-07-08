@@ -1,6 +1,6 @@
 envlist = [
   "lint",
-  {product = [{prefix = "py3.", start = 10, stop = 14}]},
+  {product = [{prefix = "py3.", start = 10, stop = 14}, {extras = ["", "extras"]}]},
   "docs"
 ]
 skip_missing_interpreters = true
@@ -14,10 +14,6 @@ commands = [
 ]
 commands_post = []
 allowlist_externals = ["make"]
-
-[env.extras]
-description = "Run tests with extras under {basepython}"
-extras = ["extras"]
 
 [env.lint]
 description = "Run code quality compliance tests under {basepython}"
@@ -33,13 +29,18 @@ allowlist_externals = ["make"]
 [env_run_base]
 description = "Run tests with pytest under {basepython}"
 setenv = {PYTEST_ADDOPTS = "--color=yes --cov=birdy --cov-report=lcov", PYTHONPATH = "{toxinidir}"}
-passenv = ["COVERALLS_*", "GITHUB_*"]
+passenv = ["CI", "COVERALLS_*", "GDAL_VERSION", "GITHUB_*"]
 download = true
 dependency_groups = ["test"]
 install_command = ["python", "-m", "pip", "install", "--no-user", "{opts}", "{packages}"]
-commands_pre = [["pip", "list"], ["pip", "check"]]
+commands_pre = [
+  [{replace = "if", condition = "factor.extras", then = ["python", "-m", "pip", "install", "--no-user", "--upgrade", "--force-reinstall", "--no-deps", "--no-binary", "gdal", "gdal[numpy]=={env:GDAL_VERSION}.*"], extend = true}],
+  [{replace = "if", condition = "factor.extras", then = ["python", "-m", "pip", "install", "--no-user", ".[extras]"], extend = true}],
+  ["pip", "list"],
+  ["pip", "check"]
+]
 commands = [
-  ["pytest", "{posargs}"]
+  ["pytest", "-m", "not slow and not online", "{posargs}"]
 ]
 commands_post = [
   ["coverage", "report"]
@@ -50,4 +51,4 @@ commands_post = [
 "3.11" = ["py3.11"]
 "3.12" = ["py3.12"]
 "3.13" = ["py3.13"]
-"3.14" = ["py3.14"]
+"3.14" = ["py3.14-extras"]
