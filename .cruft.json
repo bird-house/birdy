@@ -20,7 +20,7 @@
       "command_line_interface": "Click",
       "create_author_file": "y",
       "open_source_license": "Apache Software License 2.0",
-      "ai_tools_policy": "Strict",
+      "ai_tools_policy": "Standard",
       "generated_with_cruft": "y",
       "__gh_slug": "https://github.com/bird-house/birdy",
       "_copy_without_render": [
