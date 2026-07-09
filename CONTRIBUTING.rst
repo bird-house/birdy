@@ -256,7 +256,8 @@ We ask that contributors are forthcoming with this information so that the effor
 Code Review
 ~~~~~~~~~~~
 
-All AI-assisted code contributions must be reviewed by the contributor before opening a Pull Request, and by at least one human reviewer before approval and merging into the `main`` branch.
+All AI-assisted code contributions should be reviewed by the contributor before opening a Pull Request, except for minor or marginal changes, which may not require that step.
+All contributions should still be reviewed by at least one human reviewer before approval and merging into the `main` branch.
 
 Low Effort Contributions
 ~~~~~~~~~~~~~~~~~~~~~~~~

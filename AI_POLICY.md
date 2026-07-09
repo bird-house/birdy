@@ -4,22 +4,17 @@
 
 You are responsible for every line of code you submit, regardless of how it was produced. If you use AI tools, review and verify all output before committing.
 
-## Pull Requests
-
-Pull Requests descriptions must be drafted by a human and adhere to the template selected on creation.
-Summaries of changes posted by AI are not accepted in Pull Requests.
-
 ## AI Tool Usage
 
-AI tool usage is restricted. Get maintainer approval before using AI tools on contributions.
+AI tools are permitted. Standard review process applies to all contributions.
 
 ## AI-Generated Code
 
-AI-generated code is not accepted. Pull requests identified as AI-generated will not be merged.
+AI-generated code must be reviewed by a human maintainer before merging. Keep changes atomic -- you must be able to explain any line on request.
 
 ## Disclosure
 
-If AI tools were used in any capacity (research, debugging, understanding code), note it in the commit message:
+Mark AI involvement in commit messages with a trailer:
 
 ```text
 Assisted-by: <tool name>
@@ -32,12 +27,12 @@ Code changes from less sophisticated phrase-completion tools do not require an A
 - Submitting AI output you have not read and understood
 - Using AI to generate code that circumvents tests or CI checks
 - Feeding reviewer feedback back into AI without understanding it first
-- Any AI-generated code contributions
+- AI-generated PR descriptions -- describe your own work
 - AI-generated review comments on other contributors' PRs
 
 ## AI in CI/CD
 
-AI tools in CI/CD pipelines require explicit maintainer approval.
+AI tools may be used in CI/CD pipelines for code analysis, test generation, and deployment.
 
 ## Training Data
 
@@ -45,11 +40,15 @@ This project requests that its code not be used for AI model training. We ask th
 
 ## Low Effort Contributions
 
-AI-generated low-effort contributions are unacceptable; Human contributors must be capable of explaining their changes, responding to review comments, and precisely adapting their contributions as requested.
+AI-generated low-effort contributions are unacceptable; Human and AI contributors must be capable of explaining their changes, responding to review comments, and precisely adapting their contributions as requested.
+
+## Licensing
+
+AI-generated contributions must be compatible with this project's license. Contributors must be able to certify their submissions under the project's contribution terms.
 
 ## Enforcement
 
-Maintainers may close AI-generated PRs without detailed feedback. Repeated low-quality AI submissions may result in the contributor being asked to stop using AI tools for contributions.
+Maintainers may close AI-generated PRs that do not meet these standards without detailed feedback.
 
 ## Policy Evolution
 
