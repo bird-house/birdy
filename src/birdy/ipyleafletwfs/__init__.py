@@ -8,12 +8,13 @@ It uses owslib to get a geojson out of a WFS service, and then creates an ipylea
 Dependencies
 ------------
 
-Ipyleaflet and Ipywidgets dependencies are included in the requirements_extra.txt, at the root of this repository.
+Ipyleaflet and Ipywidgets dependencies are included in the "extras" recipe of the package metadata.
+
 To install:
 
 .. code-block:: console
 
-    $ pip install -r requirements_extra.txt
+    $ pip install -e "birdhouse-birdy[extras]"
 
 Use
 ---

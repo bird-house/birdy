@@ -22,9 +22,19 @@ Basic Usage
 .. toctree::
    :maxdepth: 1
 
-   notebooks/examples/emu-example
-   notebooks/examples/Interactive
-   notebooks/examples/owslib
+   examples/emu-example
+   examples/Interactive
+   examples/owslib
+
+Ipyleaflet WFS
+==============
+
+.. toctree::
+   :maxdepth: 1
+
+   ipyleaflet/quickstart-template
+   ipyleaflet/ipyleafletwfs_guide
+   ipyleaflet/wfs_constructor
 
 Demo
 ====
@@ -32,4 +42,4 @@ Demo
 .. toctree::
    :maxdepth: 1
 
-   notebooks/demo/agu2018_demo
+   demo/agu2018_demo

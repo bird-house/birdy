@@ -87,7 +87,7 @@ Birdy automatically manages process output to reflect its default values or Bird
 However, it's possible to customize the output of a process.
 Each process has an input named ``output_formats``, that takes a dictionary as a parameter:
 
-.. code-block::
+.. code-block:: python
 
     # example format = {
     #     'output_identifier': {

@@ -13,6 +13,9 @@ on:
     paths-ignore:
       - .cruft.json
       - .editorconfig
+      - .github/*.in
+      - .github/*.md
+      - .github/*.txt
       - .github/**.yml
       - .gitignore
       - .pre-commit-config.yaml
@@ -20,9 +23,6 @@ on:
       - .zenodo.json
       - AUTHORS.rst
       - CHANGELOG.rst
-      - CI/**/*.in
-      - CI/**/*.py
-      - CI/**/*.txt
       - CITATION.cff
       - CODE_OF_CONDUCT.md
       - CONTRIBUTING.rst

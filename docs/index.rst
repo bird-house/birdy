@@ -18,7 +18,7 @@ Navigation
 
    readme
    installation
-   examples
+   notebooks/index
    development
    api
    contributing
