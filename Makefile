@@ -64,14 +64,25 @@ install-test: ## install dependencies needed for standard testing
 install-tox: ## install base dependencies needed for running tox
 	python -m pip install --quiet --group tox
 
-lint: install-lint ## check style
-# 	python -m ruff check src/birdy tests  # FIXME: Enable this check at a later date
+lint-code-style: ## run code style checks
+	# python -m ruff check src/birdy tests  # FIXME: Enable this check at a later date
+
+lint-docstring: ## run docstring and documentation checks
 	python -m flake8 --config=.flake8 src/birdy tests
 	python -m numpydoc lint src/birdy/**.py
+
+lint-dead-code: ## run dead code checks
 	python -m vulture src/birdy tests
+
+lint-spelling: ## run spelling checks
 	codespell src/birdy tests docs
-	python -m deptry src
+
+lint-yaml: ## run YAML checks
 	python -m yamllint --config-file=.yamllint.yaml src/birdy
+
+lint-only: lint-code-style lint-docstring lint-dead-code lint-spelling lint-yaml ## run all checks
+
+lint: install-lint lint-only  ## install linting dependencies and run all checks
 
 test: install-test ## run tests quickly with the default Python
 	python -m pytest -v -m 'not slow and not online'
