@@ -67,12 +67,15 @@ install-tox: ## install base dependencies needed for running tox
 lint-code-style: ## run code style checks
 	# python -m ruff check src/birdy tests  # FIXME: Enable this check at a later date
 
+lint-dead-code: ## run dead code checks
+	python -m vulture src/birdy tests
+
+lint-dependencies: ## run dependency checks
+	python -m deptry src
+
 lint-docstring: ## run docstring and documentation checks
 	python -m flake8 --config=.flake8 src/birdy tests
 	python -m numpydoc lint src/birdy/**.py
-
-lint-dead-code: ## run dead code checks
-	python -m vulture src/birdy tests
 
 lint-spelling: ## run spelling checks
 	codespell src/birdy tests docs
@@ -80,7 +83,7 @@ lint-spelling: ## run spelling checks
 lint-yaml: ## run YAML checks
 	python -m yamllint --config-file=.yamllint.yaml src/birdy
 
-lint-only: lint-code-style lint-docstring lint-dead-code lint-spelling lint-yaml ## run all checks
+lint-only: lint-code-style lint-dead-code lint-dependencies lint-docstring lint-spelling lint-yaml ## run all checks
 
 lint: install-lint lint-only  ## install linting dependencies and run all checks
 
