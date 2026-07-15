@@ -16,10 +16,12 @@ To install birdy, run this command in your terminal:
 
     python -m pip install birdhouse-birdy
 
-..
-    .. code-block:: console
 
-        conda install birdy
+Or, alternatively:
+
+.. code-block:: console
+
+    conda install birdy
 
 This is the preferred method to install birdy, as it will always install the most recent stable release.
 

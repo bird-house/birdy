@@ -1,4 +1,4 @@
-.PHONY: clean clean-build clean-pyc clean-test coverage development dist docs help install lint release test test-nb
+.PHONY: clean clean-build clean-pyc clean-test coverage develop dist docs help install lint release test test-nb
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -115,7 +115,7 @@ release: dist ## package and upload a release
 install: clean ## install the package to the active Python's site-packages
 	python -m pip install --no-user .
 
-development: clean ## install the package to the active Python's site-packages
+develop: clean ## install the package to the active Python's site-packages
 	python -m pip install --group dev
 	python -m pip install --no-user --editable .[extras]
 	prek install

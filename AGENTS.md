@@ -14,7 +14,7 @@ Rules for AI coding agents working in this repository.
 
 ## Setup
 
-The development environment can be set up in Python using the following command: `$ make development`
+The development environment can be set up in Python using the following command: `$ make develop`
 
 ## Testing
 

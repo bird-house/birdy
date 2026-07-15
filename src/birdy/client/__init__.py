@@ -89,25 +89,14 @@ Each process has an input named ``output_formats``, that takes a dictionary as a
 
 .. code-block:: python
 
-    # example format = {
-    #     'output_identifier': {
-    #         'as_ref': <True, False or None>
-    #         'mimetype': <MIME type as a string or None>,
-    #     },
-    # }
-    #
-    # A dictionary defining netcdf and json outputs
-
-.. code-block:: python
-
     >>> custom_format = {
-    >>>     'netcdf': {
-    >>>         'as_ref': True,
-    >>>         'mimetype': 'application/json',
+    >>>     'netcdf': { # <output_identifier>
+    >>>         'as_ref': True, # <True, False or None>
+    >>>         'mimetype': 'application/json', # <MIME type as a string or None>,
     >>>     },
-    >>>     'json': {
-    >>>         'as_ref': False,
-    >>>         'mimetype': None,
+    >>>     'json': { # <output_identifier>
+    >>>         'as_ref': False, # <True, False or None>
+    >>>         'mimetype': None, # <MIME type as a string or None>,
     >>>     }
     >>> }
 
