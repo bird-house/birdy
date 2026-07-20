@@ -1,0 +1,53 @@
+envlist = [
+  "lint",
+  {product = [{prefix = "py3.", start = 11, stop = 14}, {extras = ["", "extras"]}]},
+  "docs"
+]
+skip_missing_interpreters = true
+
+[env.docs]
+description = "Build the documentation with makefile under {basepython}"
+labels = ["docs"]
+dependency_groups = ["docs"]
+commands = [
+  ["make", "build-docs"]
+]
+commands_post = []
+allowlist_externals = ["make"]
+
+[env.lint]
+description = "Run code quality compliance tests under {basepython}"
+labels = ["lint"]
+skip_install = true
+dependency_groups = ["lint"]
+commands = [
+  ["make", "lint"]
+]
+commands_post = []
+allowlist_externals = ["make"]
+
+[env_run_base]
+description = "Run tests with pytest under {basepython}"
+setenv = {PYTEST_ADDOPTS = "--color=yes --cov=birdy --cov-report=lcov", PYTHONPATH = "{toxinidir}"}
+passenv = ["CI", "COVERALLS_*", "GDAL_VERSION", "GITHUB_*"]
+download = true
+dependency_groups = ["test"]
+install_command = ["python", "-m", "pip", "install", "--no-user", "{opts}", "{packages}"]
+commands_pre = [
+  [{replace = "if", condition = "factor.extras", then = ["python", "-m", "pip", "install", "--no-user", "--upgrade", "--force-reinstall", "--no-deps", "--no-binary", "gdal", "gdal[numpy]=={env:GDAL_VERSION}.*"], extend = true}],
+  [{replace = "if", condition = "factor.extras", then = ["python", "-m", "pip", "install", "--no-user", ".[extras]"], extend = true}],
+  ["pip", "list"],
+  ["pip", "check"]
+]
+commands = [
+  ["pytest", "-m", "not slow and not online", "{posargs}"]
+]
+commands_post = [
+  ["coverage", "report"]
+]
+
+[gh.python]
+"3.11" = ["py3.11"]
+"3.12" = ["py3.12"]
+"3.13" = ["py3.13"]
+"3.14" = ["py3.14-extras"]

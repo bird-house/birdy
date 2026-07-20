@@ -6,6 +6,7 @@ from common import EMU_CAPS_XML, URL_EMU
 
 import birdy.cli.run
 
+
 cli = birdy.cli.run.cli
 cli.url = URL_EMU
 cli.caps_xml = EMU_CAPS_XML

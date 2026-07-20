@@ -1,11 +1,15 @@
+=======
+Credits
+=======
+
 Authors
-*******
+-------
 
 * David Huard <huard.david@ouranos.ca> `@huard <https://github.com/huard>`_
 * Carsten Ehbrecht <ehbrecht@dkrz.de> `@cehbrecht <https://github.com/cehbrecht>`_
 
 Contributors
-************
+------------
 
 * David Caron `@davidcaron <https://github.com/davidcaron>`_
 * Francis Pelletier `@f-PLT <@f-PLT>`_

@@ -1042,7 +1042,7 @@
       <Output>
         <ows:Identifier>output</ows:Identifier>
         <ows:Title>Fetched Files</ows:Title>
-        <ows:Abstract>File containing the local pathes to downloades files.</ows:Abstract>
+        <ows:Abstract>File containing the local paths to downloaded files.</ows:Abstract>
         <ComplexOutput>
           <Default>
             <Format>
@@ -1910,7 +1910,7 @@
   <ProcessDescription wps:processVersion="0.2" storeSupported="true" statusSupported="true">
     <ows:Identifier>sdm_gbiffetch</ows:Identifier>
     <ows:Title>Species distribution Model (GBIF data fetch only)</ows:Title>
-    <ows:Abstract>Species occurence search in Global Biodiversity              Infrastructure Facillity (GBIF)</ows:Abstract>
+    <ows:Abstract>Species occurrence search in Global Biodiversity              Infrastructure Facillity (GBIF)</ows:Abstract>
     <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Doc" xlink:type="simple"/>
     <ows:Metadata xlink:href="http://gbif.org/" xlink:title="GBIF" xlink:type="simple"/>
     <DataInputs>
@@ -1928,7 +1928,7 @@
     <ProcessOutputs>
       <Output>
         <ows:Identifier>output_map</ows:Identifier>
-        <ows:Title>Graphic of species occurences</ows:Title>
+        <ows:Title>Graphic of species occurrences</ows:Title>
         <ows:Abstract>PNG graphic file showing the presence of tree species                                according to GBIF data fetch</ows:Abstract>
         <ComplexOutput>
           <Default>
@@ -2153,7 +2153,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>gbif</ows:Identifier>
         <ows:Title>GBIF csv file</ows:Title>
-        <ows:Abstract>GBIF table (csv) with tree occurence                          (output of 'GBIF data fetch' process )</ows:Abstract>
+        <ows:Abstract>GBIF table (csv) with tree occurrence                          (output of 'GBIF data fetch' process )</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -2336,7 +2336,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>gbif</ows:Identifier>
         <ows:Title>GBIF csv file</ows:Title>
-        <ows:Abstract>GBIF table (csv) with tree occurence                          (output of 'GBIF data fetch' process )</ows:Abstract>
+        <ows:Abstract>GBIF table (csv) with tree occurrence                          (output of 'GBIF data fetch' process )</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -2848,7 +2848,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>anualcycle</ows:Identifier>
         <ows:Title>Period for anualcycle calculation</ows:Title>
-        <ows:Abstract>Period for anual cycle calculation</ows:Abstract>
+        <ows:Abstract>Period for annual cycle calculation</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -3164,7 +3164,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>anualcycle</ows:Identifier>
         <ows:Title>Period for anualcycle calculation</ows:Title>
-        <ows:Abstract>Period for anual cycle calculation</ows:Abstract>
+        <ows:Abstract>Period for annual cycle calculation</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -3337,8 +3337,8 @@
       </Input>
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>anualcycle</ows:Identifier>
-        <ows:Title>Period for anualcycle calculation</ows:Title>
-        <ows:Abstract>Period for anual cycle calculation</ows:Abstract>
+        <ows:Title>Period for annual cycle calculation</ows:Title>
+        <ows:Abstract>Period for annual cycle calculation</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -4716,7 +4716,7 @@
   <ProcessDescription wps:processVersion="0.1" storeSupported="true" statusSupported="true">
     <ows:Identifier>EO_COPERNICUS_search</ows:Identifier>
     <ows:Title>EO COPERNICUS search products</ows:Title>
-    <ows:Abstract>Search for EO Data in the scihub.copernicus archiveoutput is a list of Product according to the querry and a graphical visualisation.</ows:Abstract>
+    <ows:Abstract>Search for EO Data in the scihub.copernicus archiveoutput is a list of Product according to the query and a graphical visualisation.</ows:Abstract>
     <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     <DataInputs>
       <Input minOccurs="1" maxOccurs="1">
@@ -4744,7 +4744,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>start</ows:Identifier>
         <ows:Title>Start Date</ows:Title>
-        <ows:Abstract>First day of the period to be searched for EO data.(if not set, 30 days befor end of period will be selected</ows:Abstract>
+        <ows:Abstract>First day of the period to be searched for EO data.(if not set, 30 days before end of period will be selected</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -4785,7 +4785,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>username</ows:Identifier>
         <ows:Title>User Name</ows:Title>
-        <ows:Abstract>Authentification user name for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication user name for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -4794,7 +4794,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>password</ows:Identifier>
         <ows:Title>Password</ows:Title>
-        <ows:Abstract>Authentification password for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication password for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -4805,7 +4805,7 @@
       <Output>
         <ows:Identifier>output_txt</ows:Identifier>
         <ows:Title>Files search result</ows:Title>
-        <ows:Abstract>Files found according to the search querry</ows:Abstract>
+        <ows:Abstract>Files found according to the search query</ows:Abstract>
         <ComplexOutput>
           <Default>
             <Format>
@@ -4858,7 +4858,7 @@
   <ProcessDescription wps:processVersion="0.1" storeSupported="true" statusSupported="true">
     <ows:Identifier>EO_COPERNICUS_fetch</ows:Identifier>
     <ows:Title>EO COPERNICUS search products and fetch them into the compute provider</ows:Title>
-    <ows:Abstract>Search for EO Data in the scihub.copernicus archiveproducts will be fechted into the local disc system.outuput is a list of produces and a graphical visualisation.</ows:Abstract>
+    <ows:Abstract>Search for EO Data in the scihub.copernicus archive products will be fetched into the local disc system. Output is a list of produces and a graphical visualisation.</ows:Abstract>
     <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     <DataInputs>
       <Input minOccurs="1" maxOccurs="1">
@@ -4886,7 +4886,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>start</ows:Identifier>
         <ows:Title>Start Date</ows:Title>
-        <ows:Abstract>First day of the period to be searched for EO data.(if not set, 30 days befor end of period will be selected</ows:Abstract>
+        <ows:Abstract>First day of the period to be searched for EO data. (If not set, 30 days before end of period will be selected.)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -4896,7 +4896,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>end</ows:Identifier>
         <ows:Title>End Date</ows:Title>
-        <ows:Abstract>Last day of the period to be searched for EO data.(if not set, current day is set.)</ows:Abstract>
+        <ows:Abstract>Last day of the period to be searched for EO data. (If not set, current day is set.)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -4927,7 +4927,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>username</ows:Identifier>
         <ows:Title>User Name</ows:Title>
-        <ows:Abstract>Authentification user name for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication user name for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -4936,7 +4936,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>password</ows:Identifier>
         <ows:Title>Password</ows:Title>
-        <ows:Abstract>Authentification password for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication password for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -4947,7 +4947,7 @@
       <Output>
         <ows:Identifier>output_txt</ows:Identifier>
         <ows:Title>Files search result</ows:Title>
-        <ows:Abstract>Files found according to the search querry</ows:Abstract>
+        <ows:Abstract>Files found according to the search query</ows:Abstract>
         <ComplexOutput>
           <Default>
             <Format>
@@ -5134,7 +5134,7 @@
   <ProcessDescription wps:processVersion="0.2" storeSupported="true" statusSupported="true">
     <ows:Identifier>EO_COPERNICUS_rgb</ows:Identifier>
     <ows:Title>SENTINEL RGB images</ows:Title>
-    <ows:Abstract>Based on a search querry the appropriate products are ploted as RGB graphics</ows:Abstract>
+    <ows:Abstract>Based on a search query the appropriate products are plotted as RGB graphics</ows:Abstract>
     <ows:Metadata xlink:href="http://flyingpigeon.readthedocs.io/en/latest/" xlink:title="Documentation" xlink:type="simple"/>
     <DataInputs>
       <Input minOccurs="1" maxOccurs="1">
@@ -5171,7 +5171,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>start</ows:Identifier>
         <ows:Title>Start Date</ows:Title>
-        <ows:Abstract>First day of the period to be searched for EO data.(if not set, 30 days befor end of period will be selected</ows:Abstract>
+        <ows:Abstract>First day of the period to be searched for EO data. (if not set, 30 days before end of period will be selected)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -5181,7 +5181,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>end</ows:Identifier>
         <ows:Title>End Date</ows:Title>
-        <ows:Abstract>Last day of the period to be searched for EO data.(if not set, current day is set.)</ows:Abstract>
+        <ows:Abstract>Last day of the period to be searched for EO data. (if not set, current day is set)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -5212,7 +5212,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>username</ows:Identifier>
         <ows:Title>User Name</ows:Title>
-        <ows:Abstract>Authentification user name for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication user name for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -5221,7 +5221,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>password</ows:Identifier>
         <ows:Title>Password</ows:Title>
-        <ows:Abstract>Authentification password for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication password for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -5249,7 +5249,7 @@
       <Output>
         <ows:Identifier>output_archive</ows:Identifier>
         <ows:Title>Tar archive</ows:Title>
-        <ows:Abstract>Tar archive of the iamge files</ows:Abstract>
+        <ows:Abstract>Tar archive of the image files</ows:Abstract>
         <ComplexOutput>
           <Default>
             <Format>
@@ -5314,7 +5314,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>start</ows:Identifier>
         <ows:Title>Start Date</ows:Title>
-        <ows:Abstract>First day of the period to be searched for EO data.(if not set, 30 days befor end of period will be selected</ows:Abstract>
+        <ows:Abstract>First day of the period to be searched for EO data. (If not set, 30 days before end of period will be selected.)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -5324,7 +5324,7 @@
       <Input minOccurs="0" maxOccurs="1">
         <ows:Identifier>end</ows:Identifier>
         <ows:Title>End Date</ows:Title>
-        <ows:Abstract>Last day of the period to be searched for EO data.(if not set, current day is set.)</ows:Abstract>
+        <ows:Abstract>Last day of the period to be searched for EO data. (If not set, current day is set.)</ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:date">date</ows:DataType>
           <ows:AnyValue/>
@@ -5355,7 +5355,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>username</ows:Identifier>
         <ows:Title>User Name</ows:Title>
-        <ows:Abstract>Authentification user name for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication user name for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -5364,7 +5364,7 @@
       <Input minOccurs="1" maxOccurs="1">
         <ows:Identifier>password</ows:Identifier>
         <ows:Title>Password</ows:Title>
-        <ows:Abstract>Authentification password for the COPERNICUS Sci-hub </ows:Abstract>
+        <ows:Abstract>Authentication password for the COPERNICUS Sci-hub </ows:Abstract>
         <LiteralData>
           <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.1:string">string</ows:DataType>
           <ows:AnyValue/>
@@ -5392,7 +5392,7 @@
       <Output>
         <ows:Identifier>output_archive</ows:Identifier>
         <ows:Title>Tar archive</ows:Title>
-        <ows:Abstract>Tar archive of the iamge files</ows:Abstract>
+        <ows:Abstract>Tar archive of the image files</ows:Abstract>
         <ComplexOutput>
           <Default>
             <Format>

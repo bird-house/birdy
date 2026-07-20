@@ -1,0 +1,90 @@
+# This workflow requires a dedicated environment to ensure that credentials are safely accessed ("automation").
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by separate terms of service, privacy
+# policy, and support documentation.
+
+name: Scorecard supply-chain security
+on:
+  # For Branch-Protection check. Only the default branch is supported. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  # To guarantee Maintained check is occasionally updated. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  schedule:
+    - cron: '41 8 * * 4'
+  push:
+    branches:
+      - main
+
+# Declare default permissions as read only.
+# Read-all permission is not technically needed for this workflow.
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    environment: automation
+    permissions:
+      # Needed to upload the results to code-scanning dashboard.
+      security-events: write
+      # Needed to publish results and get a badge (see publish_results below).
+      id-token: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            api.osv.dev:443
+            api.scorecard.dev:443
+            api.securityscorecards.dev:443
+            fulcio.sigstore.dev:443
+            github.com:443
+            index.docker.io:443
+            oss-fuzz-build-logs.storage.googleapis.com:443
+            rekor.sigstore.dev:443
+            tuf-repo-cdn.sigstore.dev:443
+            www.bestpractices.dev:443
+
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Run Analysis
+        uses: ossf/scorecard-action@05b42c624433fc40578a4040d5cf5e36ddca8cde # v2.4.2
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # This job step requires a personal access token named `OPENSSF_SCORECARD_TOKEN` with the following privileges:
+          # - Administration: Read-Only
+          # - Metadata: Read-Only
+          # - Webhooks: Read-Only
+          # To create the PAT, follow the steps in https://github.com/ossf/scorecard-action#authentication-with-pat.
+          repo_token: ${{ secrets.OPENSSF_SCORECARD_TOKEN }}
+
+          # Public repositories:
+          #   - Publish results to OpenSSF REST API for easy access by consumers
+          #   - Allows the repository to include the Scorecard badge.
+          #   - See https://github.com/ossf/scorecard-action#publishing-results.
+          publish_results: true
+
+      # Upload the results as artifacts (optional). Commenting out will disable uploads of run results in SARIF
+      # format to the repository Actions tab.
+      - name: Upload Artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      # Upload the results to GitHub's code scanning dashboard.
+      - name: Upload to code-scanning
+        uses: github/codeql-action/upload-sarif@fca7ace96b7d713c7035871441bd52efbe39e27e # 3.28.19
+        with:
+          sarif_file: results.sarif

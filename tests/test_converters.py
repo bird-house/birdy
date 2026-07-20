@@ -2,6 +2,7 @@
 
 import json
 import os
+import pathlib
 import tempfile
 
 import pytest
@@ -88,10 +89,8 @@ def test_zipconverter():  # noqa: D103
 def test_jpeg_imageconverter():  # noqa: D103
     # Note: Since the format is not supported, bytes will be returned
     fn = tempfile.mktemp(suffix=".jpeg")
-    with open(fn, "w") as f:
-        f.write(
-            "jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000"
-        )
+    with pathlib.Path(fn).open("w") as f:
+        f.write("jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000")
 
     b = converters.convert(fn, path="/tmp")
     assert isinstance(b, bytes)

@@ -6,48 +6,97 @@ repos:
     rev: v3.21.2
     hooks:
       - id: pyupgrade
-        args: [ '--py39-plus' ]
+        args: [ '--py311-plus' ]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
+      - id: check-json
+      - id: pretty-format-json
+        args: [ '--autofix', '--no-ensure-ascii', '--no-sort-keys' ]
+      - id: check-merge-conflict
+      - id: check-toml
       - id: check-yaml
+        args: [ '--allow-multiple-documents' ]
       - id: debug-statements
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.5.1
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: name-tests-test
+        args: [ '--pytest-test-first' ]
+        exclude: "common.py"
+      - id: no-commit-to-branch
+        args: [ '--branch', 'main' ]
+      - id: trailing-whitespace
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.24.4
     hooks:
-      - id: black
-        args: [ '--target-version=py39' ]
-      - id: black-jupyter
-  - repo: https://github.com/PyCQA/isort
-    rev: 9.0.0a3
+      - id: toml-sort-fix
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.38.0
     hooks:
-    - id: isort
-      args: [ '--profile=black' ]
+      - id: yamllint
+        args: [ '--config-file=.yamllint.yaml' ]
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-check-blanket-noqa
+      - id: python-check-blanket-type-ignore
+      - id: python-no-eval
+        exclude: "src/birdy/cli/base.py"
+      - id: python-no-log-warn
+      - id: python-use-type-annotations
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+      - id: text-unicode-replacement-char
+  # - repo: https://github.com/astral-sh/ruff-pre-commit
+  #   rev: v0.15.9
+  #   hooks:
+  #     - id: ruff-check
+  #       args: [ '--fix', '--show-fixes' ]
+  #     - id: ruff-format
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
     hooks:
       - id: flake8
-        args: [ '--config=setup.cfg' ]
+        additional_dependencies: [ 'flake8-rst-docstrings==0.4.0' ]
+        args: [ '--config=.flake8' ]
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: v2.16
+    hooks:
+      - id: vulture
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.18.2
+  #   hooks:
+  #     - id: mypy
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        additional_dependencies: [ 'tomli' ]
+        args: [ '--toml=pyproject.toml' ]
+  - repo: https://github.com/numpy/numpydoc
+    rev: v1.10.0
+    hooks:
+      - id: numpydoc-validation
+        exclude: ^docs/|^tests/
   - repo: https://github.com/kynan/nbstripout
     rev: 0.9.1
     hooks:
       - id: nbstripout
         files: '.ipynb'
-  - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.9.1
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.1
     hooks:
-      - id: nbqa-pyupgrade
-        args: [ '--py39-plus' ]
-        additional_dependencies: [ 'pyupgrade==v3.21.2' ]
-      - id: nbqa-isort
-        args: [ '--profile=black' ]
-        additional_dependencies: [ 'isort==8.0.1' ]
-  - repo: https://github.com/numpy/numpydoc
-    rev: v1.11.0rc0
+      - id: check-github-workflows
+      - id: check-readthedocs
+  - repo: https://github.com/woodruffw/zizmor-pre-commit
+    rev: v1.24.1
     hooks:
-      - id: numpydoc-validation
+      - id: zizmor
+        args: [ '--config=.zizmor.yml' ]
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
   - repo: meta
     hooks:
       - id: check-hooks-apply
@@ -61,6 +110,6 @@ ci:
   autofix_prs: true
   autoupdate_branch: ''
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
-  autoupdate_schedule: quarterly
+  autoupdate_schedule: monthly
   skip: [ ]
   submodules: false
