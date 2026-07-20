@@ -18,7 +18,7 @@ Internal changes
 * The project now uses a `src` layout.
 * The project now uses the `tox` testing runner for local and CI testing.
 * Version bumping now occurs on all changes to the `main` branch, using semantic versioning (e.g. `1.0.1` -> `1.0.2-dev0`).
-* `black`, `isort` `nbqa`, and most of the `flake8` checks are currently, with new linting engine `ruff` staged for future implementation.
+* `black`, `isort` `nbqa`, and most of the `flake8` checks are not currently enabled, with new linting engine `ruff` staged for future implementation.
 * `pre-commit` has been replaced by `prek`.
 * GitHub Workflow-related Actions and Python dependencies are now pinned to hashes and managed by Dependabot.
 * Many spelling errors that were present in the code base have been corrected.
