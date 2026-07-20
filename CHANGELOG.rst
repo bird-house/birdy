@@ -11,6 +11,11 @@ Announcements
 ^^^^^^^^^^^^^
 This version comprises a major refactoring of the boilerplate code. While not much has changed within the code base, the project management code has been significantly changed.
 
+Changes
+^^^^^^^
+* Code base now employs better logging and exception handling in addition to other code quality adjustments, according to `ruff` suggestions. (#302).
+* Documentation builds have been broken since version 0.8.7. Modifications to configurations have been performed to address this. (#302).
+
 Internal changes
 ^^^^^^^^^^^^^^^^
 * The `master` branch has been renamed to `main`.
