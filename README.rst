@@ -94,8 +94,8 @@ This package was created with Cookiecutter_ and the `Ouranosinc/cookiecutter-pyp
         :target: https://github.com/j178/prek
         :alt: prek
 
-.. |pypi| image:: https://img.shields.io/pypi/v/birdy.svg
-        :target: https://pypi.python.org/pypi/birdy
+.. |pypi| image:: https://img.shields.io/pypi/v/birdhouse-birdy.svg
+        :target: https://pypi.python.org/pypi/birdhouse-birdy
         :alt: PyPI
 
 .. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json

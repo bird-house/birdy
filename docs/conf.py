@@ -142,6 +142,8 @@ html_logo = "_static/birdhouse_logo.svg"
 # pixels large.
 html_favicon = "_static/favicon.ico"
 
+suppress_warnings = ["epub.unknown_project_files"]
+
 
 # -- Options for HTMLHelp output ---------------------------------------
 
