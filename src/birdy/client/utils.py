@@ -1,6 +1,6 @@
 # noqa: D100, D101, D102
-
 import datetime as dt
+import logging
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -58,7 +58,8 @@ def pretty_repr(obj: Any, linebreaks: bool = True):
 
     try:
         obj = obj._asdict()  # convert namedtuple to dict
-    except AttributeError:
+    except AttributeError as err:
+        logging.exception(err)
         pass
 
     try:
@@ -199,8 +200,9 @@ def format_type(obj: Any) -> str:
         if getattr(obj, "uoms", None):
             doc += ", units:[{}]".format(", ".join([u.uom for u in obj.uoms]))
 
-    except Exception as e:
-        raise type(e)(f"{e} (in {obj.identifier} docstring)")
+    except Exception as err:
+        raise type(err)(f"{err} (in {obj.identifier} docstring)") from err
+
     return doc
 
 

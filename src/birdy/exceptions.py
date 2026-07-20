@@ -1,3 +1,5 @@
+"""Birdy Exceptions Module."""
+
 import click
 from owslib.util import ServiceException
 

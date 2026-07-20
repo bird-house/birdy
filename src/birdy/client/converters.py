@@ -1,3 +1,6 @@
+"""Client Converter Module."""
+
+import logging
 import tempfile
 from collections.abc import Sequence
 from importlib import import_module
@@ -82,9 +85,9 @@ class BaseConverter:  # noqa: D101
         """
         try:
             import_module(name, package)
-        except ImportError as e:
+        except ImportError as err:
             message = f"Class {self.__class__.__name__} has unmet dependencies: {name}"
-            raise type(e)(message)
+            raise type(err)(message) from err
 
     def convert(self):
         """To be subclassed."""
@@ -309,10 +312,7 @@ class ZipConverter(BaseConverter):  # noqa: D101
 def _find_converter(mimetype=None, extension=None, converters=()):
     """Return a list of compatible converters ordered by priority."""
     select = [GenericConverter]
-    for obj in converters:
-        if (mimetype in obj.mimetypes) or (extension in obj.extensions):
-            select.append(obj)
-
+    select.extend(obj for obj in converters if (mimetype in obj.mimetypes) or (extension in obj.extensions))
     select.sort(key=lambda x: x.priority, reverse=True)
     return select
 
@@ -348,7 +348,7 @@ def find_converter(obj: Output | str | Path, converters: Sequence[BaseConverter]
 def convert(
     output: Output | Path | str,
     path: str | Path,
-    converters: Sequence[BaseConverter] = None,
+    converters: Sequence[BaseConverter] | None = None,
     verify: bool = True,
 ):
     """
@@ -386,7 +386,8 @@ def convert(
                 out = [convert(o, path) for o in out]
             return out
 
-        except (ImportError, NotImplementedError):
+        except (ImportError, NotImplementedError) as err:
+            logging.debug(err)
             pass
 
 

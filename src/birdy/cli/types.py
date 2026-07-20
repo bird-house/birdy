@@ -15,7 +15,7 @@ class ComplexParamType(click.ParamType):  # noqa: D101
                 raise ValueError()
             return ComplexDataInput(value)
         except ValueError:
-            self.fail("%s is not a valid URL" % value, param, ctx)
+            self.fail(f"{value} is not a valid URL", param, ctx)
 
     def __repr__(self):  # noqa: D105
         return "COMPLEX"

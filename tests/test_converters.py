@@ -63,10 +63,10 @@ def test_geojsonconverter():  # noqa: D103
     fb.close()
 
 
-def test_zipconverter():  # noqa: D103
+def test_zipconverter(tmp_path):  # noqa: D103
     import zipfile
 
-    f = tempfile.mktemp(suffix=".zip")
+    f = tmp_path / "test.zip"
     zf = zipfile.ZipFile(f, mode="w")
 
     a = tempfile.NamedTemporaryFile(mode="w", suffix=".json")
@@ -81,26 +81,26 @@ def test_zipconverter():  # noqa: D103
     zf.write(b.name, arcname=os.path.split(b.name)[1])
     zf.close()
 
-    [oa, ob] = converters.convert(f, path="/tmp", converters=[converters.ZipConverter])
+    [oa, ob] = converters.convert(f, path=tmp_path, converters=[converters.ZipConverter])
     assert oa == {"a": 1}
     assert len(ob.splitlines()) == 2
 
 
-def test_jpeg_imageconverter():  # noqa: D103
+def test_jpeg_imageconverter(tmp_path):  # noqa: D103
     # Note: Since the format is not supported, bytes will be returned
-    fn = tempfile.mktemp(suffix=".jpeg")
+    fn = tmp_path / "test.jpeg"
     with pathlib.Path(fn).open("w") as f:
         f.write("jpeg.jpg JPEG 1x1 1x1+0+0 8-bit Grayscale Gray 256c 107B 0.000u 0:00.000")
 
-    b = converters.convert(fn, path="/tmp")
+    b = converters.convert(fn, path=tmp_path)
     assert isinstance(b, bytes)
 
 
-def test_raster_tif():
+def test_raster_tif(tmp_path):
     xr = pytest.importorskip("xarray")
     pytest.importorskip("rioxarray")
 
     fn = resource_file("Olympus.tif")
 
-    da = converters.convert(fn, path="/tmp")
+    da = converters.convert(fn, path=tmp_path)
     assert isinstance(da, xr.DataArray)

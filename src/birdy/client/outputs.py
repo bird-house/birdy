@@ -1,3 +1,5 @@
+"""Client Outputs Module."""
+
 import tempfile
 from collections import namedtuple
 
