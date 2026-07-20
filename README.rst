@@ -106,6 +106,6 @@ This package was created with Cookiecutter_ and the `Ouranosinc/cookiecutter-pyp
         :target: https://www.repostatus.org/#active
         :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
 
-.. |versions| image:: https://img.shields.io/pypi/pyversions/birdy.svg
-        :target: https://pypi.python.org/pypi/birdy
+.. |versions| image:: https://img.shields.io/pypi/pyversions/birdhouse-birdy.svg
+        :target: https://pypi.python.org/pypi/birdhouse-birdy
         :alt: Supported Python Versions
