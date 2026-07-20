@@ -5,16 +5,28 @@ Changelog
 `Unreleased <https://github.com/bird-house/birdy>`_ (latest)
 ------------------------------------------------------------
 
-Contributors:
+Contributors: Trevor James Smith (:user:`Zeitsperre`).
 
-Changes
-^^^^^^^
-* No change.
+Announcements
+^^^^^^^^^^^^^
+This version comprises a major refactoring of the boilerplate code. While not much has changed within the code base, the project management code has been significantly changed.
 
-Fixes
-^^^^^
-* No change.
-
+Internal changes
+^^^^^^^^^^^^^^^^
+* The `master` branch has been renamed to `main`.
+* Replaced `setuptools`, `requirements*.txt`, `MANIFEST.in`, `setup.py/cfg` with `pyproject.toml` using the `flit-core` backend.
+* The project now uses a `src` layout.
+* The project now uses the `tox` testing runner for local and CI testing.
+* Version bumping now occurs on all changes to the `main` branch, using semantic versioning (e.g. `1.0.1` -> `1.0.2-dev0`).
+* `black`, `isort` `nbqa`, and most of the `flake8` checks are currently, with new linting engine `ruff` staged for future implementation.
+* `pre-commit` has been replaced by `prek`.
+* GitHub Workflow-related Actions and Python dependencies are now pinned to hashes and managed by Dependabot.
+* Many spelling errors that were present in the code base have been corrected.
+* There is now a community standard (Contributor Covenant 3.0 Code of Conduct) for participation in the project.
+* There are now AI guidance files based mostly on the outputs from https://aipolicy.1mb.dev and Ouranos internal discussions. The AI guidance suggestions are set to "standard".
+* The docs-situated Makefile has been significantly stripped down. The relevant commands are now present in the top-level Makefile.
+* Development and documentation dependencies are now only installable from the source code using `dependency-groups`.
+  The only additions possible when installing from PyPI are `birdhouse-birdy[extras]`.
 
 v0.9.1 (2025-07-03)
 -------------------
