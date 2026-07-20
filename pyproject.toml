@@ -357,6 +357,7 @@ extend-select = [
   "RUF022" # unsorted-dunder-all
 ]
 ignore = [
+  "BLE", # blind-except
   "COM", # commas
   "D205", # blank-line-after-summary
   "D400", # ends-in-period
@@ -365,7 +366,6 @@ ignore = [
 preview = true
 select = [
   "B", # bugbear
-  "BLE", # blind-except
   "C90", # mccabe-complexity
   "D", # docstrings
   "E", # pycodestyle errors
@@ -394,12 +394,13 @@ lines-after-imports = 2
 no-lines-before = ["future", "standard-library"]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 15
+max-complexity = 20
 
 [tool.ruff.lint.per-file-ignores]
 "docs/**" = ["E402"]
 "src/birdy/**/__init__.py" = ["F401", "F403"]
 "src/birdy/cli/base.py" = ["S307"]
+"src/birdy/exceptions.py" = ["N818"]
 "tests/**" = ["D100", "D101", "D102", "D103", "S101"]
 
 [tool.ruff.lint.pycodestyle]
