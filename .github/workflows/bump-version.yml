@@ -45,7 +45,6 @@ jobs:
   bump_patch_version:
     name: Bump build/patch version
     runs-on: ubuntu-latest
-    environment: automation
     permissions:
       contents: write
     strategy:
@@ -58,31 +57,44 @@ jobs:
           disable-sudo: true
           egress-policy: block
           allowed-endpoints: >
+            api.github.com:443
             files.pythonhosted.org:443
             github.com:443
             pypi.org:443
 
-      - name: Checkout Repository (no persist-credentials)
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Generate App Token
+        id: token_generator
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
+          app-id: ${{ secrets.BIRDHOUSE_HELPER_BOT_ID }}
+          private-key: ${{ secrets.BIRDHOUSE_HELPER_BOT_KEY }}
+          permission-contents: write
+
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ steps.token_generator.outputs.token }}
           persist-credentials: false
-          fetch-depth: 0
 
       - name: Set up Python${{ matrix.python-version }}
-        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Config Commit Bot
-        run: |
-          git config --local user.email "bumpversion[bot]@ouranos.ca"
-          git config --local user.name "bumpversion[bot]"
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7.0.0
+        with:
+          gpg_private_key: ${{ secrets.BIRDHOUSE_HELPER_BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.BIRDHOUSE_HELPER_BOT_GPG_PRIVATE_KEY_PASSWORD }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          trust_level: 5
 
       - name: Install CI libraries
         run: |
           python -m pip install --require-hashes -r .github/requirements_ci.txt
 
-      - name: Conditional Bump Version
+      - name: Conditional Bump
         run: |
           CURRENT_VERSION=$(bump-my-version show current_version)
           if [[ ${CURRENT_VERSION} =~ -dev(\.\d+)? ]]; then
@@ -98,5 +110,5 @@ jobs:
         uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
         with:
           force: false
-          github_token: ${{ secrets.BUMP_VERSION_TOKEN }}
           branch: ${{ github.ref }}
+          github_token: ${{ steps.token_generator.outputs.token }}
