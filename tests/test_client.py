@@ -204,7 +204,7 @@ def test_asobj_non_pythonic_id(wps):  # noqa: D103
 
 @pytest.mark.online
 def test_inputs(wps):  # noqa: D103
-    import netCDF4 as nc  # noqa: N813
+    nc = pytest.importorskip("NetCDF4")
 
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()

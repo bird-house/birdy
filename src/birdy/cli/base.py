@@ -62,7 +62,7 @@ class BirdyCLI(click.Group):
             except SSLError as err:
                 raise ConnectionError("SSL verification of server certificate failed. Set WPS_SSL_VERIFY=false.") from err
             except Exception as err:
-                raise ConnectionError("Could not connect to Web Processing Service") from err
+                raise ConnectionError(f"Could not connect to Web Processing Service ({err!r})") from err
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
