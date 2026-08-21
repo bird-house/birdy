@@ -18,8 +18,8 @@ Changelog
 
 .. _changes_0.10.0:
 
-`v0.10.0 <https://github.com/bird-house/birdy/tree/0.10.0>`_ (2026-08-21)
------------------------------------------------------------------------------
+`v0.10.0 <https://github.com/bird-house/birdy/tree/v0.10.0>`_ (2026-08-21)
+--------------------------------------------------------------------------
 
 Contributors: Trevor James Smith (:user:`Zeitsperre`).
 
