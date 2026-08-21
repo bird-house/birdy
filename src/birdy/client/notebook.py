@@ -1,3 +1,5 @@
+"""Client Notebook Module."""
+
 import threading
 
 from owslib.wps import Input, WPSExecution

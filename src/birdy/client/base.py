@@ -1,3 +1,5 @@
+"""Client Base Module."""
+
 import logging
 import types
 from collections import OrderedDict
@@ -131,6 +133,7 @@ class WPSClient:
                 "The 'verbose' keyword is deprecated and will be removed in a future version. Starting with owslib "
                 "0.29.0, debugging information is logged instead of printed.",
                 DeprecationWarning,
+                stacklevel=2,
             )
 
         self._wps = WebProcessingService(
@@ -148,9 +151,9 @@ class WPSClient:
 
         try:
             self._wps.getcapabilities(xml=caps_xml)
-        except ServiceException as e:
-            if "AccessForbidden" in str(e):
-                raise UnauthorizedException("You are not authorized to do a request of type: GetCapabilities")
+        except ServiceException as err:
+            if "AccessForbidden" in str(err):
+                raise UnauthorizedException("You are not authorized to do a request of type: GetCapabilities") from err
             raise
 
         self._processes = self._get_process_description(processes, xml=desc_xml)
@@ -384,9 +387,9 @@ class WPSClient:
                 else:
                     self._console_monitor(wps_response)
 
-        except ServiceException as e:
-            if "AccessForbidden" in str(e):
-                raise UnauthorizedException("You are not authorized to do a request of type: Execute")
+        except ServiceException as err:
+            if "AccessForbidden" in str(err):
+                raise UnauthorizedException("You are not authorized to do a request of type: Execute") from err
             raise
 
         # Add the convenience methods of WPSResult to the WPSExecution class. This adds a `get` method.
@@ -415,12 +418,15 @@ class WPSClient:
 
         while not execution.isComplete():
             execution.checkStatus(sleepSecs=sleep)
-            self.logger.info(f"{execution.process.identifier} [{execution.percentCompleted}/100] - {execution.statusMessage[:50]} ")
+            msg = f"{execution.process.identifier} [{execution.percentCompleted}/100] - {execution.statusMessage[:50]} "
+            self.logger.info(msg)
 
         if execution.isSucceded():
-            self.logger.info(f"{execution.process.identifier} done.")
+            msg = f"{execution.process.identifier} done."
+            self.logger.info(msg)
         else:
-            self.logger.info(f"{execution.process.identifier} failed.")
+            msg = f"{execution.process.identifier} failed."
+            self.logger.info(msg)
 
 
 def sort_inputs_key(i: Input):

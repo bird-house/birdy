@@ -94,8 +94,8 @@ This package was created with Cookiecutter_ and the `Ouranosinc/cookiecutter-pyp
         :target: https://github.com/j178/prek
         :alt: prek
 
-.. |pypi| image:: https://img.shields.io/pypi/v/birdy.svg
-        :target: https://pypi.python.org/pypi/birdy
+.. |pypi| image:: https://img.shields.io/pypi/v/birdhouse-birdy.svg
+        :target: https://pypi.python.org/pypi/birdhouse-birdy
         :alt: PyPI
 
 .. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
@@ -106,6 +106,6 @@ This package was created with Cookiecutter_ and the `Ouranosinc/cookiecutter-pyp
         :target: https://www.repostatus.org/#active
         :alt: Project Status: Active – The project has reached a stable, usable state and is being actively developed.
 
-.. |versions| image:: https://img.shields.io/pypi/pyversions/birdy.svg
-        :target: https://pypi.python.org/pypi/birdy
+.. |versions| image:: https://img.shields.io/pypi/pyversions/birdhouse-birdy.svg
+        :target: https://pypi.python.org/pypi/birdhouse-birdy
         :alt: Supported Python Versions

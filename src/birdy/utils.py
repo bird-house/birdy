@@ -1,3 +1,5 @@
+"""Birdy Utils Module."""
+
 import base64
 import collections
 import keyword
@@ -105,7 +107,7 @@ def is_opendap_url(url: str) -> bool:
         return False
 
 
-def is_file(path: str | None) -> bool:
+def is_file(path: str | Path | None) -> bool:
     """
     Return True if `path` is a valid file.
 

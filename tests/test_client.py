@@ -116,8 +116,8 @@ def test_wps_client_dummy_process(wps):  # noqa: D103
 
 
 @pytest.mark.online
-def test_wps_wordcounter(wps):  # noqa: D103
-    fn = "/tmp/text.txt"
+def test_wps_wordcounter(wps, tmp_path):  # noqa: D103
+    fn = tmp_path / "test.txt"
     with Path(fn).open("w") as f:
         f.write("Just an example")
     out = wps.wordcounter(text=fn).get(asobj=True)
@@ -204,7 +204,7 @@ def test_asobj_non_pythonic_id(wps):  # noqa: D103
 
 @pytest.mark.online
 def test_inputs(wps):  # noqa: D103
-    import netCDF4 as nc
+    nc = pytest.importorskip("NetCDF4")
 
     time_ = datetime.datetime.now().time()
     date_ = datetime.datetime.now().date()
@@ -256,7 +256,7 @@ def test_inputs(wps):  # noqa: D103
 
 @pytest.mark.online
 def test_netcdf():  # noqa: D103
-    import netCDF4 as nc
+    import netCDF4 as nc  # noqa: N813
 
     from birdy.client.converters import JSONConverter, Netcdf4Converter
 

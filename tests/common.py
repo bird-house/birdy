@@ -1,16 +1,15 @@
 # noqa: D100
 
-import os
 import pathlib
 
 
-def resource_file(filepath):  # noqa: D103
-    return os.path.join(test_directory(), "resources", filepath)
+def resource_file(filepath) -> str:  # noqa: D103
+    return str(pathlib.Path(test_directory()).joinpath("resources", filepath))
 
 
 def test_directory():
     """Helper function to return path to the tests directory."""
-    return os.path.dirname(__file__)
+    return pathlib.Path(__file__).parent
 
 
 # These tests assume Emu is running on the localhost

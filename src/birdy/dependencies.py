@@ -24,19 +24,16 @@ try:
     import ipywidgets
 except ImportError:
     ipywidgets = None
-    warnings.warn(
-        "Jupyter Notebook is not supported. Please install *ipywidgets*.",
-        IPythonWarning,
-    )
+    warnings.warn("Jupyter Notebook is not supported. Please install *ipywidgets*.", IPythonWarning, stacklevel=2)
 
 try:
     import IPython
 except ImportError:
     IPython = None
-    warnings.warn("IPython is not supported. Please install *ipython*.", IPythonWarning)
+    warnings.warn("IPython is not supported. Please install *ipython*.", IPythonWarning, stacklevel=2)
 
 try:
     import ipyleaflet
 except ImportError:
     ipyleaflet = None
-    warnings.warn("Ipyleaflet is not supported. Please install *ipyleaflet*.", IPythonWarning)
+    warnings.warn("Ipyleaflet is not supported. Please install *ipyleaflet*.", IPythonWarning, stacklevel=2)

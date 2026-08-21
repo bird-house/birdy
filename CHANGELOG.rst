@@ -11,6 +11,11 @@ Announcements
 ^^^^^^^^^^^^^
 This version comprises a major refactoring of the boilerplate code. While not much has changed within the code base, the project management code has been significantly changed.
 
+Changes
+^^^^^^^
+* Code base now employs better logging and exception handling in addition to other code quality adjustments, according to `ruff` suggestions. (#302).
+* Documentation builds have been broken since version 0.8.7. Modifications to configurations have been performed to address this. (#302).
+
 Internal changes
 ^^^^^^^^^^^^^^^^
 * The `master` branch has been renamed to `main`.
@@ -28,6 +33,8 @@ Internal changes
 * Development and documentation dependencies are now only installable from the source code using `dependency-groups`.
   The only additions possible when installing from PyPI are `birdhouse-birdy[extras]`.
 
+.. _changes_0.9.1:
+
 v0.9.1 (2025-07-03)
 -------------------
 
@@ -35,6 +42,8 @@ Changes
 ^^^^^^^
 
 * Fixed the `birdy[docs]` pip installation recipe to include the necessary `requirements_docs.txt` file.
+
+.. _changes_0.9.0:
 
 v0.9.0 (2025-07-02)
 -------------------
@@ -58,6 +67,8 @@ Changes
     * Added missing docstrings for all public functions, classes, and methods.
     * Updated the documentation to reflect the new installation methods and add relevant badges.
 
+.. _changes_0.8.7:
+
 v0.8.7 (2024-05-07)
 -------------------
 
@@ -65,6 +76,8 @@ Changes
 ^^^^^^^
 
 * Fix regression, where loading TIFF files would return a Dataset instead of a DataArray, the behavior prior to 0.8.5. Loading a multi-band TIFF file will now return a DataArray with the bands as dimensions.
+
+.. _changes_0.8.6:
 
 v0.8.6 (2024-03-18)
 -------------------
@@ -82,6 +95,8 @@ Changes
 * Remove the Python package for `pandoc` (unmaintained).
 * Add a documentation entry on using `build` to build the documentation.
 
+.. _changes_0.8.5:
+
 0.8.5 (2024-03-14)
 ------------------
 
@@ -94,6 +109,8 @@ Changes
 * Now using Trusted Publisher for TestPyPI/PyPI releases.
 * Update `black` to v24.2.0 and code formatting conventions to Python3.9+.
 
+.. _changes_0.8.4:
+
 0.8.4 (2023-05-24)
 ------------------
 
@@ -103,6 +120,8 @@ Changes
 * Fix docstring creation error occurring when the server identification abstract is None (#228).
 * Handle case where the server `describeProcess` does not understand "ALL" as the process identifier (#229).
 
+.. _changes_0.8.3:
+
 0.8.3 (2023-05-03)
 ------------------
 
@@ -110,6 +129,8 @@ Changes
 ^^^^^^^
 
 * Added the `packaging` library to the list of requirements.
+
+.. _changes_0.8.2:
 
 0.8.2 (2023-04-28)
 ------------------
@@ -122,6 +143,8 @@ Changes
 * Remove Python 3.6 from test matrix and add 3.10.
 * Handle the removal of the `verbose` argument in `OWSLib.WebProcessingService` 0.29.0.
 
+.. _changes_0.8.1:
+
 0.8.1 (2021-12-01)
 ------------------
 
@@ -129,6 +152,8 @@ Changes
 ^^^^^^^
 
 * Before trying to open a netCDF dataset, determine whether link is a valid OPeNDAP endpoint to avoid unnecessarily raising the cryptic ``syntax error, unexpected WORD_WORD, expecting SCAN_ATTR or SCAN_DATASET or SCAN_ERROR``.
+
+.. _changes_0.8.0:
 
 0.8.0 (2021-05-25)
 ------------------
@@ -147,6 +172,8 @@ API Changes
 
 * `mimetype` (str) replaced by `mimetypes` (tuple) in `client.converters.BaseConverter`.
 
+.. _changes_0.7.0:
+
 0.7.0 (2021-01-15)
 ------------------
 
@@ -161,6 +188,8 @@ Changes
 * Use GitHub Actions for CI build instead of Travis CI (#185).
 * Use black formatting (#186, #187).
 
+.. _changes_0.6.9:
+
 0.6.9 (2020-03-10)
 ------------------
 
@@ -169,6 +198,8 @@ Changes
 
 * Fixed passing Path objects (#169)
 * Trying to guess mime type of inputs rather than taking the first value (#171)
+
+.. _changes_0.6.6:
 
 0.6.6 (2020-03-03)
 ------------------
@@ -188,6 +219,8 @@ Changes
 * Added roocs wps demo notebook (#165).
 * Added missing files in MANIFEST.in for pypi install (#166).
 
+.. _changes_0.6.5:
+
 0.6.5 (2019-08-19)
 ------------------
 
@@ -202,6 +235,8 @@ Changes
 * Use oauth token (#145).
 * Skip Python 2.7 (#146).
 
+.. _changes_0.6.4:
+
 0.6.4 (2019-07-03)
 ------------------
 
@@ -209,6 +244,8 @@ Changes
 ^^^^^^^
 
 * Fix default converter to return bytes (#137).
+
+.. _changes_0.6.3:
 
 0.6.3 (2019-06-21)
 ------------------
@@ -219,6 +256,8 @@ Changes
 * Disabled segmented metalink downloads (#132).
 * Fix nested conversion (#135).
 
+.. _changes_0.6.2:
+
 0.6.2 (2019-06-06)
 ------------------
 
@@ -226,6 +265,8 @@ Changes
 ^^^^^^^
 
 * Added support for passing sequences (list, tuple) as WPS inputs (#128).
+
+.. _changes_0.6.1:
 
 0.6.1 (2019-05-27)
 ------------------
@@ -235,6 +276,8 @@ Changes
 
 * Added verify argument when downloading files to disk (#123).
 * Bugfixes: #118, #121
+
+.. _changes_0.6.0:
 
 0.6.0 (2019-04-04)
 ------------------
@@ -251,6 +294,8 @@ Changes
 * Cleaned up notebooks (#107).
 * Various Bugfixes: #83, #91, #99
 
+.. _changes_0.5.1:
+
 0.5.1 (2018-12-18)
 ------------------
 
@@ -258,6 +303,8 @@ Changes
 ^^^^^^^
 
 * Added support to launch Jupyter notebooks with birdy examples on binder (#94, #95).
+
+.. _changes_0.5.0:
 
 0.5.0 (2018-12-03)
 ------------------
@@ -270,6 +317,8 @@ Changes
 * Support for Jupter Notebooks (#40): cancel button (work in progress), progress bar, input widget.
 * Updated notebooks with examples for `WPSClient`.
 
+.. _changes_0.4.2:
+
 0.4.2 (2018-09-26)
 ------------------
 
@@ -278,6 +327,8 @@ Changes
 
 * Fixed WPS default parameter (#52).
 * Using ``WPS_SSL_VERIFY`` environment variable (#50).
+
+.. _changes_0.4.1:
 
 0.4.1 (2018-09-14)
 ------------------
@@ -290,6 +341,8 @@ Changes
 * Fix: using string type when dataType is not provided (#46).
 * Updated docs for native client (#43).
 
+.. _changes_0.4.0:
+
 0.4.0 (2018-09-06)
 ------------------
 
@@ -301,6 +354,8 @@ Changes
 * Conda support on RTD (#42).
 * Fix optional input (#41).
 
+.. _changes_0.3.3:
+
 0.3.3 (2018-07-18)
 ------------------
 
@@ -308,6 +363,8 @@ Changes
 ^^^^^^^
 
 * Added initial native client (#24, #37).
+
+.. _changes_0.3.2:
 
 0.3.2 (2018-06-06)
 ------------------
@@ -317,6 +374,8 @@ Changes
 
 * Fix MANIFEST.in.
 
+.. _changes_0.3.1:
+
 0.3.1 (2018-06-06)
 ------------------
 
@@ -324,6 +383,8 @@ Changes
 ^^^^^^^
 
 * Fix bumpversion.
+
+.. _changes_0.3.0:
 
 0.3.0 (2018-06-05)
 ------------------
@@ -334,6 +395,8 @@ Changes
 * Use bumpversion (#29).
 * Use click for CLI (#6).
 * Using GitHub templates for issues, PRs and contribution guide.
+
+.. _changes_0.2.2:
 
 0.2.2 (2018-05-08)
 ------------------
@@ -349,6 +412,8 @@ New Features
 
 * using ``mode`` for async execution in OWSLib (#22).
 
+.. _changes_0.2.1:
+
 0.2.1 (2018-03-14)
 ------------------
 
@@ -362,6 +427,8 @@ New Features
 
 * Fix #14: added ``--cert`` option to use x509 certificates.
 
+.. _changes_0.2.0:
+
 0.2.0 (2017-09-25)
 ------------------
 
@@ -370,6 +437,8 @@ New Features
 * updated travis.
 * fixed tests.
 * added compat module for python 3.x
+
+.. _changes_0.1.9:
 
 0.1.9 (2017-04-07)
 ------------------
@@ -383,10 +452,14 @@ New Features
 * fixed ComplexData input.
 * show status message in log.
 
+.. _changes_0.1.8:
+
 0.1.8 (2016-05-02)
 ------------------
 
 * added backward compatibility for owslib.wps without headers and verify parameter.
+
+.. _changes_0.1.7:
 
 0.1.7 (2016-05-02)
 ------------------
@@ -394,10 +467,14 @@ New Features
 * added twitcher token parameter.
 * using ssl verify option again.
 
+.. _changes_0.1.6:
+
 0.1.6 (2016-03-22)
 ------------------
 
 * added support for bbox parameters.
+
+.. _changes_0.1.5:
 
 0.1.5 (2016-03-15)
 ------------------
@@ -405,11 +482,15 @@ New Features
 * fixed wps init (using standard owslib).
 * update makefile.
 
+.. _changes_0.1.4:
+
 0.1.4 (2015-10-29)
 ------------------
 
 * using ssl verify option of WebProcessingSerivce
 * moved python requirements to requirements/deploy.txt
+
+.. _changes_0.1.3:
 
 0.1.3 (2015-08-20)
 ------------------
@@ -418,17 +499,23 @@ New Features
 * fixed unicode error in wps description.
 * using latest ComplexDataInput from owslib.wps.
 
+.. _changes_0.1.2:
+
 0.1.2 (2015-08-14)
 ------------------
 
 * fixed encoding of input text files.
 * more unit tests.
 
+.. _changes_0.1.1:
+
 0.1.1 (2015-08-13)
 ------------------
 
 * allow local file path for complex inputs.
 * send complex data inline with request to remote wps service.
+
+.. _changes_0.1.0:
 
 0.1.0 (2014-12-02)
 ------------------

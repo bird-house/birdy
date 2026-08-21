@@ -59,10 +59,10 @@ class BirdyCLI(click.Group):
         if not self.commands:
             try:
                 self.wps.getcapabilities(xml=self.caps_xml)
-            except SSLError:
-                raise ConnectionError("SSL verification of server certificate failed. Set WPS_SSL_VERIFY=false.")
-            except Exception as e:
-                raise ConnectionError(f"Could not connect to Web Processing Service ({e!r})")
+            except SSLError as err:
+                raise ConnectionError("SSL verification of server certificate failed. Set WPS_SSL_VERIFY=false.") from err
+            except Exception as err:
+                raise ConnectionError(f"Could not connect to Web Processing Service ({err!r})") from err
             for process in self.wps.processes:
                 self.commands[process.identifier] = dict(
                     name=process.identifier,
@@ -102,9 +102,7 @@ class BirdyCLI(click.Group):
                     multiple=inp.maxOccurs > 1,
                 )
             )
-        outputs = []
-        for output in pp.processOutputs:
-            outputs.append((output.identifier, BirdyCLI.get_param_type(output) is COMPLEX))
+        _outputs = [(output.identifier, BirdyCLI.get_param_type(output) is COMPLEX) for output in pp.processOutputs]
         return cmd
 
     @staticmethod
