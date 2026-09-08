@@ -20,7 +20,7 @@
 
 __author__ = """Carsten Ehbrecht"""
 __email__ = "ehbrecht@dkrz.de"
-__version__ = "0.10.0"
+__version__ = "0.10.1-dev.0"
 
 from .client import WPSClient
 from .ipyleafletwfs import IpyleafletWFS  # noqa: F401
