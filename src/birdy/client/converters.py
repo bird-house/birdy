@@ -55,7 +55,11 @@ class BaseConverter:  # noqa: D101
 
     @property
     def file(self):
-        """Return the output Path object. Download from server if not found."""
+        """
+        The output Path object.
+
+        Will download from server if not found locally.
+        """
         if self._file is None:
             self.output.writeToDisk(path=self.path, verify=self.verify)
             self._file = Path(self.output.filePath)
@@ -63,7 +67,7 @@ class BaseConverter:  # noqa: D101
 
     @property
     def data(self):
-        """Return the data from the remote output in memory."""
+        """In-memory data object from remote output."""
         if self._file is not None:
             return self.file.read_bytes()
         else:

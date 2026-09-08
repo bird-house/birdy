@@ -300,13 +300,13 @@ class IpyleafletWFS:
 
     @property
     def geojson(self):
-        """Return the imported geojson data in a python object format."""
+        """The imported geojson data in a Python object format."""
         return self._geojson
 
     @property
     def layer_list(self) -> list:
         """
-        Return a simple layer list available to the WFS service.
+        A simple layer list available to the WFS service.
 
         Returns
         -------
@@ -318,7 +318,7 @@ class IpyleafletWFS:
     @property
     def property_list(self) -> dict:
         """
-        Return a list containing the properties of the first feature.
+        A list containing the properties of the first feature.
 
         Retrieves the available properties for use subsequent use
         by the feature property widget.
