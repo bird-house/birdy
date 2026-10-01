@@ -237,7 +237,6 @@ platformdirs==4.9.4 \
     --hash=sha256:68a9a4619a666ea6439f2ff250c12a853cd1cbd5158d258bd824a7df6be2f868
     # via
     #   pylint
-    #   python-discovery
     #   tox
     #   virtualenv
 pluggy==1.6.0 \
@@ -394,9 +393,9 @@ pyproject-api==1.10.0 \
     --hash=sha256:40c6f2d82eebdc4afee61c773ed208c04c19db4c4a60d97f8d7be3ebc0bbb330 \
     --hash=sha256:8757c41a79c0f4ab71b99abed52b97ecf66bd20b04fa59da43b5840bac105a09
     # via tox
-python-discovery==1.2.2 \
-    --hash=sha256:876e9c57139eb757cb5878cbdd9ae5379e5d96266c99ef731119e04fffe533bb \
-    --hash=sha256:e1ae95d9af875e78f15e19aed0c6137ab1bb49c200f21f5061786490c9585c7a
+python-discovery==1.6.1 \
+    --hash=sha256:cf87d3627dfb4412437fdd5b13eae402607722998d21567993aedbc59b23c15e \
+    --hash=sha256:d43fcdef879fe795352bd13ccf8d185ba5a9f86f36cfcd00529f596e737442b3
     # via
     #   tox
     #   virtualenv
@@ -491,9 +490,9 @@ tomlkit==0.13.0 \
     # via
     #   bump-my-version
     #   pylint
-tox==4.52.0 \
-    --hash=sha256:6054abf5c8b61d58776fbec991f9bf0d34bb883862beb93d2fe55601ef3977c9 \
-    --hash=sha256:624d8ea4a8c6d5e8d168eedf0e318d736fb22e83ca83137d001ac65ffdec46fd
+tox==4.64.1 \
+    --hash=sha256:3089cfb112f8c5a1fcc652b49e4c708bb00cbaa7c908078ebe470e08f112de4c \
+    --hash=sha256:d10dd88c32e9f15f0ec831f9ebacb9b253f671fd1287d49bead2852fc6225271
     # via
     #   -r requirements_ci.in
     #   tox-gh
