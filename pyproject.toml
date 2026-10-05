@@ -5,12 +5,12 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "birdhouse-birdy"
 authors = [
-  {name = "Carsten Ehbrecht", email = "ehbrecht@dkrz.de"}
+  { name = "Carsten Ehbrecht", email = "ehbrecht@dkrz.de" }
 ]
 maintainers = [
-  {name = "Carsten Ehbrecht", email = "ehbrecht@dkrz.de"}
+  { name = "Carsten Ehbrecht", email = "ehbrecht@dkrz.de" }
 ]
-readme = {file = "README.rst", content-type = "text/x-rst"}
+readme = { file = "README.rst", content-type = "text/x-rst" }
 requires-python = ">=3.11.0"
 keywords = ["birdy", "wps", "pywps", "owslib", "geopython", "birdhouse"]
 license = "Apache-2.0"
@@ -106,7 +106,7 @@ docs = [
   "sphinx-click",
   "sphinx-codeautolink >=0.16.2",
   "sphinx-copybutton >=0.5.2",
-  {include-group = "notebooks"}
+  { include-group = "notebooks" }
 ]
 tox = [
   "tox >=4.52.0",
@@ -118,10 +118,10 @@ dev = [
   "pip >=26.0.1",
   "prek >=0.3.0",
   "watchdog >=6.0.0",
-  {include-group = "docs"},
-  {include-group = "lint"},
-  {include-group = "test"},
-  {include-group = "tox"}
+  { include-group = "docs" },
+  { include-group = "lint" },
+  { include-group = "test" },
+  { include-group = "tox" }
 ]
 
 [tool]
